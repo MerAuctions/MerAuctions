@@ -5,7 +5,9 @@ import (
 )
 
 func setupRoutes(router *gin.Engine) {
-
+	router.LoadHTMLGlob("templates/**/*")
+	router.Static("/js", "./static/js")
+	router.Static("/css", "./static/css")
 	router.GET("/hello", hello)
 
 	router.GET("/", getAllAuctions)
