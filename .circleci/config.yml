@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.13.4
+    working_directory: /go/src/github.com/MerAuctions/MerAuctions
+    steps:
+      - checkout
+      - run: go build cmd/auctions/merauctions.go
+  test:
+    docker:
+      - image: circleci/golang:1.13.4
+    working_directory: /go/src/github.com/MerAuctions/MerAuctions
+    steps:
+      - checkout
+      - run: go test -v ./...
