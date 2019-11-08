@@ -28,7 +28,29 @@
       {{ template "auction/post.tmpl" }}
     </section>
   </main>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="/js/materialize.min.js"></script>
+  <script type="text/javascript">
+    var end_time = new Date({{ .end_time }});
+    updateTimer();
+    var timer = setInterval(updateTimer, 1000);
+
+    function updateTimer() {
+      var now = new Date();
+      var time_remain = end_time - now;
+      setEndTime(time_remain);
+    }
+
+    function setEndTime(t) {
+      t = Math.floor(t / 1000);
+      var s = t % 60;
+      t = Math.floor(t / 60);
+      var m = t % 60;
+      t = Math.floor(t / 60);
+      var h = t;
+      $("#end-timer").html(`${h}h ${m}m ${s}s`);
+    }
+  </script>
 </body>
 
 </html>
