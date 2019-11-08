@@ -12,5 +12,5 @@
 *.out
 
 # CI built binary
-merauctions
+merauction
 *.DS_Store
