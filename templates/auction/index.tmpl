@@ -7,7 +7,7 @@
   <link type="text/css" rel="stylesheet" href="/css/materialize.min.css" media="screen,projection" />
   <link type="text/css" rel="stylesheet" href="/css/style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ .title }}</title>
+  <title>{{ .page_title }}</title>
 </head>
 
 <body>
@@ -15,7 +15,7 @@
   <main class="container">
     <section>
       <!-- auction details -->
-      {{ template "auction/details.tmpl" }}
+      {{ template "auction/details.tmpl" . }}
     </section>
 
     <section>
