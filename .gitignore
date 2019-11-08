@@ -13,3 +13,4 @@
 
 # CI built binary
 merauctions
+*.DS_Store
