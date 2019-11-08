@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: merauctions
+spec:
+  selector:
+    matchLabels:
+      app: ci-deploy
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: ci-deploy
+        tier: backend
+    spec:
+      containers:
+        - name: merauctions-app
+          image: gcr.io/kouzoh-p-harsh/merauctions:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: merauction-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: merauction-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: merauction-port
+  selector:
+    app: ci-deploy
+    tier: backend
