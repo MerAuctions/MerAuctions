@@ -5,7 +5,11 @@ import (
 )
 
 func setupRoutes(router *gin.Engine) {
-	router.LoadHTMLGlob("templates/**/*")
+	if mode := gin.Mode(); mode == gin.TestMode {
+		router.LoadHTMLGlob("./../templates/**/*")
+	} else {
+		router.LoadHTMLGlob("templates/**/*")
+	}
 	router.Static("/js", "./static/js")
 	router.Static("/css", "./static/css")
 	router.GET("/hello", hello)
