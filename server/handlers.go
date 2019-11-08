@@ -5,3 +5,23 @@ import "github.com/gin-gonic/gin"
 func hello(c *gin.Context) {
 	c.String(200, "Hello World")
 }
+
+func getAuctionsById(c *gin.Context) {
+
+}
+
+func getBidsAuctionsById(c *gin.Context) {
+
+}
+
+func addNewUser(c *gin.Context) {
+
+}
+
+func bidAuctionByUser(c *gin.Context) {
+
+}
+
+func getResultByAuctionId(c *gin.Context) {
+
+}
