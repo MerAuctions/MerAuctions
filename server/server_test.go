@@ -31,10 +31,10 @@ var _ = Describe("Server", func() {
 		// Since we modify lists in memory, we need to restore them to a clean state before every test
 	})
 
-	Describe("Version 1 API at /api/v1", func() {
+	Describe("Version 1 API at /api/v0.1", func() {
 		Describe("The / endpoint", func() {
 			BeforeEach(func() {
-				response = performRequest(router, "GET", "/api/v0.1/", nil)
+				response = performRequest(router, "GET", "/hello", nil)
 			})
 
 			It("Returns with Status 200", func() {
