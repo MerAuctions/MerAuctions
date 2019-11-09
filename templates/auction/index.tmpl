@@ -69,6 +69,22 @@
         }
       });
     }
+
+    function signUp() {
+      var user_id = $('#input-username').val();
+      $.ajax({
+        url: `/users`,
+        method: 'POST',
+        success: function (result) {
+          M.toast({
+            html: result
+          });
+        },
+        data: {
+          user_id: user_id
+        }
+      });
+    }
     $(document).ready(function(){
       $('.modal').modal();
     });

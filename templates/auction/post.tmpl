@@ -13,10 +13,15 @@
 <div id="signup-modal" class="modal">
   <div class="modal-content">
     <h4>Sign up</h4>
-    <p></p>
+    <div class="row">
+      <div class="input-field col s12 m8 l6">
+        <input id="input-username" type="text" class="validate">
+        <label for="input-username">Your name here</label>
+      </div>
+    </div>
   </div>
   <div class="modal-footer">
-    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Confirm</a>
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat" onclick="signUp();">Confirm</a>
   </div>
 </div>
 {{ end }}
