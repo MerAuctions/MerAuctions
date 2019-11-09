@@ -1,31 +1,81 @@
 package server
 
-import "github.com/gin-gonic/gin"
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/MerAuctions/MerAuctions/data"
+	"github.com/MerAuctions/MerAuctions/models"
+	"github.com/gin-gonic/gin"
+)
 
 func hello(c *gin.Context) {
 	c.String(200, "Hello World")
 }
 
+//get all auctions
 func getAllAuctions(c *gin.Context) {
-
+	var allAuctions models.AuctionList
+	//get all auctions from db
+	data.GetAllAuctionsFromDB(&allAuctions)
+	c.JSON(200, allAuctions)
 }
 
+//get auction by id
 func getAuctionsById(c *gin.Context) {
-
+	//id, err := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
+	var auc models.Auction
+	//get auction by id from db
+	data.GetAuctionByIdFromDB(&auc, id)
+	c.JSON(200, auc)
 }
 
+//gets all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
-
+	id := c.Param("id")
+	var top5bids [5]models.Bid
+	//get top5 bids from db
+	data.GetTopFiveBidsFromDB(&top5bids, id)
+	c.JSON(200, top5bids)
 }
 
+// register new user
 func addNewUser(c *gin.Context) {
+	var newuser models.User
+	rawData, _ := c.GetRawData()
+	json.Unmarshal(rawData, &newuser)
+
+	// status:0-> success, status:1--> user exists
+	// status:2--> userid not according to standard (may be later)
+	status := data.AddNewUser(&newuser)
+	if status == 0 {
+		c.JSON(200, fmt.Sprintf("User Successfully added"))
+	} else {
+		c.JSON(400, fmt.Sprintf("User Alredy exists"))
+	}
 
 }
 
+//add bid by a registered user
 func bidAuctionIdByUserId(c *gin.Context) {
+	var newbid models.Bid
+	rawData, _ := c.GetRawData()
+	json.Unmarshal(rawData, &newbid)
 
+	//TODO: check for price limits
+	status := data.AddNewBid(&newbid)
+	if status == 0 {
+		c.JSON(200, fmt.Sprintf("User Successfully added"))
+	} else {
+		c.JSON(400, fmt.Sprintf("User Alredy exists"))
+	}
 }
 
 func getResultByAuctionId(c *gin.Context) {
-
+	id := c.Param("id")
+	var aucres models.Result
+	//get result from db
+	data.GetResult(&aucres, id)
+	c.JSON(200, aucres)
 }
