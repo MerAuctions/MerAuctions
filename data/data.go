@@ -5,16 +5,14 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	//"go.mongodb.org/mongo-driver/bson"
+	"github.com/MerAuctions/MerAuctions/models"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-<<<<<<< HEAD
-
-func GetAllAuctionsFromDB(*models.AuctionList) {
-
-}
-
-func GetAuctionByIdFromDB(auc *models.Auction, id string) {
-=======
 type DBClient struct {
 	dbName string
 	client *mongo.Client
@@ -24,34 +22,26 @@ type DBClient struct {
 func ConnectDB(URL string, dbName string) *DBClient {
 	// Set client options
 	clientOptions := options.Client().ApplyURI(URL)
->>>>>>> a009c765f83a58230ad3ae2351990f867c264efc
 
-}
+	// Connect to MongoDB
+	client, err := mongo.Connect(context.TODO(), clientOptions)
 
-func GetTopFiveBidsFromDB(top5bids *[5]models.Bid, id string) {
+	if err != nil {
+		log.Fatal(err)
+	}
 
-}
+	// Check the connection
+	err = client.Ping(context.TODO(), nil)
 
-func AddNewUserToDB(usr *models.User) int {
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	return 0
-}
-
-func AddNewBid(bid *models.Bid) int {
-
-	return 0
-}
-
-func GetResult(res *models.Result, id string) {
-
-<<<<<<< HEAD
-=======
 	fmt.Println("Connected to MongoDB!")
 	return &DBClient{
 		client: client,
 		dbName: dbName,
 	}
->>>>>>> a009c765f83a58230ad3ae2351990f867c264efc
 }
 
 func (c *DBClient) TestAddData() error {
@@ -79,4 +69,30 @@ func (c *DBClient) TestGetData() (*models.User, error) {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func GetAllAuctionsFromDB(*models.AuctionList) {
+
+}
+
+func GetAuctionByIdFromDB(auc *models.Auction, id string) {
+
+}
+
+func GetTopFiveBidsFromDB(top5bids *[5]models.Bid, id string) {
+
+}
+
+func AddNewUserToDB(usr *models.User) int {
+
+	return 0
+}
+
+func AddNewBid(bid *models.Bid) int {
+
+	return 0
+}
+
+func GetResult(res *models.Result, id string) {
+
 }
