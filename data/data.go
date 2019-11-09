@@ -16,7 +16,7 @@ func GetTopFiveBidsFromDB(top5bids *[5]models.Bid, id string) {
 
 }
 
-func AddNewUser(usr *models.User) int {
+func AddNewUserToDB(usr *models.User) int {
 
 	return 0
 }

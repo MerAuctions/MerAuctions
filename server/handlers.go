@@ -16,17 +16,14 @@ func hello(c *gin.Context) {
 //get all auctions
 func getAllAuctions(c *gin.Context) {
 	var allAuctions models.AuctionList
-	//get all auctions from db
 	data.GetAllAuctionsFromDB(&allAuctions)
 	c.JSON(200, allAuctions)
 }
 
 //get auction by id
 func getAuctionsById(c *gin.Context) {
-	//id, err := strconv.Atoi(c.Param("id"))
 	id := c.Param("id")
 	var auc models.Auction
-	//get auction by id from db
 	data.GetAuctionByIdFromDB(&auc, id)
 	c.JSON(200, auc)
 }
@@ -35,7 +32,6 @@ func getAuctionsById(c *gin.Context) {
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("id")
 	var top5bids [5]models.Bid
-	//get top5 bids from db
 	data.GetTopFiveBidsFromDB(&top5bids, id)
 	c.JSON(200, top5bids)
 }
@@ -46,9 +42,9 @@ func addNewUser(c *gin.Context) {
 	rawData, _ := c.GetRawData()
 	json.Unmarshal(rawData, &newuser)
 
-	// status:0-> success, status:1--> user exists
-	// status:2--> userid not according to standard (may be later)
-	status := data.AddNewUser(&newuser)
+	//status:0-->success, status:1-->user exists
+	//TODO: status:2-->userid not according to standard
+	status := data.AddNewUserToDB(&newuser)
 	if status == 0 {
 		c.JSON(200, fmt.Sprintf("User Successfully added"))
 	} else {
@@ -58,7 +54,7 @@ func addNewUser(c *gin.Context) {
 }
 
 //add bid by a registered user
-func bidAuctionIdByUserId(c *gin.Context) {
+func addBidAuctionIdByUserId(c *gin.Context) {
 	var newbid models.Bid
 	rawData, _ := c.GetRawData()
 	json.Unmarshal(rawData, &newbid)
@@ -72,10 +68,10 @@ func bidAuctionIdByUserId(c *gin.Context) {
 	}
 }
 
+//get results of an auction
 func getResultByAuctionId(c *gin.Context) {
 	id := c.Param("id")
 	var aucres models.Result
-	//get result from db
 	data.GetResult(&aucres, id)
 	c.JSON(200, aucres)
 }
