@@ -26,8 +26,8 @@ jobs:
           command: make test
 
   deploy_master:
-    executor: golang
     description: Deploy application to Google Kubernetes Engine aftre pushing to Google Container Registry
+    machine: true
     steps:
       - checkout
       - gcr/gcr-auth
