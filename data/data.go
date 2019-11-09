@@ -14,11 +14,12 @@ import (
 )
 
 type DBClient struct {
+	dbName string
 	client *mongo.Client
 }
 
 //Connect to mongoDB of given URL
-func ConnectDB(URL string) *DBClient {
+func ConnectDB(URL string, dbName string) *DBClient {
 	// Set client options
 	clientOptions := options.Client().ApplyURI(URL)
 
@@ -39,11 +40,12 @@ func ConnectDB(URL string) *DBClient {
 	fmt.Println("Connected to MongoDB!")
 	return &DBClient{
 		client: client,
+		dbName: dbName,
 	}
 }
 
-func (c *DBClient) TestData() (*models.User, error) {
-	collection := c.client.Database("testing").Collection("numbers")
+func (c *DBClient) TestAddData() error {
+	collection := c.client.Database(c.dbName).Collection("numbers")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	//inserting data
 	res, err := collection.InsertOne(ctx, models.User{
@@ -51,15 +53,18 @@ func (c *DBClient) TestData() (*models.User, error) {
 		UserName: "harsh",
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	log.Printf("Added document with ID: %s", res.InsertedID)
+	return nil
+}
 
+func (c *DBClient) TestGetData() (*models.User, error) {
+	collection := c.client.Database(c.dbName).Collection("numbers")
 	var result models.User
-	ctx, _ = context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	//querying data
-	err = collection.FindOne(ctx, bson.M{"username": "harsh"}).Decode(&result)
-
+	err := collection.FindOne(ctx, bson.M{"username": "harsh"}).Decode(&result)
 	if err != nil {
 		return nil, err
 	}

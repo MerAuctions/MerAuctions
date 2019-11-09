@@ -10,18 +10,23 @@ import (
 )
 
 func hello(c *gin.Context) {
-	x, err := db.TestData()
+	err := db.TestAddData()
 	if err != nil {
 		c.String(200, "Error : "+err.Error())
 	}
-	c.JSON(200, x)
+	c.JSON(200, "Done")
 }
 
 //get all auctions
 func getAllAuctions(c *gin.Context) {
-	var allAuctions models.AuctionList
-	data.GetAllAuctionsFromDB(&allAuctions)
-	c.JSON(200, allAuctions)
+	// var allAuctions models.AuctionList
+	// data.GetAllAuctionsFromDB(&allAuctions)
+	// c.JSON(200, allAuctions)
+	x, err := db.TestGetData()
+	if err != nil {
+		c.String(200, "Error : "+err.Error())
+	}
+	c.JSON(200, x)
 }
 
 //get auction by id

@@ -34,7 +34,7 @@ var _ = Describe("Server", func() {
 	Describe("Version 1 API at /api/v0.1", func() {
 		Describe("The / endpoint", func() {
 			BeforeEach(func() {
-				response = performRequest(router, "GET", "/", nil)
+				response = performRequest(router, "GET", "/auctions/1", nil)
 			})
 
 			It("Returns with Status 200", func() {
