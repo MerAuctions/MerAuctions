@@ -32,9 +32,8 @@ docker-push: docker-build
 		docker push gcr.io/kouzoh-p-harsh/merauctions:v0.1
 
 cluster-create:
-	gcloud container clusters create merauction --num-nodes=1 --machine-type=g1-small
+	gcloud container clusters create merauction --num-nodes=2 --machine-type=g1-small
 
 kubernetes-build:
 	gcloud container clusters get-credentials $(CLUSTER_NAME)
 	kubectl apply -f kubernetes
-	# kubectl exec mongo -c mongo -- mongo --eval 'db.getSiblingDB("admin").createUser({user:"main_admin",pwd:"'"$(DB_PASSWORD)"'",roles:[{role:"root",db:"admin"}]});'
