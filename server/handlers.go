@@ -10,7 +10,11 @@ import (
 )
 
 func hello(c *gin.Context) {
-	c.String(200, "Hello World")
+	x, err := db.TestData()
+	if err != nil {
+		c.String(200, "Error : "+err.Error())
+	}
+	c.JSON(200, x)
 }
 
 //get all auctions

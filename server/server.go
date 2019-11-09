@@ -8,8 +8,18 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/gin-gonic/gin"
 )
+
+var (
+	db *data.DBClient
+)
+
+// ConnectToDB connects to database
+func ConnectToDB(dbURL string) {
+	db = data.ConnectDB(dbURL)
+}
 
 // CreateRouter creates and configures a server
 func CreateRouter() *gin.Engine {
