@@ -17,8 +17,8 @@ var (
 )
 
 // ConnectToDB connects to database
-func ConnectToDB(dbURL string) {
-	db = data.ConnectDB(dbURL)
+func ConnectToDB(dbURL string, dbName string) {
+	db = data.ConnectDB(dbURL, dbName)
 }
 
 // CreateRouter creates and configures a server

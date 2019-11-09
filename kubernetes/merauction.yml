@@ -16,6 +16,11 @@ spec:
       containers:
         - name: merauctions-app
           image: gcr.io/kouzoh-p-harsh/merauctions:v0.1
+          command: [ "/app/merauction" ]
+          args: [
+          "--mongodb-url=mongodb://mongo-service:27017/testing",
+          "--database=testing"
+          ]
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
