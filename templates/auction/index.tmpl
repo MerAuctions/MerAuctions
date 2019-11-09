@@ -31,6 +31,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="/js/materialize.min.js"></script>
   <script type="text/javascript">
+    var debug = {{ . }};
     var end_time = new Date({{ .end_time }});
     updateTimer();
     var timer = setInterval(updateTimer, 1000);
@@ -50,7 +51,27 @@
       var h = t;
       $("#end-timer").html(`${h}h ${m}m ${s}s`);
     }
-    var debug = {{ . }};
+
+    function submitBid() {
+      var price = $('#input-price').val();
+      var auction_id = 0;
+      var user_id = 0;
+      $.ajax({
+        url: `/auctions/${auction_id}/users/${user_id}/bids`,
+        method: 'POST',
+        success: function (result) {
+          M.toast({
+            html: result
+          });
+        },
+        data: {
+          price: price
+        }
+      });
+    }
+    $(document).ready(function(){
+      $('.modal').modal();
+    });
   </script>
 </body>
 

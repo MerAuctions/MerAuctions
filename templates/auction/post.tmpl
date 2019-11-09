@@ -1,12 +1,22 @@
 {{ define "auction/post.tmpl" }}
 <div class="row">
   <div class="input-field col s6">
-    <input id="last_name" type="text" class="validate">
-    <label for="last_name">Price</label>
+    <input id="input-price" type="text" class="validate">
+    <label for="input-price">Price</label>
   </div>
   <div class="col s6 post-bid-buttons">
-    <a class="waves-effect waves-light btn">Register</a>
-    <a class="waves-effect waves-light btn">Submit</a>
+    <a id="signup-button" class="waves-effect waves-light btn modal-trigger" data-target="signup-modal">Sign up</a>
+    <a id="submit-button" class="waves-effect waves-light btn" onclick="submitBid();">Submit</a>
+  </div>
+</div>
+
+<div id="signup-modal" class="modal">
+  <div class="modal-content">
+    <h4>Sign up</h4>
+    <p></p>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Confirm</a>
   </div>
 </div>
 {{ end }}
