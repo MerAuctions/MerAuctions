@@ -1,16 +1,61 @@
-version: 2
+version: 2.1
+orbs:
+  gcp-gke: circleci/gcp-gke@0.2.0
+  gcr: circleci/gcp-gcr@0.0.2
+
+executors:
+  golang:
+    docker:
+    - image: circleci/golang:1.13.4
+      
 jobs:
   build:
-    docker:
-      - image: circleci/golang:1.13.4
-    working_directory: /go/src/github.com/MerAuctions/MerAuctions
+    executor: golang
+    description: Run go build to check compilation
     steps:
       - checkout
-      - run: go build cmd/auctions/merauctions.go
+      - run:
+          command: make build
+
   test:
-    docker:
-      - image: circleci/golang:1.13.4
-    working_directory: /go/src/github.com/MerAuctions/MerAuctions
+    executor: golang
+    description: Run go test to run tests
     steps:
       - checkout
-      - run: go test -v ./...
+      - run:
+          command: make test
+
+  deploy_master:
+    description: Deploy application to Google Kubernetes Engine after pushing to Google Container Registry
+    machine: true
+    steps:
+      - checkout
+      - gcr/gcr-auth
+      - gcr/build-image:
+          image: merauctions
+          tag: "v0.1"
+      - gcr/push-image:
+          image: merauctions
+          tag: "v0.1"
+      - gcp-gke/install
+      - gcp-gke/init
+      - gcp-gke/rollout-image:
+          cluster: merauction
+          deployment: merauctions-deployment
+          container: merauctions-app
+          image: gcr.io/kouzoh-p-harsh/merauctions:v0.1
+      - run:
+          command: kubectl rollout restart deployment/merauctions-deployment
+
+workflows:
+  merauction:
+    jobs:
+      - build
+      - test
+      - deploy_master:
+          requires:
+            - build
+            - test
+          filters:
+            branches:
+              only: master
