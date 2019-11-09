@@ -7,7 +7,7 @@ func hello(c *gin.Context) {
 }
 
 func getAllAuctions(c *gin.Context) {
-
+	c.String(200, "Auctions")
 }
 
 func getAuctionsById(c *gin.Context) {

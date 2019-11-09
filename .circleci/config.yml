@@ -25,7 +25,7 @@ jobs:
       - run:
           command: make test
 
-  deploy:
+  deploy_master:
     executor: golang
     description: Deploy application to Google Kubernetes Engine aftre pushing to Google Container Registry
     steps:
@@ -49,7 +49,7 @@ workflows:
     jobs:
       - build
       - test
-      - deploy:
+      - deploy_master:
           requires:
             - build
             - test
