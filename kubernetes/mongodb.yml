@@ -1,7 +1,11 @@
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
+<<<<<<< HEAD
  name: mongodb-set
+=======
+ name: mongo
+>>>>>>> dfc2d322ee3975788fb18d114473242fda859b8b
 spec:
  serviceName: "mongo"
  replicas: 1
@@ -17,6 +21,11 @@ spec:
          image: mongo:4.2
          command:
            - mongod
+<<<<<<< HEAD
+=======
+           - "--replSet"
+           - rs0
+>>>>>>> dfc2d322ee3975788fb18d114473242fda859b8b
          ports:
           - containerPort: 27017
             name: mongodb-port
