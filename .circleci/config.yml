@@ -26,7 +26,7 @@ jobs:
           command: make test
 
   deploy_master:
-    description: Deploy application to Google Kubernetes Engine aftre pushing to Google Container Registry
+    description: Deploy application to Google Kubernetes Engine after pushing to Google Container Registry
     machine: true
     steps:
       - checkout
@@ -44,6 +44,9 @@ jobs:
           deployment: merauctions-deployment
           container: merauctions-app
           image: gcr.io/kouzoh-p-harsh/merauctions:v0.1
+      - run:
+          command: kubectl rollout restart deployment/merauctions-deployment
+
 workflows:
   merauction:
     jobs:
