@@ -31,8 +31,8 @@ docker-build:
 docker-push: docker-build
 		docker push gcr.io/kouzoh-p-harsh/merauctions:v0.1
 
-cluster-create:
-	gcloud container clusters create merauction --num-nodes=1 --machine-type=g1-small
+cluster-create: kubernetes-build
+	gcloud container clusters create merauction --num-nodes=3 --machine-type=f1-small
 
 kubernetes-build:
 	gcloud container clusters get-credentials $(CLUSTER_NAME)
