@@ -22,7 +22,7 @@ func getAllAuctions(c *gin.Context) {
 
 //get auction by id
 func getAuctionsById(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("auction_id")
 	var auc models.Auction
 	data.GetAuctionByIdFromDB(&auc, id)
 	c.JSON(200, auc)
@@ -30,7 +30,7 @@ func getAuctionsById(c *gin.Context) {
 
 //gets all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("auction_id")
 	var top5bids [5]models.Bid
 	data.GetTopFiveBidsFromDB(&top5bids, id)
 	c.JSON(200, top5bids)
@@ -75,7 +75,7 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 
 //get results of an auction
 func getResultByAuctionId(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("auction_id")
 	var aucres models.Result
 	data.GetResult(&aucres, id)
 	c.JSON(200, aucres)
