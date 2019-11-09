@@ -8,31 +8,13 @@
     </tr>
   </thead>
   <tbody>
+    {{ range $bid := .top_5_bids -}}
     <tr>
-      <td>Alvin</td>
-      <td>2019.11.06 14:43</td>
-      <td>$20.00</td>
+      <td>{{ $bid.UserID }}</td>
+      <td>{{ $bid.Time }}</td>
+      <td>{{ $bid.Price }}</td>
     </tr>
-    <tr>
-      <td>Alvin</td>
-      <td>2019.11.06 14:43</td>
-      <td>$20.00</td>
-    </tr>
-    <tr>
-      <td>Alvin</td>
-      <td>2019.11.06 14:43</td>
-      <td>$20.00</td>
-    </tr>
-    <tr>
-      <td>Alvin</td>
-      <td>2019.11.06 14:43</td>
-      <td>$20.00</td>
-    </tr>
-    <tr>
-      <td>Alvin</td>
-      <td>2019.11.06 14:43</td>
-      <td>$20.00</td>
-    </tr>
+    {{- end }}
   </tbody>
 </table>
 {{ end }}

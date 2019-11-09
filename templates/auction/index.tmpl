@@ -20,12 +20,12 @@
 
     <section>
       <!-- bids -->
-      {{ template "auction/bids.tmpl" }}
+      {{ template "auction/bids.tmpl" . }}
     </section>
 
     <section>
       <!-- post bid -->
-      {{ template "auction/post.tmpl" }}
+      {{ template "auction/post.tmpl" . }}
     </section>
   </main>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -50,6 +50,7 @@
       var h = t;
       $("#end-timer").html(`${h}h ${m}m ${s}s`);
     }
+    var debug = {{ . }};
   </script>
 </body>
 
