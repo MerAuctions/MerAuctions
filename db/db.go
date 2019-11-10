@@ -1,4 +1,5 @@
 package db
+// package main
 
 import (
 	"context"
@@ -17,7 +18,7 @@ type DBClient struct {
 }
 
 //Connect to mongoDB of given URL
-func (c *DBClient)ConnectDB(url string) *DBClient {
+func ConnectDB(url string) *DBClient {
 	// Set client options
 	clientOptions := options.Client().ApplyURI(url)
 
@@ -64,11 +65,22 @@ func (c *DBClient)InsertBid(bid *models.Bid) error{
   return err
 }
 
+//Insert a auction in db
+func (c *DBClient)InsertAuction(auction *models.Auction) error{
+  collection := c.client.Database("production").Collection("auctions")
+  insertResult, err := collection.InsertOne(context.TODO(), auction)
+  if err != nil {
+      log.Fatal(err)
+  }
+  fmt.Println("Inserted auction: ", insertResult.InsertedID)
+  return err
+}
+
 //Get list of an Auction with ID
 func (c *DBClient)GetAuction(id string) *models.Auction{
   var auction models.Auction
   collection := c.client.Database("production").Collection("auctions")
-  filter := bson.D{{"AuctionID", id}}
+  filter := bson.D{{"auctionid", id}}
   err := collection.FindOne(context.TODO(), filter).Decode(&auction)
   if err!=nil {
     log.Fatal(err)
@@ -103,11 +115,11 @@ func (c *DBClient)GetAuctions() *models.AuctionList{
 }
 
 //get the list of all the bids
-func (c *DBClient)GetBids() *[]models.Bid{
+func (c *DBClient)GetBids(AuctionId string) *[]models.Bid{
   var bids []models.Bid
-  collection := c.client.Database("production").Collection("bid")
-  cur, err := collection.Find(context.Background(), bson.D{{}})
-
+  collection := c.client.Database("production").Collection("bids")
+  filter := bson.D{{"auctionid", AuctionId}}
+  cur, err := collection.Find(context.Background(), filter)
   if err!=nil {
     log.Fatal(err)
   }
@@ -126,3 +138,31 @@ func (c *DBClient)GetBids() *[]models.Bid{
 
   return &bids
 }
+
+//Following is for testing the db locally
+// func main(){
+//   dbclient := ConnectDB("mongodb://localhost:27017")
+//   fmt.Println(dbclient.URL)
+//   usr := models.User{"1","deepak"}
+//   dbclient.InsertUser(&usr)
+//   bid1 := models.Bid{"1","2","3",323,9301233}
+//   bid2 := models.Bid{"2","2","1",99.823,9238478}
+//   bid3 := models.Bid{"3","2","5",101.23,2984792}
+//   bid4 := models.Bid{"4","3","6",834.823,398374}
+//   bid5 := models.Bid{"5","6","7",8934.823,2349879}
+//   dbclient.InsertBid(&bid1)
+//   dbclient.InsertBid(&bid2)
+//   dbclient.InsertBid(&bid3)
+//   dbclient.InsertBid(&bid4)
+//   dbclient.InsertBid(&bid5)
+//
+// 	auc := models.Auction{"1","thisisahashofanimage","thisisadesc.",298347289}
+// 	fmt.Println("inserting an auciton")
+// 	fmt.Println(dbclient.InsertAuction(&auc))
+//   fmt.Println("getting all the bids")
+//   fmt.Println(dbclient.GetBids("6"))
+//   fmt.Println("Getting all the auctions")
+//   fmt.Println(dbclient.GetAuctions())
+//
+//
+// }
