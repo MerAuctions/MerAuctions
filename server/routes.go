@@ -15,10 +15,10 @@ func setupRoutes(router *gin.Engine) {
 	router.GET("/hello", hello)
 
 	router.GET("/", getAllAuctions)
-	router.GET("/auctions/:id", getAuctionsById)
-	router.GET("/auctions/:id/bids", getBidsAuctionsById)
+	router.GET("/auctions/:auction_id", getAuctionsById)
+	router.GET("/auctions/:auction_id/bids", getBidsAuctionsById)
 	router.POST("/users", addNewUser)
-	router.POST("/auctions/:id/users/:id/bids", bidAuctionIdByUserId)
-	router.GET("/auctions/:id/result", getResultByAuctionId)
+	router.POST("/auctions/:auction_id/users/:user_id/bids", addBidAuctionIdByUserId)
+	router.GET("/auctions/:auction_id/result", getResultByAuctionId)
 
 }

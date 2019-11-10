@@ -12,9 +12,9 @@ DB_PASSWORD = ${MONGODB_PASSWORD}
 all: test build
 build:
 		GO111MODULE=on CGO_ENABLED=0 $(GOBUILD) -o $(BINARY_NAME) cmd/auctions/merauctions.go
-test: 
+test:
 		$(GOTEST) -v ./...
-clean: 
+clean:
 		$(GOCLEAN)
 		rm -f $(BINARY_NAME)
 		rm -f $(BINARY_UNIX)
@@ -31,10 +31,9 @@ docker-build:
 docker-push: docker-build
 		docker push gcr.io/kouzoh-p-harsh/merauctions:v0.1
 
-cluster-create: kubernetes-build
-	gcloud container clusters create merauction --num-nodes=3 --machine-type=f1-small
+cluster-create:
+	gcloud container clusters create merauction --num-nodes=2 --machine-type=g1-small
 
 kubernetes-build:
 	gcloud container clusters get-credentials $(CLUSTER_NAME)
 	kubectl apply -f kubernetes
-	# kubectl exec mongo -c mongo -- mongo --eval 'db.getSiblingDB("admin").createUser({user:"main_admin",pwd:"'"$(DB_PASSWORD)"'",roles:[{role:"root",db:"admin"}]});'
