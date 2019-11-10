@@ -1,7 +1,7 @@
 package models
 
 import (
-  "time"
+  //"time"
 )
 
 //Price of the item or the bid made on the item
@@ -22,7 +22,7 @@ type Bid struct{
   AuctionID ID
   UserID ID
   Price Price
-  Time time.Time
+  Time int
 }
 
 //Auction represents a single auction
@@ -30,7 +30,7 @@ type Auction struct{
   AuctionID ID
   Image string      // image encode in base64
   Description string
-  EndTime time.Time
+  EndTime int
 }
 
 //AuctionList is a list of auctions

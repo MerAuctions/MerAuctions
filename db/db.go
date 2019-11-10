@@ -64,6 +64,19 @@ func (c *DBClient)InsertBid(bid *models.Bid) error{
   return err
 }
 
+//Get list of an Auction with ID
+func (c *DBClient)GetAuction(id string) *models.Auction{
+  var auction models.Auction
+  collection := c.client.Database("production").Collection("auctions")
+  filter := bson.D{{"AuctionID", id}}
+  err := collection.FindOne(context.TODO(), filter).Decode(&auction)
+  if err!=nil {
+    log.Fatal(err)
+  }
+
+  return &auction
+}
+
 //Get list of all the Auctions
 func (c *DBClient)GetAuctions() *models.AuctionList{
   var auctions models.AuctionList
@@ -89,15 +102,27 @@ func (c *DBClient)GetAuctions() *models.AuctionList{
   return &auctions
 }
 
-//Get list of an Auction with ID
-func (c *DBClient)GetAuction(id string) *models.Auction{
-  var auction models.Auction
-  collection := c.client.Database("production").Collection("auctions")
-  filter := bson.D{{"AuctionID", id}}
-  err := collection.FindOne(context.TODO(), filter).Decode(&auction)
+//get the list of all the bids
+func (c *DBClient)GetBids() *[]models.Bid{
+  var bids []models.Bid
+  collection := c.client.Database("production").Collection("bid")
+  cur, err := collection.Find(context.Background(), bson.D{{}})
+
   if err!=nil {
     log.Fatal(err)
   }
+  defer cur.Close(context.Background())
+  for cur.Next(context.Background()) {
+    var elem models.Bid
+    err := cur.Decode(&elem)
+    bids = append(bids, elem)
+    if err != nil {
+      log.Fatal(err)
+    }
+  }
+  if err := cur.Err(); err != nil {
+    log.Fatal(err)
+  }
 
-  return &auction
+  return &bids
 }
