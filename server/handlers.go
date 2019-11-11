@@ -27,10 +27,12 @@ func getAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	var auc models.Auction
 	data.GetAuctionByIdFromDB(&auc, id)
+	var top5bids [5]models.Bid
+	data.GetTopFiveBidsFromDB(&top5bids, id)
 	c.JSON(200, auc)
 }
 
-//gets all bids from a auction
+//gets top 5 bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	var top5bids [5]models.Bid
@@ -75,7 +77,7 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	}
 }
 
-func declareResult(auctionID string) models.Bid {
+func declareResult(c *gin.Context, auctionID string) {
 	var auc models.Auction
 	data.GetAuctionByIdFromDB(&auc, auctionID)
 	var bidlist models.BidList
@@ -83,7 +85,12 @@ func declareResult(auctionID string) models.Bid {
 	sort.Slice(bidlist, func(i, j int) bool {
 		return bidlist[i].Price > bidlist[j].Price
 	})
-	return bidlist[0]
+	var winnerBid models.Result
+	winnerBid.AuctionID = bidlist[0].AuctionID
+	winnerBid.Price = bidlist[0].Price
+	winnerBid.WinnerID = bidlist[0].UserID
+	c.JSON(200, winnerBid)
+	data.PushResultDB(&winnerBid)
 }
 
 //get results of an auction

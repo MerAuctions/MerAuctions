@@ -30,7 +30,7 @@ func AddNewBid(bid *models.Bid) int {
 	return 0
 }
 
-func pushResultDB(*models.Bid) bool {
+func PushResultDB(*models.Result) bool {
 
 	return true
 }
