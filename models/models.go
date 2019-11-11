@@ -18,7 +18,6 @@ type User struct{
 
 //Bid represents a single bid in an Auction
 type Bid struct{
-  BidID ID
   AuctionID ID
   UserID ID
   Price Price
@@ -27,7 +26,6 @@ type Bid struct{
 
 //Auction represents a single auction
 type Auction struct{
-  AuctionID ID
   Image string      // image encode in base64
   Description string
   EndTime int64

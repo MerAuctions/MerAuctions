@@ -70,9 +70,9 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	//TODO: check for price limits
 	status := data.AddNewBid(&newbid)
 	if status == 0 {
-		c.JSON(200, fmt.Sprintf("User Successfully added"))
+		c.JSON(200, fmt.Sprintf("Bid Successfully added"))
 	} else {
-		c.JSON(400, fmt.Sprintf("User Alredy exists"))
+		c.JSON(200, fmt.Sprintf("Cannot add Bid"))
 	}
 }
 

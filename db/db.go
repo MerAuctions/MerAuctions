@@ -8,6 +8,7 @@ import (
 
 	"github.com/MerAuctions/MerAuctions/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -85,8 +86,12 @@ func (c *DBClient)InsertAuction(auction *models.Auction) error{
 func (c *DBClient)GetAuction(id string) (*models.Auction,error){
   var auction models.Auction
   collection := c.client.Database(c.DBname).Collection("auctions")
-  filter := bson.D{{"auctionid", id}}
-  err := collection.FindOne(context.TODO(), filter).Decode(&auction)
+	docID, err := primitive.ObjectIDFromHex(id)
+	if err!=nil{
+		return nil,err
+	}
+  filter := bson.D{{"_id", docID}}
+  err = collection.FindOne(context.TODO(), filter).Decode(&auction)
   if err!=nil {
     // log.Fatal(err)
 		return nil,err
@@ -124,7 +129,11 @@ func (c *DBClient)GetAuctions() *models.AuctionList{
 func (c *DBClient)GetBids(AuctionId string) (*[]models.Bid,error){
   var bids []models.Bid
   collection := c.client.Database(c.DBname).Collection("bids")
-  filter := bson.D{{"auctionid", AuctionId}}
+	docID, err := primitive.ObjectIDFromHex(AuctionId)
+	if err!=nil{
+		return nil,err
+	}
+  filter := bson.D{{"auctionid", docID}}
   cur, err := collection.Find(context.Background(), filter)
   if err!=nil {
     // log.Fatal(err)
@@ -152,8 +161,12 @@ func (c *DBClient)GetBids(AuctionId string) (*[]models.Bid,error){
 func (c *DBClient)Getuser(id string)(*models.User,error){
 	var user models.User
   collection := c.client.Database(c.DBname).Collection("users")
-  filter := bson.D{{"userid", id}}
-	err := collection.FindOne(context.TODO(), filter).Decode(&user)
+	docID, err := primitive.ObjectIDFromHex(id)
+	if err!=nil{
+		return nil,err
+	}
+  filter := bson.D{{"_id", docID}}
+	err = collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err!=nil {
     return nil,err
   }
