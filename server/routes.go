@@ -100,7 +100,7 @@ func setupRoutes(router *gin.Engine) {
 
 	router.GET("/hello", hello)
 	router.GET("/", getAllAuctions)
-	router.GET("/auctions/:auction_id", getAuctionsById)
+	router.GET("/auctions/:auction_id", getAuctionsByID)
 	router.GET("/auctions/:auction_id/bids", getBidsAuctionsById)
 	router.GET("/auctions/:auction_id/result", getResultByAuctionId)
 

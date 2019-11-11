@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sort"
 	"time"
 
 	"github.com/MerAuctions/MerAuctions/data"
@@ -19,14 +18,14 @@ func hello(c *gin.Context) {
 	c.String(200, "Hello World")
 }
 
-//get all auctions
+//getAllAuctions is handler function to return list of all auctions
 func getAllAuctions(c *gin.Context) {
 	allAuctions := data.GetAllAuctions()
 	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 
-//getAuctionsById is handler function for getting particular auction page
-func getAuctionsById(c *gin.Context) {
+//getAuctionsByID is handler function for getting particular auction page
+func getAuctionsByID(c *gin.Context) {
 	id := c.Param("auction_id")
 	auc := data.GetAuctionById(id)
 	if auc == nil {
@@ -60,7 +59,7 @@ func getAuctionsById(c *gin.Context) {
 	})
 }
 
-//gets all bids from a auction
+//getBidsAuctionsById is handler function to get all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	top5bids := data.GetTopFiveBids(id)
@@ -71,7 +70,7 @@ func getBidsAuctionsById(c *gin.Context) {
 	c.JSON(200, top5bids)
 }
 
-// register new user
+//addNewUser registers a new user
 func addNewUser(c *gin.Context) {
 	var newuser models.User
 	rawData, _ := c.GetRawData()
@@ -88,7 +87,7 @@ func addNewUser(c *gin.Context) {
 
 }
 
-//add bid by a registered user
+//addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
 	var newbid models.Bid
 	rawData, _ := c.GetRawData()
@@ -108,34 +107,16 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	}
 }
 
-func declareResult(c *gin.Context, auctionID string) {
-	var auc models.Auction
-	data.GetAuctionByIdFromDB(&auc, auctionID)
-	var bidlist models.BidList
-	data.GetAllBidsFromDB(&bidlist, auctionID)
-	sort.Slice(bidlist, func(i, j int) bool {
-		return bidlist[i].Price > bidlist[j].Price
-	})
-	var winnerBid models.Result
-	winnerBid.AuctionID = bidlist[0].AuctionID
-	winnerBid.Price = bidlist[0].Price
-	winnerBid.WinnerID = bidlist[0].UserID
-	c.JSON(200, winnerBid)
-	data.PushResultDB(&winnerBid)
-}
-
-//get results of an auction
+//getResultByAuctionId is handler function to check result by ID
 func getResultByAuctionId(c *gin.Context) {
 	id := c.Param("auction_id")
-	var aucres models.Result
-	var auc models.Auction
-	data.GetAuctionByIdFromDB(&auc, id)
+	auc := data.GetAuctionById(id)
 
 	if int64(auc.EndTime) <= time.Now().Unix() {
 		//auction completed
-		data.GetResult(&aucres, id)
+		aucres := data.GetResult(id)
 		c.JSON(200, aucres)
 	} else {
-		c.String(400, fmt.Sprint("Auction Not completed yet"))
+		c.String(200, fmt.Sprint("Auction Not completed yet"))
 	}
 }

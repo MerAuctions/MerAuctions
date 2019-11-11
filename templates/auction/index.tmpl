@@ -122,9 +122,11 @@
         url: `/users`,
         method: 'POST',
         success: function (result) {
-          M.toast({
-            html: result
-          });
+          $("#signup-status-message").html("Successfully created new User");
+          location.reload();
+        },
+        error: function (jqXHR, exception) {
+          $("#signup-status-message").html(JSON.parse(jqXHR.responseText)["message"])
         },
         data: {
           user_id: user_id
