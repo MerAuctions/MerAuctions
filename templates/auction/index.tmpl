@@ -23,6 +23,8 @@
       {{ template "auction/bids.tmpl" . }}
     </section>
 
+    <br>
+
     <section>
       <!-- post bid -->
       {{ template "auction/post.tmpl" . }}
@@ -66,6 +68,26 @@
         },
         data: {
           price: price
+        }
+      });
+    }
+
+    function login() {
+      var user_id = $('#login-input-username').val();
+      var password = $('#login-input-password').val();
+      $.ajax({
+        url: `/login`,
+        method: 'POST',
+        success: function (result) {
+          $("#login-status-message").html("Successfully logged in");
+          location.reload();
+        },
+        error: function (jqXHR, exception) {
+          $("#login-status-message").html(JSON.parse(jqXHR.responseText)["message"])
+        },
+        data: {
+          username: user_id,
+          password: password
         }
       });
     }
