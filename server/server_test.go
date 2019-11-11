@@ -32,7 +32,7 @@ var _ = Describe("Server", func() {
 	})
 
 	Describe("Version 1 API at /api/v0.1", func() {
-		Describe("The / endpoint", func() {
+		Describe("The /hello endpoint", func() {
 			BeforeEach(func() {
 				response = performRequest(router, "GET", "/hello", nil)
 			})
@@ -44,7 +44,7 @@ var _ = Describe("Server", func() {
 			It("Returns the String 'Hello World'", func() {
 				Expect(response.Body.String()).To(Equal("Hello World"))
 			})
-		})
 
+		})
 	})
 })

@@ -1,9 +1,13 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
  name: mongodb-set
 spec:
  serviceName: "mongo"
+ selector:
+   matchLabels:
+     role: mongo
+     environment: test
  replicas: 1
  template:
    metadata:
@@ -15,19 +19,12 @@ spec:
      containers:
        - name: mongo
          image: mongo:4.2
-         command:
-           - mongod
          ports:
           - containerPort: 27017
             name: mongodb-port
          volumeMounts:
            - name: mongo-persistent-storage
              mountPath: /data/db
-       - name: mongo-sidecar
-         image: cvallance/mongo-k8s-sidecar
-         env:
-           - name: MONGO_SIDECAR_POD_LABELS
-             value: "role=mongo,environment=test"
  volumeClaimTemplates:
  - metadata:
      name: mongo-persistent-storage
@@ -40,13 +37,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
- name: mongo
+ name: mongo-service
  labels:
    name: mongo
 spec:
  ports:
  - port: 27017
    targetPort: mongodb-port
- clusterIP: None
  selector:
    role: mongo
