@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"sort"
 	"time"
 
@@ -27,9 +28,12 @@ func getAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	var auc models.Auction
 	data.GetAuctionByIdFromDB(&auc, id)
-	var top5bids [5]models.Bid
-	data.GetTopFiveBidsFromDB(&top5bids, id)
-	c.JSON(200, auc)
+	var top_5_bids [5]models.Bid
+	data.GetTopFiveBidsFromDB(&top_5_bids, id)
+	c.HTML(http.StatusOK, "auction/index.tmpl", gin.H{
+		"auction": auc,
+		"bids":    top_5_bids,
+	})
 }
 
 //gets top 5 bids from a auction
