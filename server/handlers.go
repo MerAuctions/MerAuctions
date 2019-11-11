@@ -20,7 +20,7 @@ func hello(c *gin.Context) {
 func getAllAuctions(c *gin.Context) {
 	var allAuctions models.AuctionList
 	data.GetAllAuctionsFromDB(&allAuctions)
-	c.JSON(200, allAuctions)
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 
 //get auction by id
