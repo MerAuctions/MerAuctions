@@ -3,6 +3,8 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
+	"time"
 
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
@@ -73,10 +75,30 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	}
 }
 
+func declareResult(auctionID string) models.Bid {
+	var auc models.Auction
+	data.GetAuctionByIdFromDB(&auc, auctionID)
+	var bidlist models.BidList
+	data.GetAllBidsFromDB(&bidlist, auctionID)
+	sort.Slice(bidlist, func(i, j int) bool {
+		return bidlist[i].Price > bidlist[j].Price
+	})
+	return bidlist[0]
+}
+
 //get results of an auction
 func getResultByAuctionId(c *gin.Context) {
 	id := c.Param("auction_id")
 	var aucres models.Result
-	data.GetResult(&aucres, id)
-	c.JSON(200, aucres)
+	var auc models.Auction
+	data.GetAuctionByIdFromDB(&auc, id)
+
+	if int64(auc.EndTime) <= time.Now().Unix() {
+		//auction completed
+		data.GetResult(&aucres, id)
+		c.JSON(200, aucres)
+	} else {
+		c.String(400, fmt.Sprint("Auction Not completed yet"))
+	}
+
 }
