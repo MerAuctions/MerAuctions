@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"sort"
 	"time"
@@ -10,6 +11,8 @@ import (
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
 	"github.com/gin-gonic/gin"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 func hello(c *gin.Context) {
@@ -30,9 +33,25 @@ func getAuctionsById(c *gin.Context) {
 	data.GetAuctionByIdFromDB(&auc, id)
 	var top_5_bids [5]models.Bid
 	data.GetTopFiveBidsFromDB(&top_5_bids, id)
+
+	isUserSignedIn := false
+	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
+		if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok && jwtToken.Valid {
+			if userID, ok := claims[jwtIdentityKey].(string); ok == true {
+				if user, _ := data.GetUserById(userID); user != nil {
+					isUserSignedIn = true
+				}
+			} else {
+				log.Printf("Could not convert claim to string")
+			}
+		} else {
+			log.Printf("Could not extract claims into JWT")
+		}
+	}
 	c.HTML(http.StatusOK, "auction/index.tmpl", gin.H{
-		"auction": auc,
-		"bids":    top_5_bids,
+		"auction":        auc,
+		"bids":           top_5_bids,
+		"isUserSignedIn": isUserSignedIn,
 	})
 }
 

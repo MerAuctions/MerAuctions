@@ -12,7 +12,7 @@ import (
 
 var (
 	authMiddleware *jwt.GinJWTMiddleware
-	identityKey    = "id"
+	jwtIdentityKey = "id"
 )
 
 func setUpJWT() {
@@ -21,7 +21,7 @@ func setUpJWT() {
 	authMiddleware, err = jwt.New(&jwt.GinJWTMiddleware{
 		Realm:          "MerAuction API",
 		Key:            []byte("secret key"),
-		IdentityKey:    identityKey,
+		IdentityKey:    jwtIdentityKey,
 		Timeout:        time.Hour,
 		MaxRefresh:     time.Hour,
 		SendCookie:     true,
@@ -32,19 +32,15 @@ func setUpJWT() {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*models.User); ok {
 				return jwt.MapClaims{
-					identityKey: string(v.UserID),
+					jwtIdentityKey: v.UserID,
 				}
 			}
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			if val, ok := claims[identityKey].(string); ok == false {
-				return nil
-			} else {
-				return &models.User{
-					UserID: models.ID(val),
-				}
+			return &models.User{
+				UserID: claims[jwtIdentityKey].(models.ID),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -54,7 +50,6 @@ func setUpJWT() {
 				Password string `form:"password" json:"password" binding:"required"`
 			})
 			if err := c.ShouldBind(loginVals); err != nil {
-				log.Printf("Missing Login Values in JWT")
 				return "", jwt.ErrMissingLoginValues
 			}
 			userID := loginVals.Username
@@ -72,7 +67,8 @@ func setUpJWT() {
 					log.Printf("Incorrect password for user '%s'", userID)
 					return "", jwt.ErrFailedAuthentication
 				}
-				return &user, nil
+				log.Printf("Successfully logged in user '%s'", userID)
+				return user, nil
 			}
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
