@@ -21,19 +21,24 @@ func hello(c *gin.Context) {
 
 //get all auctions
 func getAllAuctions(c *gin.Context) {
-	var allAuctions models.AuctionList
-	data.GetAllAuctionsFromDB(&allAuctions)
-	c.JSON(200, allAuctions)
+	allAuctions := data.GetAllAuctions()
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 
-//get auction by id
+//getAuctionsById is handler function for getting particular auction page
 func getAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
-	var auc models.Auction
-	data.GetAuctionByIdFromDB(&auc, id)
-	var top_5_bids [5]models.Bid
-	data.GetTopFiveBidsFromDB(&top_5_bids, id)
+	auc := data.GetAuctionById(id)
+	if auc == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
+	}
 
+	top5bids := data.GetTopFiveBids(id)
+	if top5bids == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
+	}
 	isUserSignedIn := false
 	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
 		if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok && jwtToken.Valid {
@@ -50,16 +55,19 @@ func getAuctionsById(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "auction/index.tmpl", gin.H{
 		"auction":        auc,
-		"bids":           top_5_bids,
+		"bids":           top5bids,
 		"isUserSignedIn": isUserSignedIn,
 	})
 }
 
-//gets top 5 bids from a auction
+//gets all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
-	var top5bids [5]models.Bid
-	data.GetTopFiveBidsFromDB(&top5bids, id)
+	top5bids := data.GetTopFiveBids(id)
+	if top5bids == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
+	}
 	c.JSON(200, top5bids)
 }
 
@@ -71,7 +79,7 @@ func addNewUser(c *gin.Context) {
 
 	//status:0-->success, status:1-->user exists
 	//TODO: status:2-->userid not according to standard
-	status := data.AddNewUserToDB(&newuser)
+	status := data.AddNewUser(&newuser)
 	if status == 0 {
 		c.JSON(200, fmt.Sprintf("User Successfully added"))
 	} else {
@@ -130,5 +138,4 @@ func getResultByAuctionId(c *gin.Context) {
 	} else {
 		c.String(400, fmt.Sprint("Auction Not completed yet"))
 	}
-
 }

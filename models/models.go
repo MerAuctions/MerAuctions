@@ -1,5 +1,9 @@
 package models
 
+import (
+  //"time"
+)
+
 //Price of the item or the bid made on the item
 type Price float32
 
@@ -22,7 +26,7 @@ type Bid struct {
 	AuctionID ID
 	UserID    ID
 	Price     Price
-	Time      TimeStamp
+	Time      int64
 }
 
 //Auction represents a single auction
@@ -31,7 +35,7 @@ type Auction struct {
 	Title       string
 	Image       string // image encode in base64
 	Description string
-	EndTime     TimeStamp
+	EndTime     int64
 }
 
 //AuctionList is a list of auctions
