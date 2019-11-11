@@ -129,11 +129,7 @@ func (c *DBClient)GetAuctions() *models.AuctionList{
 func (c *DBClient)GetBids(AuctionId string) (*[]models.Bid,error){
   var bids []models.Bid
   collection := c.client.Database(c.DBname).Collection("bids")
-	docID, err := primitive.ObjectIDFromHex(AuctionId)
-	if err!=nil{
-		return nil,err
-	}
-  filter := bson.D{{"auctionid", docID}}
+	filter := bson.D{{"auctionid", AuctionId}}
   cur, err := collection.Find(context.Background(), filter)
   if err!=nil {
     // log.Fatal(err)
@@ -161,12 +157,8 @@ func (c *DBClient)GetBids(AuctionId string) (*[]models.Bid,error){
 func (c *DBClient)Getuser(id string)(*models.User,error){
 	var user models.User
   collection := c.client.Database(c.DBname).Collection("users")
-	docID, err := primitive.ObjectIDFromHex(id)
-	if err!=nil{
-		return nil,err
-	}
-  filter := bson.D{{"_id", docID}}
-	err = collection.FindOne(context.TODO(), filter).Decode(&user)
+	filter := bson.D{{"userid", id}}
+	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err!=nil {
     return nil,err
   }
@@ -175,34 +167,32 @@ func (c *DBClient)Getuser(id string)(*models.User,error){
 }
 
 
-//Following is for testing the db locally
+// // Following is for testing the db locally
 // func main(){
-//   dbclient := ConnectDB("mongodb://localhost:27017","test6")
+//   dbclient := ConnectDB("mongodb://localhost:27017","test7")
 //   fmt.Println(dbclient.URL)
 //   usr := models.User{"1","deepak"}
 //   dbclient.InsertUser(&usr)
-//   bid1 := models.Bid{"1","2","3",323,9301233}
-//   bid2 := models.Bid{"2","2","1",99.823,9238478}
-//   bid3 := models.Bid{"3","2","5",101.23,2984792}
-//   bid4 := models.Bid{"4","3","6",834.823,398374}
-//   bid5 := models.Bid{"5","6","7",8934.823,2349879}
+//   bid1 := models.Bid{"5dc937cc88d9a2eaff817723","3",323,9301233}
+//   bid2 := models.Bid{"5dc937cc88d9a2eaff817723","1",99.823,9238478}
+//   bid3 := models.Bid{"5dc937cc88d9a2eaff817723","5",101.23,2984792}
+//   bid4 := models.Bid{"5dc937cc88d9a2eaff817723","6",834.823,398374}
+//   bid5 := models.Bid{"5dc937cc88d9a2eaff817723","7",8934.823,2349879}
 //   dbclient.InsertBid(&bid1)
 //   dbclient.InsertBid(&bid2)
 //   dbclient.InsertBid(&bid3)
 //   dbclient.InsertBid(&bid4)
 //   dbclient.InsertBid(&bid5)
 //
-// 	auc := models.Auction{"1","thisisahashofanimage","thisisadesc.",298347289}
-// 	fmt.Println("inserting an auciton")
-// 	fmt.Println(dbclient.InsertAuction(&auc))
+// 	// auc := models.Auction{"thisisahashofanimage","thisisadesc.",298347289}
+// 	// fmt.Println("inserting an auciton")
+// 	// fmt.Println(dbclient.InsertAuction(&auc))
 //   fmt.Println("getting all the bids")
-//   fmt.Println(dbclient.GetBids("6"))
+//   fmt.Println(dbclient.GetBids("5dc937cc88d9a2eaff817723"))
 //   fmt.Println("Getting all the auctions")
 //   fmt.Println(dbclient.GetAuctions())
 // 	fmt.Println("Getting the user")
 //   fmt.Println(dbclient.Getuser("1"))
-//
-//
 // }
 
 

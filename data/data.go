@@ -1,5 +1,5 @@
 package data
-
+// package main
 import (
 	// "context"
 	"fmt"
@@ -113,6 +113,9 @@ func GetResult(auctionID string) *models.Result{
 	}
 
 	sort.SliceStable(bids, func(i, j int) bool{
+		if bids[i].Price == bids[j].Price{
+			return bids[i].Time < bids[j].Time
+		}
 		return bids[i].Price > bids[j].Price
 	})
 	winningBid:=bids[0]
@@ -124,3 +127,10 @@ func GetResult(auctionID string) *models.Result{
 
 	return &result
 }
+
+
+//
+// func main(){
+// 	DBclient = db.ConnectDB("mongodb://localhost:27017","test7")
+// 	fmt.Println(GetResult("5dc937cc88d9a2eaff817723"))
+// }
