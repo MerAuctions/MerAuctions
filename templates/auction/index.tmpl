@@ -7,7 +7,7 @@
   <link type="text/css" rel="stylesheet" href="/css/materialize.min.css" media="screen,projection" />
   <link type="text/css" rel="stylesheet" href="/css/style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ .page_title }}</title>
+  <title>{{ .auction.Title }}</title>
 </head>
 
 <body>
@@ -32,7 +32,7 @@
   <script type="text/javascript" src="/js/materialize.min.js"></script>
   <script type="text/javascript">
     var debug = {{ . }};
-    var end_time = new Date({{ .end_time }});
+    var end_time = new Date({{ .auction.EndTime }});
     updateTimer();
     var timer = setInterval(updateTimer, 1000);
 

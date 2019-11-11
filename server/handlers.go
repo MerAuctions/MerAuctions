@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
@@ -25,7 +26,12 @@ func getAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	var auc models.Auction
 	data.GetAuctionByIdFromDB(&auc, id)
-	c.JSON(200, auc)
+	var top_5_bids [5]models.Bid
+	data.GetTopFiveBidsFromDB(&top_5_bids, id)
+	c.HTML(http.StatusOK, "auction/index.tmpl", gin.H{
+		"auction": auc,
+		"bids":    top_5_bids,
+	})
 }
 
 //gets all bids from a auction
