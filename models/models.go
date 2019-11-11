@@ -13,6 +13,7 @@ type TimeStamp int64
 type User struct {
 	UserID   ID
 	UserName string
+	Password string
 }
 
 //Bid represents a single bid in an Auction

@@ -29,3 +29,10 @@ func AddNewBid(bid *models.Bid) int {
 func GetResult(res *models.Result, id string) {
 
 }
+
+func GetUserById(id string) (*models.User, error) {
+	return &models.User{
+		UserID: "harsh",
+		Password: "temp",
+	}, nil
+}
