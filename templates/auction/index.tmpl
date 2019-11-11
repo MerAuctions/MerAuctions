@@ -23,6 +23,8 @@
       {{ template "auction/bids.tmpl" . }}
     </section>
 
+    <br>
+
     <section id="section-post">
       <!-- post bid -->
       {{ template "auction/post.tmpl" . }}
@@ -94,15 +96,37 @@
       });
     }
 
+    function login() {
+      var user_id = $('#login-input-username').val();
+      var password = $('#login-input-password').val();
+      $.ajax({
+        url: `/login`,
+        method: 'POST',
+        success: function (result) {
+          $("#login-status-message").html("Successfully logged in");
+          location.reload();
+        },
+        error: function (jqXHR, exception) {
+          $("#login-status-message").html(JSON.parse(jqXHR.responseText)["message"])
+        },
+        data: {
+          username: user_id,
+          password: password
+        }
+      });
+    }
+
     function signUp() {
       var user_id = $('#input-username').val();
       $.ajax({
         url: `/users`,
         method: 'POST',
         success: function (result) {
-          M.toast({
-            html: result
-          });
+          $("#signup-status-message").html("Successfully created new User");
+          location.reload();
+        },
+        error: function (jqXHR, exception) {
+          $("#signup-status-message").html(JSON.parse(jqXHR.responseText)["message"])
         },
         data: {
           user_id: user_id
