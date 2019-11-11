@@ -76,7 +76,7 @@ func (c *DBClient)InsertAuction(auction *models.Auction) error{
   return err
 }
 
-//Get list of an Auction with ID
+//Get an Auction with ID
 func (c *DBClient)GetAuction(id string) *models.Auction{
   var auction models.Auction
   collection := c.client.Database("production").Collection("auctions")
@@ -139,6 +139,20 @@ func (c *DBClient)GetBids(AuctionId string) *[]models.Bid{
   return &bids
 }
 
+//get an user by id
+func (c *DBClient)Getuser(id string)*models.User{
+	var user models.User
+  collection := c.client.Database("production").Collection("users")
+  filter := bson.D{{"userid", id}}
+  err := collection.FindOne(context.TODO(), filter).Decode(&user)
+  if err!=nil {
+    log.Fatal(err)
+  }
+
+  return &user	
+}
+
+
 //Following is for testing the db locally
 // func main(){
 //   dbclient := ConnectDB("mongodb://localhost:27017")
@@ -165,4 +179,63 @@ func (c *DBClient)GetBids(AuctionId string) *[]models.Bid{
 //   fmt.Println(dbclient.GetAuctions())
 //
 //
+// }
+
+
+// type DBClient struct {
+// 	dbName string
+// 	client *mongo.Client
+// }
+//
+// //Connect to mongoDB of given URL
+// func ConnectDB(URL string, dbName string) *DBClient {
+// 	// Set client options
+// 	clientOptions := options.Client().ApplyURI(URL)
+//
+// 	// Connect to MongoDB
+// 	client, err := mongo.Connect(context.TODO(), clientOptions)
+//
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+//
+// 	// Check the connection
+// 	err = client.Ping(context.TODO(), nil)
+//
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+//
+// 	fmt.Println("Connected to MongoDB!")
+// 	return &DBClient{
+// 		client: client,
+// 		dbName: dbName,
+// 	}
+// }
+//
+// func (c *DBClient) TestAddData() error {
+// 	collection := c.client.Database(c.dbName).Collection("numbers")
+// 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+// 	//inserting data
+// 	res, err := collection.InsertOne(ctx, models.User{
+// 		UserID:   "test1",
+// 		UserName: "harsh",
+// 	})
+// 	if err != nil {
+// 		return err
+// 	}
+// 	log.Printf("Added document with ID: %s", res.InsertedID)
+// 	return nil
+// }
+//
+// func (c *DBClient) TestGetData() (*models.User, error) {
+// 	collection := c.client.Database(c.dbName).Collection("numbers")
+// 	var result models.User
+// 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+// 	//querying data
+// 	err := collection.FindOne(ctx, bson.M{"username": "harsh"}).Decode(&result)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &result, nil
 // }

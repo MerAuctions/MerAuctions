@@ -1,98 +1,48 @@
 package data
 
 import (
-	"context"
+	// "context"
 	"fmt"
-	"log"
-	"time"
+	// "log"
+	"sort"
 
-	//"go.mongodb.org/mongo-driver/bson"
 	"github.com/MerAuctions/MerAuctions/models"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/MerAuctions/MerAuctions/db"
 )
 
-type DBClient struct {
-	dbName string
-	client *mongo.Client
+var DBclient db.DBClient
+
+func GetAllAuctions()*models.AuctionList {
+	return DBclient.GetAuctions()
 }
 
-//Connect to mongoDB of given URL
-func ConnectDB(URL string, dbName string) *DBClient {
-	// Set client options
-	clientOptions := options.Client().ApplyURI(URL)
-
-	// Connect to MongoDB
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Check the connection
-	err = client.Ping(context.TODO(), nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Connected to MongoDB!")
-	return &DBClient{
-		client: client,
-		dbName: dbName,
-	}
+func GetAuctionById(id string)*models.Auction {
+	return DBclient.GetAuction(id)
 }
 
-func (c *DBClient) TestAddData() error {
-	collection := c.client.Database(c.dbName).Collection("numbers")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	//inserting data
-	res, err := collection.InsertOne(ctx, models.User{
-		UserID:   "test1",
-		UserName: "harsh",
+func GetTopFiveBids(auctionID string)*[]models.Bid {
+	bids := *DBclient.GetBids(auctionID)
+	fmt.Println(bids)
+	sort.SliceStable(bids, func(i, j int) bool{
+		return bids[i].Time > bids[j].Time
 	})
-	if err != nil {
-		return err
+	if len(bids) < 5{
+		return &bids
 	}
-	log.Printf("Added document with ID: %s", res.InsertedID)
+	result := bids[:5]
+	return &result
+}
+
+func AddNewUser(usr *models.User) error {
+
 	return nil
 }
 
-func (c *DBClient) TestGetData() (*models.User, error) {
-	collection := c.client.Database(c.dbName).Collection("numbers")
-	var result models.User
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	//querying data
-	err := collection.FindOne(ctx, bson.M{"username": "harsh"}).Decode(&result)
-	if err != nil {
-		return nil, err
-	}
-	return &result, nil
+func AddNewBid(bid *models.Bid) error {
+
+	return nil
 }
 
-func GetAllAuctionsFromDB(*models.AuctionList) {
-
-}
-
-func GetAuctionByIdFromDB(auc *models.Auction, id string) {
-
-}
-
-func GetTopFiveBidsFromDB(top5bids *[5]models.Bid, id string) {
-
-}
-
-func AddNewUserToDB(usr *models.User) int {
-
-	return 0
-}
-
-func AddNewBid(bid *models.Bid) int {
-
-	return 0
-}
-
-func GetResult(res *models.Result, id string) {
-
+func GetResult(auctionID string) *models.Result{
+	return nil
 }
