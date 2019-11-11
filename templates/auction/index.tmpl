@@ -23,7 +23,7 @@
       {{ template "auction/bids.tmpl" . }}
     </section>
 
-    <section>
+    <section id="section-post">
       <!-- post bid -->
       {{ template "auction/post.tmpl" . }}
     </section>
@@ -32,13 +32,21 @@
   <script type="text/javascript" src="/js/materialize.min.js"></script>
   <script type="text/javascript">
     var debug = {{ . }};
+    var auction_id = "{{ .auction.AuctionID }}" | "1";
     var end_time = new Date({{ .auction.EndTime }});
     updateTimer();
-    var timer = setInterval(updateTimer, 1000);
+    var end_timer = setInterval(updateTimer, 1000);
+    var bid_timer = setInterval(updateBids, 10000);
 
     function updateTimer() {
       var now = new Date();
       var time_remain = end_time - now;
+      if (time_remain < 0) {
+        $('#section-post').hide();
+        $('#end-timer').hide();
+        clearInterval(end_timer)
+        clearInterval(bid_timer)
+      }
       setEndTime(time_remain);
     }
 
@@ -52,12 +60,28 @@
       $("#end-timer").html(`${h}h ${m}m ${s}s`);
     }
 
+    function updateBids() {
+      $.ajax({
+        url: `/auctions/${auction_id}/bids`,
+        method: 'GET',
+        success: function(result) {
+          console.log("Top 5 bids:", result);
+          $('#table-bids-body tr').remove();
+          for (var bid of result) {
+            var tr = $('<tr>')
+              .append($('<td>').text(bid.UserID))
+              .append($('<td>').text(bid.Time))
+              .append($('<td>').text(bid.Price))
+            $('#table-bids-body').append(tr);
+          }
+        }
+      });
+    }
+
     function submitBid() {
       var price = $('#input-price').val();
-      var auction_id = 0;
-      var user_id = 0;
       $.ajax({
-        url: `/auctions/${auction_id}/users/${user_id}/bids`,
+        url: `/auctions/${auction_id}/bids`,
         method: 'POST',
         success: function (result) {
           M.toast({
