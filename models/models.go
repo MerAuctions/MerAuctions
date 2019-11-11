@@ -22,7 +22,7 @@ type Bid struct{
   AuctionID ID
   UserID ID
   Price Price
-  Time int
+  Time int64
 }
 
 //Auction represents a single auction
@@ -30,7 +30,7 @@ type Auction struct{
   AuctionID ID
   Image string      // image encode in base64
   Description string
-  EndTime int
+  EndTime int64
 }
 
 //AuctionList is a list of auctions

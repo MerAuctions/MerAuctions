@@ -32,18 +32,18 @@ var _ = Describe("Server", func() {
 	})
 
 	Describe("Version 1 API at /api/v0.1", func() {
-		Describe("The / endpoint", func() {
+		Describe("The /hello endpoint", func() {
 			BeforeEach(func() {
-				response = performRequest(router, "GET", "/auctions/1", nil)
+				response = performRequest(router, "GET", "/hello", nil)
 			})
 
 			It("Returns with Status 200", func() {
 				Expect(response.Code).To(Equal(200))
 			})
 
-			// It("Returns the String 'Hello World'", func() {
-			// 	Expect(response.Body.String()).To(Equal("Hello World"))
-			// })
+			It("Returns the String 'Hello World'", func() {
+				Expect(response.Body.String()).To(Equal("Hello World"))
+			})
 
 		})
 	})

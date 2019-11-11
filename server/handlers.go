@@ -10,38 +10,32 @@ import (
 )
 
 func hello(c *gin.Context) {
-	err := db.TestAddData()
-	if err != nil {
-		c.String(200, "Error : "+err.Error())
-	}
-	c.JSON(200, "Done")
+	c.String(200, "Hello World")
 }
 
 //get all auctions
 func getAllAuctions(c *gin.Context) {
-	// var allAuctions models.AuctionList
-	// data.GetAllAuctionsFromDB(&allAuctions)
-	// c.JSON(200, allAuctions)
-	x, err := db.TestGetData()
-	if err != nil {
-		c.String(200, "Error : "+err.Error())
-	}
-	c.JSON(200, x)
+	allAuctions := data.GetAllAuctions()
+	c.JSON(200, allAuctions)
 }
 
 //get auction by id
 func getAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
-	var auc models.Auction
-	data.GetAuctionByIdFromDB(&auc, id)
+	auc := data.GetAuctionById(id)
+	if auc==nil{
+		c.JSON(404, fmt.Sprintf("Given id: %v not found",id))
+	}
 	c.JSON(200, auc)
 }
 
 //gets all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
-	var top5bids [5]models.Bid
-	data.GetTopFiveBidsFromDB(&top5bids, id)
+	top5bids := data.GetTopFiveBids(id)
+	if top5bids==nil{
+		c.JSON(404, fmt.Sprintf("Given id: %v not found",id))
+	}
 	c.JSON(200, top5bids)
 }
 
@@ -53,7 +47,7 @@ func addNewUser(c *gin.Context) {
 
 	//status:0-->success, status:1-->user exists
 	//TODO: status:2-->userid not according to standard
-	status := data.AddNewUserToDB(&newuser)
+	status := data.AddNewUser(&newuser)
 	if status == 0 {
 		c.JSON(200, fmt.Sprintf("User Successfully added"))
 	} else {
@@ -85,7 +79,6 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 //get results of an auction
 func getResultByAuctionId(c *gin.Context) {
 	id := c.Param("auction_id")
-	var aucres models.Result
-	data.GetResult(&aucres, id)
+	aucres := data.GetResult(id)
 	c.JSON(200, aucres)
 }

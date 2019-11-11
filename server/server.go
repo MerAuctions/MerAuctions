@@ -9,16 +9,13 @@ import (
 	"time"
 
 	"github.com/MerAuctions/MerAuctions/data"
+	"github.com/MerAuctions/MerAuctions/db"
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	db *data.DBClient
 )
 
 // ConnectToDB connects to database
 func ConnectToDB(dbURL string, dbName string) {
-	db = data.ConnectDB(dbURL, dbName)
+	data.DBclient = db.ConnectDB(dbURL, dbName)
 }
 
 // CreateRouter creates and configures a server
