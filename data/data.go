@@ -41,7 +41,7 @@ func GetResult(res *models.Result, id string) {
 
 func GetUserById(id string) (*models.User, error) {
 	return &models.User{
-		UserID: "harsh",
+		UserID:   "harsh",
 		Password: "temp",
 	}, nil
 }
