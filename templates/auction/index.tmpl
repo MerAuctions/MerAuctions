@@ -18,6 +18,7 @@
     <section>
       <!-- auction details -->
       {{ template "auction/details.tmpl" . }}
+      <div id="result" class="flow-text" style="display: none;"></div>
     </section>
     <div class="divider">
 
@@ -53,6 +54,7 @@
         clearInterval(end_timer)
         clearInterval(bid_timer)
         getAuctionResult();
+        return;
       }
       setEndTime(time_remain);
     }
@@ -87,7 +89,7 @@
             var tr = $('<tr>')
               .append($('<td>').text(bid.UserID))
               .append($('<td>').text(t.toLocaleString()))
-              .append($('<td>').text(bid.Price))
+              .append($('<td>').text('$' +bid.Price))
             $('#table-bids-body').append(tr);
           }
         }
@@ -154,6 +156,11 @@
         method: "GET",
         success: function (result) {
           console.log(result);
+          $('#result').html(`Auction has ended. The winner is ${result.WinnerID} who gave a price of \$${result.Price}.`);
+          $('#result').show();
+        },
+        error: function (result) {
+          alert(result);
         }
       })
     }
