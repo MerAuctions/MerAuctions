@@ -171,7 +171,7 @@
         },
         error: function (jqXHR, exception) {
           M.toast({
-            html: JSON.parse(jqXHR.responseText)["message"]
+            html: jqXHR.responseText
           });
         },
         data: JSON.stringify({
