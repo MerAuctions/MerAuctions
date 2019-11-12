@@ -21,9 +21,9 @@ ps -ef | grep mongod #check if mongodb is working
 ```
 ### Start the App
 ```
-make run
+go run cmd/auctions/merauctions.go --mongodb-url=mongodb://localhost:27017/testing --database=testing
 ```
-* If you want to populate initial data you can run cd server/seed-data/
+* If you want to populate initial data you can run `cd server/seed-data/ && go run seeddb.go`
 ## Minimal Viable Product (MVP) [Using a User Story]
 
 
@@ -33,15 +33,3 @@ make run
 ## Technologies Used
 
 ## Challenges
-
-## Tasks & Assignment
-
-- Sahil
-  - Build the User Interface structure so that a user can upload the image from local machine or provide an image URL.
-  - Try to connect the application to Instagram/Facebook/Twitter.
-- Aniket
-  - Make endpoints and write test cases to fetch data from MusixMatch API.
-- Liu
-  - Implement the algorithm to generate caption by using the lyrics obtained from MusixMatch API.
-- Shashank
-  - Make endpoints and write test cases to fetch data from Azure API.
