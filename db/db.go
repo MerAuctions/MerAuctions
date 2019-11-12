@@ -71,7 +71,7 @@ func (c *DBClient) InsertBid(bid *models.Bid) error {
 	return err
 }
 
-func (c *DBClient) InsertBids(bids *[]models.Bid) error {
+func (c *DBClient) InsertBids(bids *models.BidList) error {
 	collection := c.client.Database(c.DBname).Collection("bids")
 	for _, bid := range *bids {
 		insertResult, err := collection.InsertOne(context.TODO(), bid)
@@ -95,7 +95,7 @@ func (c *DBClient) DeleteBid(bid *models.Bid) error {
 	return nil
 }
 
-func (c *DBClient) DeleteBids(bids *[]models.Bid) error {
+func (c *DBClient) DeleteBids(bids *models.BidList) error {
 	collection := c.client.Database(c.DBname).Collection("bids")
 	for _, bid := range *bids {
 		_, err := collection.DeleteOne(context.TODO(), bid)
@@ -130,7 +130,7 @@ func (c *DBClient) DeleteAuction(auction *models.Auction) error {
 	return nil
 }
 
-func (c *DBClient) InsertAuctions(auctions *[]models.Auction) error {
+func (c *DBClient) InsertAuctions(auctions *models.AuctionList) error {
 	collection := c.client.Database(c.DBname).Collection("auctions")
 	for _, auc := range *auctions {
 		insertResult, err := collection.InsertOne(context.TODO(), auc)
@@ -143,7 +143,7 @@ func (c *DBClient) InsertAuctions(auctions *[]models.Auction) error {
 	return nil
 }
 
-func (c *DBClient) DeleteAuctions(auctions *[]models.Auction) error {
+func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
 	collection := c.client.Database(c.DBname).Collection("auctions")
 	for _, auc := range *auctions {
 		_, err := collection.DeleteOne(context.TODO(), auc)
