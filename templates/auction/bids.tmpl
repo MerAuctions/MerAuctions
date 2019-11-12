@@ -1,6 +1,9 @@
 {{ define "auction/bids.tmpl" }}
 <h5>Top bids</h5>
-<table>
+<div id="text-no-bids" style="display: none;">
+  No bids now.
+</div>
+<table id="table-bids">
   <thead>
     <tr>
       <th>Name</th>

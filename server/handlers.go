@@ -29,7 +29,7 @@ func getAuctionsByID(c *gin.Context) {
 	id := c.Param("auction_id")
 	auc := data.GetAuctionById(id)
 	if auc == nil {
-		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
 	fmt.Println("At the start: auction ", auc.AuctionID, " the end")
@@ -38,7 +38,7 @@ func getAuctionsByID(c *gin.Context) {
 	fmt.Println("top 5 bids ", top5bids)
 
 	if top5bids == nil {
-		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
 	isUserSignedIn := false
@@ -68,7 +68,7 @@ func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	top5bids := data.GetTopFiveBids(id)
 	if top5bids == nil {
-		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
 	c.JSON(200, top5bids)

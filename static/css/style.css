@@ -39,6 +39,10 @@ nav {
   background-color: #4cc9ff;
 }
 
+.btn:hover {
+  background-color: #ff0010;
+}
+
 .card-action a {
   color: #4cc9ff;
 }
