@@ -29,28 +29,28 @@
     },
     {
         "BidID" : "5",
-        "AuctionID": "1",
+        "AuctionID": "2",
         "UserID" : "harsh",
         "Price" : 38000000,
         "Time" : 1573516840
     },
     {
         "BidID" : "6",
-        "AuctionID": "1",
+        "AuctionID": "2",
         "UserID" : "deepak",
         "Price" : 36000000,
         "Time" : 1573516850
     },
     {
         "BidID" : "7",
-        "AuctionID": "1",
+        "AuctionID": "2",
         "UserID" : "vamshi",
         "Price" : 45000000,
         "Time" : 1573516860
     },
     {
         "BidID" : "8",
-        "AuctionID": "1",
+        "AuctionID": "2",
         "UserID" : "bowei",
         "Price" : 41000000,
         "Time" : 1573516870
