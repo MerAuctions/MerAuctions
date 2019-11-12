@@ -1,3 +1,35 @@
 .post-bid-buttons .btn {
   margin: 1rem 0;
 }
+
+/* @font-face {
+  font-family: MercariSans-Thin;
+  src: url(/fonts/3c99c41.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap
+} */
+
+@font-face {
+  font-family: MercariSans-Regular;
+  src: url(/fonts/b396b9d.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap
+}
+
+@font-face {
+  font-family: MercariSans-Bold;
+  src: url(/fonts/647432b.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap
+}
+
+body {
+  font-family: MercariSans-Regular;
+}
+
+nav {
+  font-family: MercariSans-Bold;
+}

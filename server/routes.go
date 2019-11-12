@@ -97,6 +97,7 @@ func setupRoutes(router *gin.Engine) {
 	}
 	router.Static("/js", "./static/js")
 	router.Static("/css", "./static/css")
+	router.Static("/fonts", "./static/fonts")
 
 	router.GET("/hello", hello)
 	router.GET("/", getAllAuctions)
