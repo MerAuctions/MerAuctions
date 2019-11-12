@@ -38,7 +38,7 @@
   <script type="text/javascript" src="/js/materialize.min.js"></script>
   <script type="text/javascript">
     var debug = {{ . }};
-    var auction_id = "{{ .auctionID }}";
+    var auction_id = "{{ formatAuctionIDAsHexString .auction.AuctionID }}";
     var end_time = new Date(1000 * {{ .auction.EndTime }});
 
     var end_timer;

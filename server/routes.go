@@ -1,6 +1,7 @@
 package server
 
 import (
+	"html/template"
 	"log"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/MerAuctions/MerAuctions/models"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var (
@@ -84,11 +86,19 @@ func setUpJWT() {
 	log.Println("Successfully set up JWT")
 }
 
+func formatAuctionIDAsHexString(auctionID primitive.ObjectID) string {
+	return auctionID.Hex()
+}
+
 func setupRoutes(router *gin.Engine) {
 
 	setUpJWT()
 	router.POST("/login", authMiddleware.LoginHandler)
 	router.POST("/users", addNewUser) //handle signing up
+
+	router.SetFuncMap(template.FuncMap{
+		"formatAuctionIDAsHexString": formatAuctionIDAsHexString,
+	})
 
 	if mode := gin.Mode(); mode == gin.TestMode {
 		router.LoadHTMLGlob("./../templates/**/*")
