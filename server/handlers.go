@@ -86,7 +86,7 @@ func addNewUser(c *gin.Context) {
 	if status == 0 {
 		c.JSON(200, fmt.Sprintf("User Successfully added"))
 	} else {
-		c.JSON(400, fmt.Sprintf("User Alredy exists"))
+		c.JSON(400, fmt.Sprintf("User Already exists"))
 	}
 
 }

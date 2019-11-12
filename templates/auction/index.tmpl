@@ -89,24 +89,39 @@
               .append($('<td>').text(bid.Price))
             $('#table-bids-body').append(tr);
           }
+        },
+        error: function (jqXHR, exception) {
+          console.log(JSON.parse(jqXHR.responseText)["message"])
         }
       });
     }
 
     function submitBid() {
       var price = $('#input-price').val();
-      $.ajax({
-        url: `/auctions/${auction_id}/bids`,
-        method: 'POST',
-        success: function (result) {
+      if(price.length == 0 || isNaN(Number(price)) == true) {
           M.toast({
-            html: result
+            html: "incorrect bid value"
           });
-        },
-        data: {
-          price: price
-        }
-      });
+      } else {
+          $.ajax({
+            url: `/auctions/${auction_id}/bids`,
+            method: 'POST',
+            success: function (result) {
+              updateBids();
+              M.toast({
+                html: result
+              });
+            },
+            error: function (jqXHR, exception) {
+              M.toast({
+                html: JSON.parse(jqXHR.responseText)["message"]
+              });
+            },
+            data: {
+              price: price
+            }
+          });
+      }
     }
 
     function login() {
@@ -116,11 +131,15 @@
         url: `/login`,
         method: 'POST',
         success: function (result) {
-          $("#login-status-message").html("Successfully logged in");
+          M.toast({
+            html: "Successfully logged in"
+          });
           location.reload();
         },
         error: function (jqXHR, exception) {
-          $("#login-status-message").html(JSON.parse(jqXHR.responseText)["message"])
+          M.toast({
+            html: JSON.parse(jqXHR.responseText)["message"]
+          });
         },
         data: {
           username: user_id,
@@ -135,11 +154,15 @@
         url: `/users`,
         method: 'POST',
         success: function (result) {
-          $("#signup-status-message").html("Successfully created new User");
+          M.toast({
+            html: "Successfully signed up"
+          });
           location.reload();
         },
         error: function (jqXHR, exception) {
-          $("#signup-status-message").html(JSON.parse(jqXHR.responseText)["message"])
+          M.toast({
+            html: JSON.parse(jqXHR.responseText)["message"]
+          });
         },
         data: {
           user_id: user_id
