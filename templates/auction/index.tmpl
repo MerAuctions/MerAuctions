@@ -12,14 +12,16 @@
 
 <body>
   {{ template "common/navbar.tmpl" }}
-  
+
   <!-- auction details page -->
   <main class="container">
     <section>
       <!-- auction details -->
       {{ template "auction/details.tmpl" . }}
     </section>
+    <div class="divider">
 
+    </div>
     <section>
       <!-- bids -->
       {{ template "auction/bids.tmpl" . }}
@@ -71,7 +73,15 @@
         method: 'GET',
         success: function(result) {
           console.log("Top 5 bids:", result);
+
           $('#table-bids-body tr').remove();
+          if (result == null) {
+            $('#table-bids').hide();
+            $('#text-no-bids').show();
+            return;
+          }
+          $('#table-bids').show();
+          $('#text-no-bids').hide();
           for (var bid of result) {
             var tr = $('<tr>')
               .append($('<td>').text(bid.UserID))
