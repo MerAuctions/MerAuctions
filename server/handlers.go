@@ -77,6 +77,7 @@ func getBidsAuctionsById(c *gin.Context) {
 //addNewUser registers a new user
 func addNewUser(c *gin.Context) {
 	var newuser models.User
+	//TODO check for error
 	c.ShouldBindJSON(&newuser)
 
 	//status:0-->success, status:1-->user exists
@@ -84,10 +85,17 @@ func addNewUser(c *gin.Context) {
 	status := data.AddNewUser(&newuser)
 	if status == 0 {
 		log.Println("User Successfully added.")
-		c.JSON(200, fmt.Sprintf("User Successfully added"))
+		usr := models.User{
+			UserID: newuser.UserID,
+		}
+		token, _, _ := authMiddleware.TokenGenerator(&usr)
+		log.Println("cookie token ", token)
+		//TODO fix domain name
+		c.SetCookie("token", token, 60*60, "/", "localhost", false, false)
+		c.String(200, fmt.Sprintf("User Successfully added"))
 	} else {
 		log.Println("User already exists")
-		c.JSON(400, fmt.Sprintf("User Already exists"))
+		c.String(400, fmt.Sprintf("User Already exists"))
 	}
 
 }
