@@ -8,23 +8,20 @@ import (
 //Price of the item or the bid made on the item
 type Price float32
 
-//ID represents the id of an auciton, user or a bid
-type ID string
-
 // A unix timestamp in milliseconds, like 1573292410953
 type TimeStamp int64
 
 //User represents the users making the bid
 type User struct {
-	UserID   ID
+	UserID   string
 	UserName string
 	Password string
 }
 
 //Bid represents a single bid in an Auction
 type Bid struct {
-	AuctionID ID
-	UserID    ID
+	AuctionID string
+	UserID    string
 	Price     Price
 	Time      int64
 }
@@ -42,8 +39,8 @@ type Auction struct {
 type AuctionList []Auction
 
 type Result struct {
-	AuctionID ID
-	WinnerID  ID
+	AuctionID string
+	WinnerID  string
 	Price     Price
 }
 

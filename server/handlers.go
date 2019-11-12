@@ -99,8 +99,8 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	auc_id := c.Param("auction_id")
 	usr_id := c.Param("user_id")
 
-	newbid.AuctionID = models.ID(auc_id)
-	newbid.UserID = models.ID(usr_id)
+	newbid.AuctionID = auc_id
+	newbid.UserID = usr_id
 
 	//TODO: check for price limits
 	status := data.AddNewBid(&newbid)

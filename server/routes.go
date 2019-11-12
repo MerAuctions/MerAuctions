@@ -40,7 +40,7 @@ func setUpJWT() {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &models.User{
-				UserID: claims[jwtIdentityKey].(models.ID),
+				UserID: claims[jwtIdentityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
