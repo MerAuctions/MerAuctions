@@ -101,14 +101,16 @@
       $.ajax({
         url: `/auctions/${auction_id}/bids`,
         method: 'POST',
+        datatype: "json",
+        contentType: 'application/json',
         success: function (result) {
           M.toast({
             html: result
           });
         },
-        data: {
+        data: JSON.stringify({
           price: price
-        }
+        })
       });
     }
 
@@ -133,10 +135,13 @@
     }
 
     function signUp() {
-      var user_id = $('#input-username').val();
+      var user_id = $('#signup-input-username').val();
+      var pwd = $('#signup-input-password').val();
       $.ajax({
         url: `/users`,
         method: 'POST',
+        datatype: "json",
+        contentType: 'application/json',
         success: function (result) {
           $("#signup-status-message").html("Successfully created new User");
           location.reload();
@@ -144,9 +149,10 @@
         error: function (jqXHR, exception) {
           $("#signup-status-message").html(JSON.parse(jqXHR.responseText)["message"])
         },
-        data: {
-          user_id: user_id
-        }
+        data: JSON.stringify({
+          user_id: user_id,
+          pwd : pwd
+        })
       });
     }
 
