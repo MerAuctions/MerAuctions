@@ -1,7 +1,7 @@
 package models
 
 import (
-  //"time"
+	//"time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -22,20 +22,20 @@ type User struct {
 }
 
 //Bid represents a single bid in an Auction
-type Bid struct{
-  AuctionID ID
-  UserID ID
-  Price Price
-  Time int64
+type Bid struct {
+	AuctionID ID
+	UserID    ID
+	Price     Price
+	Time      int64
 }
 
 //Auction represents a single auction
-type Auction struct{
-	AuctionID primitive.ObjectID  `bson:"_id, omitempty"`
-	Title string
-  Image string      // image encode in base64
-  Description string
-  EndTime int64
+type Auction struct {
+	AuctionID   primitive.ObjectID `bson:"_id, omitempty"`
+	Title       string
+	Image       string // image encode in base64
+	Description string
+	EndTime     int64
 }
 
 //AuctionList is a list of auctions
