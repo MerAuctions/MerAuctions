@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	// "io/ioutil"
 
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
@@ -173,4 +174,15 @@ func getResultByAuctionId(c *gin.Context) {
 	} else {
 		c.String(400, fmt.Sprint("Auction Not completed yet"))
 	}
+}
+
+//this will populate the db
+func addDataDB(c *gin.Context) {
+	ok := data.PopulateDB()
+	if ok==false{
+		c.String(400,"Can't populate DB")
+	}else {
+		c.String(200,"DB is populated Successfully")
+	}
+
 }
