@@ -78,8 +78,14 @@ func getBidsAuctionsById(c *gin.Context) {
 func addNewUser(c *gin.Context) {
 	var newuser models.User
 	rawData, _ := c.GetRawData()
-	json.Unmarshal(rawData, &newuser)
+	fmt.Println("this is raw data ",rawData)
+	// mp := make(map[string]interface{})
+	// // json.Unmarshal(rawData, &newuser)
+	// fmt.Println("this is in adduser  ",json.Unmarshal(rawData, &mp))
+	newuser.UserID = c.PostForm("user_id")
+	newuser.Password = c.PostForm("pwd")
 
+	fmt.Println("this is c.PostForm(\"user_id\") ",c.PostForm("user_id"))
 	//status:0-->success, status:1-->user exists
 	//TODO: status:2-->userid not according to standard
 	status := data.AddNewUser(&newuser)

@@ -12,7 +12,7 @@
 
 <body>
   {{ template "common/navbar.tmpl" }}
-  
+
   <!-- auction details page -->
   <main class="container">
     <section>
@@ -120,7 +120,8 @@
     }
 
     function signUp() {
-      var user_id = $('#input-username').val();
+      var user_id = $('#signup-input-username').val();
+      var pwd = $('#signup-input-password').val();
       $.ajax({
         url: `/users`,
         method: 'POST',
@@ -132,7 +133,8 @@
           $("#signup-status-message").html(JSON.parse(jqXHR.responseText)["message"])
         },
         data: {
-          user_id: user_id
+          user_id: user_id,
+          pwd: pwd
         }
       });
     }

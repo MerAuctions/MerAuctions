@@ -10,9 +10,9 @@ type Price float32
 
 //User represents the users making the bid
 type User struct {
-	UserID   string
+	UserID   string `json:"user_id, string"`
 	UserName string
-	Password string
+	Password string `json:"pwd, string"`
 }
 
 //Bid represents a single bid in an Auction
