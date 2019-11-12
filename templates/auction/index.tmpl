@@ -83,9 +83,10 @@
           $('#table-bids').show();
           $('#text-no-bids').hide();
           for (var bid of result) {
+            var t = new Date(1000 * bid.Time);
             var tr = $('<tr>')
               .append($('<td>').text(bid.UserID))
-              .append($('<td>').text(bid.Time))
+              .append($('<td>').text(t.toLocaleString()))
               .append($('<td>').text(bid.Price))
             $('#table-bids-body').append(tr);
           }
