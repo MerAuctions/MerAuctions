@@ -98,7 +98,7 @@
 
     function submitBid() {
       var price = $('#input-price').val();
-      if(price.length == 0 || isNaN(Number(price)) == true) {
+      if (price.length == 0 || isNaN(Number(price)) == true) {
           M.toast({
             html: "incorrect bid value"
           });
@@ -134,7 +134,9 @@
           M.toast({
             html: "Successfully logged in"
           });
-          location.reload();
+          setTimeout(function () {
+            location.reload();
+          }, 500);
         },
         error: function (jqXHR, exception) {
           M.toast({
