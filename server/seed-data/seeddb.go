@@ -67,7 +67,7 @@ func RemoveBidsFromDB() {
 
 func main() {
 	dbURL := "mongodb://localhost:27017"
-	dbName := "testing-main"
+	dbName := "testing"
 
 	server.ConnectToDB(dbURL, dbName)
 	InsertAuctionsToDB()
