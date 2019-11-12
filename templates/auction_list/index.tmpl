@@ -17,7 +17,7 @@
       <div class="row">
 
         {{ range $auction := . -}}
-        {{ template "auction/bids.tmpl" $auction }}
+        {{ template "auction_list/card.tmpl" $auction }}
         {{- end }}
 
       </div>
