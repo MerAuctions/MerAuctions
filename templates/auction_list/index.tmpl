@@ -16,85 +16,9 @@
     <section>
       <div class="row">
 
-        <div class="col s12 m6 l4">
-          <div class="card">
-            <div class="card-image">
-              <img src="https://mercari-images.global.ssl.fastly.net/photos/m22468387230_1.jpg?1573459871&w=200&h=200&fitcrop&sharpen">
-              <span class="card-title">Custom Variety Pack</span>
-            </div>
-            <div class="card-content">
-              <p>I am a very simple card. I am good at containing small bits of information.
-                I am convenient because I require little markup to use effectively.</p>
-            </div>
-            <div class="card-action">
-              <a href="#">This is a link</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col s12 m6 l4">
-          <div class="card">
-            <div class="card-image">
-              <img src="https://mercari-images.global.ssl.fastly.net/photos/m74360343971_1.jpg?1573457851&w=200&h=200&fitcrop&sharpen">
-              <span class="card-title">Custom Variety Pack</span>
-            </div>
-            <div class="card-content">
-              <p>I am a very simple card. I am good at containing small bits of information.
-                I am convenient because I require little markup to use effectively.</p>
-            </div>
-            <div class="card-action">
-              <a href="#">This is a link</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col s12 m6 l4">
-          <div class="card">
-            <div class="card-image">
-              <img src="https://mercari-images.global.ssl.fastly.net/photos/m38475691574_1.jpg?1573458455&w=200&h=200&fitcrop&sharpen">
-              <span class="card-title">Custom Variety Pack</span>
-            </div>
-            <div class="card-content">
-              <p>I am a very simple card. I am good at containing small bits of information.
-                I am convenient because I require little markup to use effectively.</p>
-            </div>
-            <div class="card-action">
-              <a href="#">This is a link</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col s12 m6 l4">
-          <div class="card">
-            <div class="card-image">
-              <img src="https://mercari-images.global.ssl.fastly.net/photos/m29782174074_1.jpg?1573459122&w=200&h=200&fitcrop&sharpen">
-              <span class="card-title">Custom Variety Pack</span>
-            </div>
-            <div class="card-content">
-              <p>I am a very simple card. I am good at containing small bits of information.
-                I am convenient because I require little markup to use effectively.</p>
-            </div>
-            <div class="card-action">
-              <a href="#">This is a link</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col s12 m6 l4">
-          <div class="card">
-            <div class="card-image">
-              <img src="https://mercari-images.global.ssl.fastly.net/photos/m73525297386_1.jpg?1573461120&w=200&h=200&fitcrop&sharpen">
-              <span class="card-title">Custom Variety Pack</span>
-            </div>
-            <div class="card-content">
-              <p>I am a very simple card. I am good at containing small bits of information.
-                I am convenient because I require little markup to use effectively.</p>
-            </div>
-            <div class="card-action">
-              <a href="#">This is a link</a>
-            </div>
-          </div>
-        </div>
+        {{ range $auction := . -}}
+        {{ template "auction/bids.tmpl" $auction }}
+        {{- end }}
 
       </div>
     </section>
