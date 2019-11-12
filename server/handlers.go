@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
-	"github.com/gin-gonic/gin"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 func hello(c *gin.Context) {
@@ -83,9 +83,11 @@ func addNewUser(c *gin.Context) {
 	//TODO: status:2-->userid not according to standard
 	status := data.AddNewUser(&newuser)
 	if status == 0 {
+		log.Println("User Successfully added.")
 		c.JSON(200, fmt.Sprintf("User Successfully added"))
 	} else {
-		c.JSON(400, fmt.Sprintf("User Alredy exists"))
+		log.Println("User already exists")
+		c.JSON(400, fmt.Sprintf("User Already exists"))
 	}
 
 }
@@ -117,20 +119,20 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	}
 
 	var newbid models.Bid
-	price_map :=gin.H{"price":""}
+	price_map := gin.H{"price": ""}
 	rawData, _ := c.GetRawData()
 	json.Unmarshal(rawData, &price_map)
 
 	auc_id := c.Param("auction_id")
 
-	str_price,ok := price_map["price"].(string)
-	if ok==false{
+	str_price, ok := price_map["price"].(string)
+	if ok == false {
 		log.Println("Invalid bid: error my converting interface to string")
 		c.JSON(400, fmt.Sprintf("Invalid bid"))
 		return
 	}
-	tmp_price,err := strconv.ParseFloat(str_price, 32)
-	if err!=nil{
+	tmp_price, err := strconv.ParseFloat(str_price, 32)
+	if err != nil {
 		log.Println(err)
 		c.JSON(400, fmt.Sprintf("Invalid bid"))
 		return
