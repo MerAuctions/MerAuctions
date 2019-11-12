@@ -36,7 +36,7 @@
   <script type="text/javascript" src="/js/materialize.min.js"></script>
   <script type="text/javascript">
     var debug = {{ . }};
-    var auction_id = "{{ .auction.AuctionID }}" | "1";
+    var auction_id = "{{ .auctionID }}" | "1";
     var end_time = new Date(1000 * {{ .auction.EndTime }});
 
     var end_timer;
@@ -125,7 +125,7 @@
         url: `/users`,
         method: 'POST',
         success: function (result) {
-          alert("Successfully created new User");
+          $("#signup-status-message").html("Successfully created new User");
           location.reload();
         },
         error: function (jqXHR, exception) {
