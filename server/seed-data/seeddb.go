@@ -26,7 +26,7 @@ func InsertAuctionsToDB() *models.AuctionList {
 }
 
 func RemoveAuctionsFromDB() {
-	var auc []models.Auction
+	var auc models.AuctionList
 	file, err := ioutil.ReadFile("./auctions.json")
 	if err != nil {
 		log.Fatal("Error reading auctions.json : ", err.Error())
