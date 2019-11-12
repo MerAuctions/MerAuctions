@@ -149,6 +149,12 @@ func PopulateDB() bool{
 	// fmt.Println(string(file))
 	json.Unmarshal([]byte(file), &auc)
 
+	// deleting all the data it exists before
+	err = DBclient.DeleteAllCollections()
+	if err != nil {
+		log.Fatal("Error in deleting pre-existing data : ", err.Error())
+	}
+	
 	//setting the time for different aucitons
 	auc[0].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
 	auc[1].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
