@@ -1,6 +1,7 @@
 package server
 
 import (
+	"html/template"
 	"log"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/MerAuctions/MerAuctions/models"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var (
@@ -40,7 +42,7 @@ func setUpJWT() {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &models.User{
-				UserID: claims[jwtIdentityKey].(models.ID),
+				UserID: claims[jwtIdentityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -84,11 +86,19 @@ func setUpJWT() {
 	log.Println("Successfully set up JWT")
 }
 
+func formatAuctionIDAsHexString(auctionID primitive.ObjectID) string {
+	return auctionID.Hex()
+}
+
 func setupRoutes(router *gin.Engine) {
 
 	setUpJWT()
 	router.POST("/login", authMiddleware.LoginHandler)
 	router.POST("/users", addNewUser) //handle signing up
+
+	router.SetFuncMap(template.FuncMap{
+		"formatAuctionIDAsHexString": formatAuctionIDAsHexString,
+	})
 
 	if mode := gin.Mode(); mode == gin.TestMode {
 		router.LoadHTMLGlob("./../templates/**/*")
@@ -97,6 +107,7 @@ func setupRoutes(router *gin.Engine) {
 	}
 	router.Static("/js", "./static/js")
 	router.Static("/css", "./static/css")
+	router.Static("/fonts", "./static/fonts")
 
 	router.GET("/hello", hello)
 	router.GET("/", getAllAuctions)

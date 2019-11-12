@@ -1,5 +1,9 @@
 {{ define "auction/bids.tmpl" }}
-<table>
+<h5>Top 5 Most Recent bids</h5>
+<div id="text-no-bids" style="display: none;">
+  No bids now.
+</div>
+<table id="table-bids">
   <thead>
     <tr>
       <th>Name</th>
@@ -8,13 +12,6 @@
     </tr>
   </thead>
   <tbody id="table-bids-body">
-    {{ range $bid := .bids -}}
-    <tr>
-      <td>{{ $bid.UserID }}</td>
-      <td>{{ $bid.Time }}</td>
-      <td>{{ $bid.Price }}</td>
-    </tr>
-    {{- end }}
   </tbody>
 </table>
 {{ end }}
