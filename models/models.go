@@ -6,7 +6,7 @@ import (
 )
 
 //Price of the item or the bid made on the item
-type Price float32
+type Price float64
 
 //User represents the users making the bid
 type User struct {
@@ -19,7 +19,7 @@ type User struct {
 type Bid struct {
 	AuctionID string
 	UserID    string
-	Price     Price
+	Price     Price 
 	Time      int64
 }
 

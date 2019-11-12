@@ -98,14 +98,16 @@
       $.ajax({
         url: `/auctions/${auction_id}/bids`,
         method: 'POST',
+        datatype: "json",
+        contentType: 'application/json',
         success: function (result) {
           M.toast({
             html: result
           });
         },
-        data: {
+        data: JSON.stringify({
           price: price
-        }
+        })
       });
     }
 
@@ -135,6 +137,8 @@
       $.ajax({
         url: `/users`,
         method: 'POST',
+        datatype: "json",
+        contentType: 'application/json',
         success: function (result) {
           $("#signup-status-message").html("Successfully created new User");
           location.reload();
@@ -142,10 +146,10 @@
         error: function (jqXHR, exception) {
           $("#signup-status-message").html(JSON.parse(jqXHR.responseText)["message"])
         },
-        data: {
+        data: JSON.stringify({
           user_id: user_id,
-          pwd: pwd
-        }
+          pwd : pwd
+        })
       });
     }
     $(document).ready(function(){
