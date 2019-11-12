@@ -71,6 +71,42 @@ func (c *DBClient) InsertBid(bid *models.Bid) error {
 	return err
 }
 
+func (c *DBClient) InsertBids(bids *models.BidList) error {
+	collection := c.client.Database(c.DBname).Collection("bids")
+	for _, bid := range *bids {
+		insertResult, err := collection.InsertOne(context.TODO(), bid)
+		if err != nil {
+			//log.Fatal(err)
+			return err
+		}
+		fmt.Println("Inserted bid: ", insertResult.InsertedID)
+	}
+	return nil
+}
+
+func (c *DBClient) DeleteBid(bid *models.Bid) error {
+	collection := c.client.Database(c.DBname).Collection("bids")
+	_, err := collection.DeleteOne(context.TODO(), bid)
+	if err != nil {
+		//log.Fatal(err)
+		return err
+	}
+	fmt.Println("Deleted bid")
+	return nil
+}
+
+func (c *DBClient) DeleteBids(bids *models.BidList) error {
+	collection := c.client.Database(c.DBname).Collection("bids")
+	for _, bid := range *bids {
+		_, err := collection.DeleteOne(context.TODO(), bid)
+		if err != nil {
+			return err
+		}
+	}
+	fmt.Println("Deleted all bids")
+	return nil
+}
+
 //Insert a auction in db
 func (c *DBClient) InsertAuction(auction *models.Auction) error {
 	collection := c.client.Database(c.DBname).Collection("auctions")
@@ -81,6 +117,43 @@ func (c *DBClient) InsertAuction(auction *models.Auction) error {
 	}
 	fmt.Println("Inserted auction: ", insertResult.InsertedID)
 	return err
+}
+
+func (c *DBClient) DeleteAuction(auction *models.Auction) error {
+	collection := c.client.Database(c.DBname).Collection("auctions")
+	_, err := collection.DeleteOne(context.TODO(), auction)
+	if err != nil {
+		// log.Fatal(err)
+		return err
+	}
+	fmt.Println("Inserted auction: ", auction)
+	return nil
+}
+
+func (c *DBClient) InsertAuctions(auctions *models.AuctionList) error {
+	collection := c.client.Database(c.DBname).Collection("auctions")
+	for _, auc := range *auctions {
+		insertResult, err := collection.InsertOne(context.TODO(), auc)
+		if err != nil {
+			// log.Fatal(err)
+			return err
+		}
+		fmt.Println("Inserted auction: ", insertResult.InsertedID)
+	}
+	return nil
+}
+
+func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
+	collection := c.client.Database(c.DBname).Collection("auctions")
+	for _, auc := range *auctions {
+		_, err := collection.DeleteOne(context.TODO(), auc)
+		if err != nil {
+			// log.Fatal(err)
+			return err
+		}
+	}
+	fmt.Println("Deleted all auctions")
+	return nil
 }
 
 //Get an Auction with ID
@@ -108,7 +181,8 @@ func (c *DBClient) GetAuctions() *models.AuctionList {
 	cur, err := collection.Find(context.Background(), bson.D{{}})
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error in fetching all auctions", err.Error())
+		return nil
 	}
 	defer cur.Close(context.Background())
 	for cur.Next(context.Background()) {
@@ -116,11 +190,13 @@ func (c *DBClient) GetAuctions() *models.AuctionList {
 		err := cur.Decode(&elem)
 		auctions = append(auctions, elem)
 		if err != nil {
-			log.Fatal(err)
+			log.Println("Error in decoding auctions", err.Error())
+			return nil
 		}
 	}
 	if err := cur.Err(); err != nil {
-		log.Fatal(err)
+		log.Println("Error in reading auctionst list", err.Error())
+		return nil
 	}
 
 	return &auctions
@@ -150,7 +226,6 @@ func (c *DBClient) GetBids(AuctionId string) (*[]models.Bid, error) {
 		// log.Fatal(err)
 		return nil, err
 	}
-
 	return &bids, nil
 }
 

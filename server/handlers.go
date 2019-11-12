@@ -161,6 +161,6 @@ func getResultByAuctionId(c *gin.Context) {
 		aucres := data.GetResult(id)
 		c.JSON(200, aucres)
 	} else {
-		c.String(200, fmt.Sprint("Auction Not completed yet"))
+		c.String(400, fmt.Sprint("Auction Not completed yet"))
 	}
 }

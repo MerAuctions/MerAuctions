@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
 	"github.com/MerAuctions/MerAuctions/server"
 )
@@ -12,6 +13,7 @@ func main() {
 	dbName := flag.String("database", "test7", "Database name in mongodb")
 	flag.Parse()
 	router := server.CreateRouter()
+	fmt.Println(*dbName)
 	server.ConnectToDB(*dbURL, *dbName)
 	server.StartServer(router)
 }
