@@ -31,5 +31,22 @@ go run cmd/auctions/merauctions.go --mongodb-url=mongodb://localhost:27017/testi
 
 
 ## Technologies Used
+### Front-end
+  - Materialize CSS
+  - jQuery
+  - Go templates
 
-## Challenges
+### Back-end
+  - ginkgo
+  - JWT
+  
+### Database
+  - MongoDB
+
+
+### Deployment
+  - Kubernetes
+  - CircleCI
+  - Docker
+  - GCP
+  
