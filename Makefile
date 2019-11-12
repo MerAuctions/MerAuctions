@@ -12,9 +12,9 @@ DB_PASSWORD = ${MONGODB_PASSWORD}
 all: test build
 build:
 		GO111MODULE=on CGO_ENABLED=0 $(GOBUILD) -o $(BINARY_NAME) cmd/auctions/merauctions.go
-test: 
+test:
 		$(GOTEST) -v ./...
-clean: 
+clean:
 		$(GOCLEAN)
 		rm -f $(BINARY_NAME)
 		rm -f $(BINARY_UNIX)

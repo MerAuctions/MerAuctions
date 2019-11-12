@@ -1,0 +1,143 @@
+{{ define "auction/index.tmpl" }}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="/css/materialize.min.css" media="screen,projection" />
+  <link type="text/css" rel="stylesheet" href="/css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ .auction.Title }}</title>
+</head>
+
+<body>
+  <!-- auction details page -->
+  <main class="container">
+    <section>
+      <!-- auction details -->
+      {{ template "auction/details.tmpl" . }}
+    </section>
+
+    <section>
+      <!-- bids -->
+      {{ template "auction/bids.tmpl" . }}
+    </section>
+
+    <br>
+
+    <section id="section-post">
+      <!-- post bid -->
+      {{ template "auction/post.tmpl" . }}
+    </section>
+  </main>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/js/materialize.min.js"></script>
+  <script type="text/javascript">
+    var debug = {{ . }};
+    var auction_id = "{{ .auction.AuctionID }}" | "1";
+    var end_time = new Date({{ .auction.EndTime }});
+    updateTimer();
+    var end_timer = setInterval(updateTimer, 1000);
+    var bid_timer = setInterval(updateBids, 10000);
+
+    function updateTimer() {
+      var now = new Date();
+      var time_remain = end_time - now;
+      if (time_remain < 0) {
+        $('#section-post').hide();
+        $('#end-timer').hide();
+        clearInterval(end_timer)
+        clearInterval(bid_timer)
+      }
+      setEndTime(time_remain);
+    }
+
+    function setEndTime(t) {
+      t = Math.floor(t / 1000);
+      var s = t % 60;
+      t = Math.floor(t / 60);
+      var m = t % 60;
+      t = Math.floor(t / 60);
+      var h = t;
+      $("#end-timer").html(`${h}h ${m}m ${s}s`);
+    }
+
+    function updateBids() {
+      $.ajax({
+        url: `/auctions/${auction_id}/bids`,
+        method: 'GET',
+        success: function(result) {
+          console.log("Top 5 bids:", result);
+          $('#table-bids-body tr').remove();
+          for (var bid of result) {
+            var tr = $('<tr>')
+              .append($('<td>').text(bid.UserID))
+              .append($('<td>').text(bid.Time))
+              .append($('<td>').text(bid.Price))
+            $('#table-bids-body').append(tr);
+          }
+        }
+      });
+    }
+
+    function submitBid() {
+      var price = $('#input-price').val();
+      $.ajax({
+        url: `/auctions/${auction_id}/bids`,
+        method: 'POST',
+        success: function (result) {
+          M.toast({
+            html: result
+          });
+        },
+        data: {
+          price: price
+        }
+      });
+    }
+
+    function login() {
+      var user_id = $('#login-input-username').val();
+      var password = $('#login-input-password').val();
+      $.ajax({
+        url: `/login`,
+        method: 'POST',
+        success: function (result) {
+          $("#login-status-message").html("Successfully logged in");
+          location.reload();
+        },
+        error: function (jqXHR, exception) {
+          $("#login-status-message").html(JSON.parse(jqXHR.responseText)["message"])
+        },
+        data: {
+          username: user_id,
+          password: password
+        }
+      });
+    }
+
+    function signUp() {
+      var user_id = $('#input-username').val();
+      $.ajax({
+        url: `/users`,
+        method: 'POST',
+        success: function (result) {
+          $("#signup-status-message").html("Successfully created new User");
+          location.reload();
+        },
+        error: function (jqXHR, exception) {
+          $("#signup-status-message").html(JSON.parse(jqXHR.responseText)["message"])
+        },
+        data: {
+          user_id: user_id
+        }
+      });
+    }
+    $(document).ready(function(){
+      $('.modal').modal();
+    });
+  </script>
+</body>
+
+</html>
+{{ end }}

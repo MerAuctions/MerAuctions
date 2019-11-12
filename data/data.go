@@ -7,19 +7,20 @@ import (
 	"time"
 	"sort"
 
-	"github.com/MerAuctions/MerAuctions/models"
 	"github.com/MerAuctions/MerAuctions/db"
+	"github.com/MerAuctions/MerAuctions/models"
 )
 
 var DBclient *db.DBClient
 
-func GetAllAuctions()*models.AuctionList {
+func GetAllAuctions() *models.AuctionList {
 	return DBclient.GetAuctions()
 }
 
-func GetAuctionById(id string)*models.Auction {
-	auc,err:= DBclient.GetAuction(id)
-	if err!=nil{
+//TODO return error
+func GetAuctionById(id string) *models.Auction {
+	auc, err := DBclient.GetAuction(id)
+	if err != nil {
 		return nil
 	}
 	return auc
@@ -28,14 +29,14 @@ func GetAuctionById(id string)*models.Auction {
 func GetTopFiveBids(auctionID string)*[]models.Bid {
 	tmp_bids,err := DBclient.GetBids(auctionID)
 	if err != nil{
-		return nil
+		return nil //TODO: also give error 
 	}
 	bids:=*tmp_bids
 	// fmt.Println(bids)
 	sort.SliceStable(bids, func(i, j int) bool{
 		return bids[i].Time > bids[j].Time
 	})
-	if len(bids) < 5{
+	if len(bids) < 5 {
 		return &bids
 	}
 	result := bids[:5]
@@ -127,6 +128,15 @@ func GetResult(auctionID string) *models.Result{
 
 	return &result
 }
+
+func GetUserById(id string) (*models.User,error){
+	usr, err := DBclient.Getuser(id)
+	if err != nil {
+		return nil,err
+	}
+	return usr,nil
+}
+
 
 
 //

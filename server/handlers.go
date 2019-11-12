@@ -3,43 +3,77 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
 
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
 	"github.com/gin-gonic/gin"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 func hello(c *gin.Context) {
 	c.String(200, "Hello World")
 }
 
-//get all auctions
+//getAllAuctions is handler function to return list of all auctions
 func getAllAuctions(c *gin.Context) {
 	allAuctions := data.GetAllAuctions()
-	c.JSON(200, allAuctions)
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 
-//get auction by id
-func getAuctionsById(c *gin.Context) {
+//getAuctionsByID is handler function for getting particular auction page
+func getAuctionsByID(c *gin.Context) {
 	id := c.Param("auction_id")
 	auc := data.GetAuctionById(id)
-	if auc==nil{
-		c.JSON(200, fmt.Sprintf("Given id: %v not found",id))
+	if auc == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
 	}
-	c.JSON(200, auc)
+	fmt.Println("At the start: auction",auc)
+
+	top5bids := data.GetTopFiveBids(id)
+	fmt.Println("top 5 bids ",top5bids)
+
+	if top5bids == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
+	}
+	isUserSignedIn := false
+	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
+		if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok && jwtToken.Valid {
+			if userID, ok := claims[jwtIdentityKey].(string); ok == true {
+				if user, _ := data.GetUserById(userID); user != nil {
+					isUserSignedIn = true
+				}
+			} else {
+				log.Printf("Could not convert claim to string")
+			}
+		} else {
+			log.Printf("Could not extract claims into JWT")
+		}
+	}
+	c.HTML(http.StatusOK, "auction/index.tmpl", gin.H{
+		"auction":        auc,
+		"bids":           top5bids,
+		"isUserSignedIn": isUserSignedIn,
+	})
 }
 
-//gets all bids from a auction
+//getBidsAuctionsById is handler function to get all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	top5bids := data.GetTopFiveBids(id)
-	if top5bids==nil{
-		c.JSON(200, fmt.Sprintf("Given id: %v not found",id))
+	if top5bids == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
 	}
 	c.JSON(200, top5bids)
 }
 
-// register new user
+//addNewUser registers a new user
 func addNewUser(c *gin.Context) {
 	var newuser models.User
 	rawData, _ := c.GetRawData()
@@ -56,7 +90,7 @@ func addNewUser(c *gin.Context) {
 
 }
 
-//add bid by a registered user
+//addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
 	var newbid models.Bid
 	rawData, _ := c.GetRawData()
@@ -70,15 +104,22 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	//TODO: check for price limits
 	status := data.AddNewBid(&newbid)
 	if status == 0 {
-		c.JSON(200, fmt.Sprintf("Bid Successfully added"))
+		c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
 	} else {
-		c.JSON(200, fmt.Sprintf("Cannot add Bid"))
+		c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
 	}
 }
 
-//get results of an auction
+//getResultByAuctionId is handler function to check result by ID
 func getResultByAuctionId(c *gin.Context) {
 	id := c.Param("auction_id")
-	aucres := data.GetResult(id)
-	c.JSON(200, aucres)
+	auc := data.GetAuctionById(id)
+
+	if int64(auc.EndTime) <= time.Now().Unix() {
+		//auction completed
+		aucres := data.GetResult(id)
+		c.JSON(200, aucres)
+	} else {
+		c.String(200, fmt.Sprint("Auction Not completed yet"))
+	}
 }
