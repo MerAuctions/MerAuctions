@@ -35,10 +35,10 @@
   <script type="text/javascript">
     var debug = {{ . }};
     var auction_id = "{{ .auction.AuctionID }}" | "1";
-    var end_time = new Date({{ .auction.EndTime }});
-    updateTimer();
-    var end_timer = setInterval(updateTimer, 1000);
-    var bid_timer = setInterval(updateBids, 10000);
+    var end_time = new Date(1000 * {{ .auction.EndTime }});
+
+    var end_timer;
+    var bid_timer;
 
     function updateTimer() {
       var now = new Date();
@@ -48,6 +48,7 @@
         $('#end-timer').hide();
         clearInterval(end_timer)
         clearInterval(bid_timer)
+        // TODO: get the auction result
       }
       setEndTime(time_remain);
     }
@@ -59,7 +60,7 @@
       var m = t % 60;
       t = Math.floor(t / 60);
       var h = t;
-      $("#end-timer").html(`${h}h ${m}m ${s}s`);
+      $("#end-timer").html(`End after ${h}h ${m}m ${s}s`);
     }
 
     function updateBids() {
@@ -122,7 +123,7 @@
         url: `/users`,
         method: 'POST',
         success: function (result) {
-          $("#signup-status-message").html("Successfully created new User");
+          alert("Successfully created new User");
           location.reload();
         },
         error: function (jqXHR, exception) {
@@ -135,6 +136,10 @@
     }
     $(document).ready(function(){
       $('.modal').modal();
+      updateTimer();
+      updateBids();
+      end_timer = setInterval(updateTimer, 1000);
+      bid_timer = setInterval(updateBids, 10000);
     });
   </script>
 </body>
