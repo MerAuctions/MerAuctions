@@ -1,21 +1,51 @@
 package server
 
 import (
+	"encoding/json"
 	"html/template"
+	"io/ioutil"
 	"log"
+	"os"
 	"time"
 
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 var (
 	authMiddleware *jwt.GinJWTMiddleware
 	jwtIdentityKey = "id"
+
+	cred  models.Credentials
+	conf  *oauth2.Config
+	state string
+	store = sessions.NewCookieStore([]byte("secret"))
 )
+
+func setUpOauth2() {
+	file, err := ioutil.ReadFile("/Users/vamshi.teja/go/src/github.com/MerAuctions/MerAuctions/server/creds.json")
+	if err != nil {
+		log.Printf("File error: %v\n", err)
+		os.Exit(1)
+	}
+	json.Unmarshal(file, &cred)
+
+	conf = &oauth2.Config{
+		ClientID:     cred.Cid,
+		ClientSecret: cred.Csecret,
+		RedirectURL:  "http://me.mydomain.com:8081/auth",
+		Scopes: []string{
+			"https://www.googleapis.com/auth/userinfo.email", // You have to select your own scope from here -> https://developers.google.com/identity/protocols/googlescopes#google_sign-in
+		},
+		Endpoint: google.Endpoint,
+	}
+}
 
 func setUpJWT() {
 	// the jwt middleware
@@ -91,8 +121,13 @@ func formatAuctionIDAsHexString(auctionID primitive.ObjectID) string {
 }
 
 func setupRoutes(router *gin.Engine) {
-
+	setUpOauth2()
 	setUpJWT()
+	router.Use(sessions.Sessions("goquestsession", store))
+
+	router.GET("/glogin", googleloginHandler)
+	router.GET("/auth", googleauthHandler)
+
 	router.POST("/login", authMiddleware.LoginHandler)
 	router.POST("/users", addNewUser) //handle signing up
 
@@ -120,4 +155,5 @@ func setupRoutes(router *gin.Engine) {
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 
 	auth.POST("/auctions/:auction_id/bids", addBidAuctionIdByUserId)
+	router.Run("me.mydomain.com:8081")
 }

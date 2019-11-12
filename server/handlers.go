@@ -1,21 +1,78 @@
 package server
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
 func hello(c *gin.Context) {
 	c.String(200, "Hello World")
+}
+
+//gets loginurl for google sign in
+func getLoginURL(state string) string {
+	return conf.AuthCodeURL(state)
+}
+
+//random state for the session
+func randToken() string {
+	b := make([]byte, 32)
+	rand.Read(b)
+	return base64.StdEncoding.EncodeToString(b)
+}
+
+//google login handler
+func googleloginHandler(c *gin.Context) {
+	state = randToken()
+	session := sessions.Default(c)
+	session.Set("state", state)
+	session.Save()
+	c.Writer.Write([]byte("<html><title>Golang Google</title> <body> <a href='" + getLoginURL(state) + "'><button>Login with Google!</button> </a> </body></html>"))
+}
+
+//google auth page
+func googleauthHandler(c *gin.Context) {
+	// Handle the exchange code to initiate a transport.
+	session := sessions.Default(c)
+	retrievedState := session.Get("state")
+	if retrievedState != c.Query("state") {
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s", retrievedState))
+		return
+	}
+
+	tok, err := conf.Exchange(oauth2.NoContext, c.Query("code"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	client := conf.Client(oauth2.NoContext, tok)
+	email, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
+	fmt.Println(email)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	defer email.Body.Close()
+	data, _ := ioutil.ReadAll(email.Body)
+	var userdetails models.GUser
+	json.Unmarshal(data, &userdetails)
+	log.Println("Email body: ", userdetails.Email)
+	c.Status(http.StatusOK)
 }
 
 //getAllAuctions is handler function to return list of all auctions
