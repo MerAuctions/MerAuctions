@@ -18,6 +18,9 @@ jobs:
           command: make build
 
   test:
+    machine:
+      image: mongo:4.2.1
+      command: [mongod]
     executor: golang
     description: Run go test to run tests
     steps:
