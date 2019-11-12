@@ -3,11 +3,10 @@ package server_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
-	"sort"
 
 	"github.com/gin-gonic/gin"
 	. "github.com/onsi/ginkgo"
@@ -30,78 +29,78 @@ func performRequest(r http.Handler, method, path string, body []byte) *httptest.
 	return w
 }
 
-func InsertAuctionsToDB() {
-	var auc []models.Auction
+func InsertAuctionsToDB() *models.AuctionList {
+	var auc models.AuctionList
 	file, err := ioutil.ReadFile("./seed-data/auctions.json")
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal("Error reading auctions.json : ", err.Error())
 	}
 	// fmt.Println(string(file))
 	json.Unmarshal([]byte(file), &auc)
 	err = data.DBclient.InsertAuctions(&auc)
 	if err != nil {
-		return
+		log.Fatal("Error populating auctions.json : ", err.Error())
 	}
+	return &auc
 }
 
 func RemoveAuctionsFromDB() {
-	var auc []models.Auction
+	var auc models.AuctionList
 	file, err := ioutil.ReadFile("./seed-data/auctions.json")
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal("Error reading auctions.json : ", err.Error())
 	}
 	json.Unmarshal([]byte(file), &auc)
 	err = data.DBclient.DeleteAuctions(&auc)
 	if err != nil {
-		return
+		log.Fatal("Error deleting auctions.json : ", err.Error())
 	}
 }
 
-func InsertBidsToDB() {
-	var bids []models.Bid
+func InsertBidsToDB() *models.BidList {
+	var bids models.BidList
 	file, err := ioutil.ReadFile("./seed-data/bids.json")
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal("Error reading bids.json : ", err.Error())
 	}
-	// fmt.Println(string(file))
 	json.Unmarshal([]byte(file), &bids)
 	err = data.DBclient.InsertBids(&bids)
 	if err != nil {
-		return
+		log.Fatal("Error populating bids.json : ", err.Error())
 	}
+	return &bids
 }
 
 func RemoveBidsFromDB() {
-	var bids []models.Bid
+	var bids models.BidList
 	file, err := ioutil.ReadFile("./seed-data/bids.json")
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal("Error reading bids.json : ", err.Error())
 	}
-	// fmt.Println(string(file))
 	json.Unmarshal([]byte(file), &bids)
 	err = data.DBclient.DeleteBids(&bids)
 	if err != nil {
-		return
+		log.Fatal("Error deleting bids.json : ", err.Error())
 	}
 }
 
 var _ = Describe("Server", func() {
 	var (
-		router   *gin.Engine
-		response *httptest.ResponseRecorder
+		router           *gin.Engine
+		response         *httptest.ResponseRecorder
+		insertedAuctions *models.AuctionList
 	)
 
 	BeforeEach(func() {
 		router = CreateRouter()
 		dbURL := "mongodb://localhost:27017"
-		dbName := "testing5"
+		dbName := "testing"
 
 		ConnectToDB(dbURL, dbName)
-		InsertAuctionsToDB()
-	})
-
-	AfterEach(func() {
 		RemoveAuctionsFromDB()
+		RemoveBidsFromDB()
+		insertedAuctions = InsertAuctionsToDB()
+		InsertBidsToDB()
 	})
 
 	Describe("The /hello endpoint", func() {
@@ -118,86 +117,36 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	Describe("The GET / endpoint", func() {
+	Describe("Getting all auctions from db", func() {
+		var returnedAuctions *models.AuctionList
 		BeforeEach(func() {
-			response = performRequest(router, "GET", "/", nil)
-
+			returnedAuctions = data.GetAllAuctions()
 		})
 
-		// AfterEach(func() {
-		// 	RemoveAuctionsFromDB()
-		// })
-
-		It("Returns with Status 200", func() {
-			Expect(response.Code).To(Equal(200))
+		It("Does not return nil", func() {
+			Expect(returnedAuctions).To(Not(BeNil()))
 		})
 
-		It("Returns all auctions", func() {
-			var allauc models.AuctionList
-			json.Unmarshal(response.Body.Bytes(), &allauc)
-			actualauc, _ := json.Marshal(data.DBclient.GetAuctions())
-			Expect(response.Body.Bytes()).To(Equal(actualauc))
-		})
-	})
-
-	Describe("The GET auctions/:auction_id endpoint", func() {
-		BeforeEach(func() {
-			response = performRequest(router, "GET", "/auctions/1", nil)
-		})
-
-		It("Returns with Status 200", func() {
-			Expect(response.Code).To(Equal(200))
-		})
-
-		It("Returns auction 1", func() {
-			var auc models.Auction
-			json.Unmarshal(response.Body.Bytes(), &auc)
-			actualauc, _ := data.DBclient.GetAuction("1")
-			actual, _ := json.Marshal(actualauc)
-			Expect(response.Body.Bytes()).To(Equal(actual))
+		It("Returns all 3 auctions", func() {
+			Expect(returnedAuctions).To(Equal(insertedAuctions))
 		})
 	})
 
 	Describe("The GET auctions/:auction_id/bids endpoint", func() {
 
+		auctionID := "5dca6431de52283587609581"
 		BeforeEach(func() {
 			InsertBidsToDB()
-			response = performRequest(router, "GET", "/auctions/1/bids", nil)
-
-			// newbid1 := models.Bid{"1", "1", "bowei", 2000000, 1573516800}
-			// data.DBclient.InsertBid(&newbid1)
-			// newbid2 := models.Bid{"2", "1", "vamshi", 2500000, 1573516810}
-			// data.DBclient.InsertBid(&newbid2)
-			// newbid3 := models.Bid{"3", "1", "harsh", 3000000, 1573516820}
-			// data.DBclient.InsertBid(&newbid3)
-			// newbid4 := models.Bid{"4", "1", "deepak", 4000000, 1573516830}
-			// data.DBclient.InsertBid(&newbid4)
-			// newbid5 := models.Bid{"5", "1", "vamshi", 3500000, 1573516840}
-			// data.DBclient.InsertBid(&newbid5)
+			response = performRequest(router, "GET", "/auctions/"+auctionID+"/bids", nil)
 		})
-
-		AfterEach(func() {
-			RemoveBidsFromDB()
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
 		})
-
-		// It("Returns with Status 200", func() {
-		// 	Expect(response.Code).To(Equal(200))
-		// })
-
-		It("Returns all running auctions", func() {
-			var allbids []models.Bid
-			json.Unmarshal(response.Body.Bytes(), &allbids)
-			act, _ := data.DBclient.GetBids("1")
-			var actual []models.Bid
-			actual = *act
-			sort.Slice(actual, func(i, j int) bool {
-				return actual[i].Price < actual[j].Price
-			})
-			sort.Slice(allbids, func(i, j int) bool {
-				return allbids[i].Price < allbids[j].Price
-			})
-			//actualbytes, _ := json.Marshal(&actual)
-			Expect(allbids).To(Equal(actual))
+		It("Returns top 5 bids of running auction 5dca6431de52283587609581", func() {
+			var receivedBidsList *[]models.Bid
+			json.Unmarshal(response.Body.Bytes(), &receivedBidsList)
+			returnedBids := data.GetTopFiveBids(auctionID)
+			Expect(receivedBidsList).To(Equal(returnedBids))
 		})
 	})
 
@@ -238,20 +187,19 @@ var _ = Describe("Server", func() {
 	// 	})
 	// })
 
-	Describe("The GET /auctions/:auction_id/result", func() {
-		BeforeEach(func() {
-			response = performRequest(router, "GET", "/auctions/1/result", nil)
-		})
+	// Describe("The GET /auctions/:auction_id/result", func() {
+	// 	BeforeEach(func() {
+	// 		response = performRequest(router, "GET", "/auctions/1/result", nil)
+	// 	})
 
-		It("Returns with Status 200", func() {
-			Expect(response.Code).To(Equal(200))
-		})
+	// 	It("Returns with Status 200", func() {
+	// 		Expect(response.Code).To(Equal(200))
+	// 	})
 
-		It("Returns result of auction 1", func() {
-			var res models.Result
-			json.Unmarshal(response.Body.Bytes(), &res)
-			// actual := data.DBclient.GetResult("1")
-			// Expect(res).To(Equal(actual))
-		})
-	})
+	// 	It("Returns result of auction 1", func() {
+	// 		var res models.Result
+	// 		json.Unmarshal(response.Body.Bytes(), &res)
+	// 		// actual := data.DBclient.GetResult("1")
+	// 		// Expect(res).To(Equal(actual))
+	// 	})
 })
