@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sort"
 	"time"
+
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
 	"github.com/gin-gonic/gin"
@@ -18,25 +19,25 @@ func hello(c *gin.Context) {
 //get all auctions
 func getAllAuctions(c *gin.Context) {
 	allAuctions := data.GetAllAuctions()
-  c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 
 //get auction by id
 func getAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
-  auc := data.GetAuctionById(id)
-	if auc==nil{
-		c.JSON(200, fmt.Sprintf("Given id: %v not found",id))
-    return
+	auc := data.GetAuctionById(id)
+	if auc == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
 	}
-  top5bids := data.GetTopFiveBids(id)
-	if top5bids==nil{
-		c.JSON(200, fmt.Sprintf("Given id: %v not found",id))
-    return
+	top5bids := data.GetTopFiveBids(id)
+	if top5bids == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
 	}
-  c.HTML(http.StatusOK, "auction/index.tmpl", gin.H{
+	c.HTML(http.StatusOK, "auction/index.tmpl", gin.H{
 		"auction": auc,
-		"bids":    top_5_bids,
+		"bids":    top5bids,
 	})
 }
 
@@ -44,9 +45,9 @@ func getAuctionsById(c *gin.Context) {
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	top5bids := data.GetTopFiveBids(id)
-	if top5bids==nil{
-		c.JSON(200, fmt.Sprintf("Given id: %v not found",id))
-    return
+	if top5bids == nil {
+		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		return
 	}
 	c.JSON(200, top5bids)
 }
