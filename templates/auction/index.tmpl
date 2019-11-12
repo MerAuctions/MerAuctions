@@ -11,6 +11,8 @@
 </head>
 
 <body>
+  {{ template "common/navbar.tmpl" }}
+  
   <!-- auction details page -->
   <main class="container">
     <section>
@@ -34,11 +36,11 @@
   <script type="text/javascript" src="/js/materialize.min.js"></script>
   <script type="text/javascript">
     var debug = {{ . }};
-    var auction_id = "{{ .auctionID }}";
-    var end_time = new Date({{ .auction.EndTime }});
-    updateTimer();
-    var end_timer = setInterval(updateTimer, 1000);
-    var bid_timer = setInterval(updateBids, 10000);
+    var auction_id = "{{ .auctionID }}" | "1";
+    var end_time = new Date(1000 * {{ .auction.EndTime }});
+
+    var end_timer;
+    var bid_timer;
 
     function updateTimer() {
       var now = new Date();
@@ -48,6 +50,7 @@
         $('#end-timer').hide();
         clearInterval(end_timer)
         clearInterval(bid_timer)
+        // TODO: get the auction result
       }
       setEndTime(time_remain);
     }
@@ -59,7 +62,7 @@
       var m = t % 60;
       t = Math.floor(t / 60);
       var h = t;
-      $("#end-timer").html(`${h}h ${m}m ${s}s`);
+      $("#end-timer").html(`End after ${h}h ${m}m ${s}s`);
     }
 
     function updateBids() {
@@ -135,6 +138,10 @@
     }
     $(document).ready(function(){
       $('.modal').modal();
+      updateTimer();
+      updateBids();
+      end_timer = setInterval(updateTimer, 1000);
+      bid_timer = setInterval(updateBids, 10000);
     });
   </script>
 </body>

@@ -1,15 +1,15 @@
 {{ define "auction/post.tmpl" }}
 <div class="row">
   {{ if .isUserSignedIn }}
-    <div class="input-field col s6">
-      <input id="input-price" type="text" class="validate">
-      <label for="input-price">Price</label>
-    </div>
+  <div class="input-field col s6">
+    <input id="input-price" type="text" class="validate">
+    <label for="input-price">Price</label>
+  </div>
   <div class="col s6 post-bid-buttons">
     <a id="submit-button" class="waves-effect waves-light btn" onclick="submitBid();">Submit</a>
   </div>
   {{ else }}
-    <a id="signup-button" class="waves-effect waves-light btn modal-trigger" data-target="signup-modal">Sign Up/Log In</a>
+  <a id="signup-button" class="waves-effect waves-light btn modal-trigger" data-target="signup-modal">Sign Up / Log In</a>
   {{ end }}
   </div>
 </div>

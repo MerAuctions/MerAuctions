@@ -33,7 +33,6 @@ func GetTopFiveBids(auctionID string) *[]models.Bid {
 		return nil //TODO: also give error
 	}
 	bids := *tmp_bids
-	// fmt.Println(bids)
 	sort.SliceStable(bids, func(i, j int) bool {
 		return bids[i].Time > bids[j].Time
 	})

@@ -8,9 +8,6 @@ import (
 //Price of the item or the bid made on the item
 type Price float32
 
-// A unix timestamp in milliseconds, like 1573292410953
-type TimeStamp int64
-
 //User represents the users making the bid
 type User struct {
 	UserID   string

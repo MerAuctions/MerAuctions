@@ -8,13 +8,6 @@
     </tr>
   </thead>
   <tbody id="table-bids-body">
-    {{ range $bid := .bids -}}
-    <tr>
-      <td>{{ $bid.UserID }}</td>
-      <td>{{ $bid.Time }}</td>
-      <td>{{ $bid.Price }}</td>
-    </tr>
-    {{- end }}
   </tbody>
 </table>
 {{ end }}
