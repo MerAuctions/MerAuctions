@@ -34,3 +34,11 @@ body {
 nav {
   font-family: MercariSans-Bold;
 }
+
+.btn {
+  background-color: #4cc9ff;
+}
+
+.card-action a {
+  color: #4cc9ff;
+}
