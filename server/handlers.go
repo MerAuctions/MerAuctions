@@ -59,6 +59,7 @@ func getAuctionsByID(c *gin.Context) {
 		"auction":        auc,
 		"bids":           top5bids,
 		"isUserSignedIn": isUserSignedIn,
+		"auctionID":      auc.AuctionID.Hex(),
 	})
 }
 

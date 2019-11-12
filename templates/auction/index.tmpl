@@ -34,7 +34,7 @@
   <script type="text/javascript" src="/js/materialize.min.js"></script>
   <script type="text/javascript">
     var debug = {{ . }};
-    var auction_id = "{{ .auction.AuctionID }}" | "1";
+    var auction_id = "{{ .auctionID }}";
     var end_time = new Date({{ .auction.EndTime }});
     updateTimer();
     var end_timer = setInterval(updateTimer, 1000);
