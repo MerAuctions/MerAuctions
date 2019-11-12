@@ -115,6 +115,8 @@ func setupRoutes(router *gin.Engine) {
 	router.GET("/auctions/:auction_id/bids", getBidsAuctionsById)
 	router.GET("/auctions/:auction_id/result", getResultByAuctionId)
 
+	router.GET("/db/populate",addDataDB)
+
 	auth := router.Group("")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)

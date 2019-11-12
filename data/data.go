@@ -4,9 +4,11 @@ package data
 import (
 	// "context"
 	"fmt"
-	// "log"
+	"log"
 	"sort"
 	"time"
+	"io/ioutil"
+	"encoding/json"
 
 	"github.com/MerAuctions/MerAuctions/db"
 	"github.com/MerAuctions/MerAuctions/models"
@@ -136,6 +138,35 @@ func GetUserById(id string) (*models.User, error) {
 	}
 	return usr, nil
 }
+
+//this will populate the db
+func PopulateDB() bool{
+	var auc models.AuctionList
+	file, err := ioutil.ReadFile("./server/seed-data/auctions.json")
+	if err != nil {
+		log.Fatal("Error reading auctions.json : ", err.Error())
+	}
+	// fmt.Println(string(file))
+	json.Unmarshal([]byte(file), &auc)
+
+	// deleting all the data it exists before
+	err = DBclient.DeleteAllCollections()
+	if err != nil {
+		log.Fatal("Error in deleting pre-existing data : ", err.Error())
+	}
+	
+	//setting the time for different aucitons
+	auc[0].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
+	auc[1].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
+	auc[2].EndTime = int64(time.Now().Add(time.Minute * 5 ).Unix())
+	err = DBclient.InsertAuctions(&auc)
+	if err != nil {
+		log.Fatal("Error populating auctions.json : ", err.Error())
+	}
+	return true
+
+}
+
 
 //
 // func main(){
