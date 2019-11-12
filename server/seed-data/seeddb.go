@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"io/ioutil"
 	"log"
 
@@ -67,10 +68,13 @@ func RemoveBidsFromDB() {
 }
 
 func main() {
-	dbURL := "mongodb://localhost:27017"
-	dbName := "testing"
+	dbURL := flag.String("mongodb-url", "mongodb://localhost:27017", "URL to connet to mongodb database")
+	dbName := flag.String("database", "testing", "Database name in mongodb")
+	flag.Parse()
 
-	server.ConnectToDB(dbURL, dbName)
+	server.ConnectToDB(*dbURL, *dbName)
+	if err := data.DBclient.DeleteAllCollections(); err != nil {
+		log.Fatal("Could not delete all collections in database")
+	}
 	InsertAuctionsToDB()
-	InsertBidsToDB()
 }

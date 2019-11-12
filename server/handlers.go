@@ -92,7 +92,7 @@ func addNewUser(c *gin.Context) {
 		token, _, _ := authMiddleware.TokenGenerator(&usr)
 		log.Println("cookie token ", token)
 		//TODO fix domain name
-		c.SetCookie("token", token, 60*60, "/", "localhost", false, false)
+		c.SetCookie("token", token, 60*60, "/", "", false, false)
 		c.String(200, fmt.Sprintf("User Successfully added"))
 	} else {
 		log.Println("User already exists")

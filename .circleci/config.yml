@@ -7,7 +7,11 @@ executors:
   golang:
     docker:
     - image: circleci/golang:1.13.4
-      
+  golang-mongo:
+    docker:
+    - image: circleci/golang:1.13.4
+    - image: circleci/mongo:4.2.1
+
 jobs:
   build:
     executor: golang
@@ -18,7 +22,7 @@ jobs:
           command: make build
 
   test:
-    executor: golang
+    executor: golang-mongo
     description: Run go test to run tests
     steps:
       - checkout
