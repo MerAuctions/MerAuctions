@@ -52,7 +52,7 @@
         $('#end-timer').hide();
         clearInterval(end_timer)
         clearInterval(bid_timer)
-        // TODO: get the auction result
+        getAuctionResult();
       }
       setEndTime(time_remain);
     }
@@ -146,6 +146,17 @@
         }
       });
     }
+
+    function getAuctionResult() {
+      $.ajax({
+        url: `/auctions/${auction_id}/result`,
+        method: "GET",
+        success: function (result) {
+          console.log(result);
+        }
+      })
+    }
+
     $(document).ready(function(){
       $('.modal').modal();
       updateTimer();
