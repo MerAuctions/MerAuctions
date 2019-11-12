@@ -29,7 +29,7 @@ func getAuctionsByID(c *gin.Context) {
 	id := c.Param("auction_id")
 	auc := data.GetAuctionById(id)
 	if auc == nil {
-		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
 	fmt.Println("At the start: auction ", auc.AuctionID, " the end")
@@ -38,7 +38,7 @@ func getAuctionsByID(c *gin.Context) {
 	fmt.Println("top 5 bids ", top5bids)
 
 	if top5bids == nil {
-		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
 	isUserSignedIn := false
@@ -68,7 +68,7 @@ func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
 	top5bids := data.GetTopFiveBids(id)
 	if top5bids == nil {
-		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
+		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
 	c.JSON(200, top5bids)
@@ -99,11 +99,34 @@ func addNewUser(c *gin.Context) {
 
 //addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
+
+	isUserSignedIn := false
+	usr_id := ""
+	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
+		if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok && jwtToken.Valid {
+			if userID, ok := claims[jwtIdentityKey].(string); ok == true {
+				if user, _ := data.GetUserById(userID); user != nil {
+					isUserSignedIn = true
+					usr_id = userID
+				}
+			} else {
+				log.Printf("Could not convert claim to string")
+			}
+		} else {
+			log.Printf("Could not extract claims into JWT")
+		}
+	}
+
+	if isUserSignedIn == false {
+		log.Printf("User not logged in because of not signed in.")
+		c.JSON(400, fmt.Sprintf("User is not logged in."))
+		return
+	}
+
 	var newbid models.Bid
 	rawData, _ := c.GetRawData()
 	json.Unmarshal(rawData, &newbid)
 	auc_id := c.Param("auction_id")
-	usr_id := c.Param("user_id")
 
 	newbid.AuctionID = auc_id
 	newbid.UserID = usr_id
@@ -111,8 +134,10 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	//TODO: check for price limits
 	status := data.AddNewBid(&newbid)
 	if status == 0 {
+		log.Printf("User's Bid Successfully added.")
 		c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
 	} else {
+		log.Printf("User's Bid could not be added with status %d.", status)
 		c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
 	}
 }
