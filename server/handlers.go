@@ -32,7 +32,7 @@ func getAuctionsByID(c *gin.Context) {
 		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
-	fmt.Println("At the start: auction",auc)
+	fmt.Println("At the start: auction ",auc.AuctionID," the end")
 
 	top5bids := data.GetTopFiveBids(id)
 	fmt.Println("top 5 bids ",top5bids)
