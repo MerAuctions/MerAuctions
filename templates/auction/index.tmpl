@@ -18,6 +18,7 @@
     <section>
       <!-- auction details -->
       {{ template "auction/details.tmpl" . }}
+      <div id="result" class="flow-text" style="display: none;"></div>
     </section>
     <div class="divider">
 
@@ -52,7 +53,8 @@
         $('#end-timer').hide();
         clearInterval(end_timer)
         clearInterval(bid_timer)
-        // TODO: get the auction result
+        getAuctionResult();
+        return;
       }
       setEndTime(time_remain);
     }
@@ -83,10 +85,11 @@
           $('#table-bids').show();
           $('#text-no-bids').hide();
           for (var bid of result) {
+            var t = new Date(1000 * bid.Time);
             var tr = $('<tr>')
               .append($('<td>').text(bid.UserID))
-              .append($('<td>').text(bid.Time))
-              .append($('<td>').text(bid.Price))
+              .append($('<td>').text(t.toLocaleString()))
+              .append($('<td>').text('$' +bid.Price))
             $('#table-bids-body').append(tr);
           }
         },
@@ -103,23 +106,25 @@
             html: "incorrect bid value"
           });
       } else {
-          $.ajax({
-            url: `/auctions/${auction_id}/bids`,
-            method: 'POST',
-            success: function (result) {
-              updateBids();
-              M.toast({
-                html: result
-              });
-            },
-            error: function (jqXHR, exception) {
-              M.toast({
-                html: JSON.parse(jqXHR.responseText)["message"]
-              });
-            },
-            data: {
-              price: price
-            }
+        $.ajax({
+          url: `/auctions/${auction_id}/bids`,
+          method: 'POST',
+          datatype: "json",
+          contentType: 'application/json',
+              success: function (result) {
+                updateBids();
+                M.toast({
+                  html: result
+                });
+              },
+              error: function (jqXHR, exception) {
+                M.toast({
+                  html: JSON.parse(jqXHR.responseText)["message"]
+                });
+              },
+              data: JSON.stringify({
+                price: price
+              })
           });
       }
     }
@@ -151,26 +156,48 @@
     }
 
     function signUp() {
-      var user_id = $('#input-username').val();
+      var user_id = $('#signup-input-username').val();
+      var pwd = $('#signup-input-password').val();
       $.ajax({
         url: `/users`,
         method: 'POST',
+        datatype: "json",
+        contentType: 'application/json',
         success: function (result) {
           M.toast({
             html: "Successfully signed up"
           });
-          location.reload();
+          setTimeout(function () {
+            location.reload();
+          }, 500);
         },
         error: function (jqXHR, exception) {
           M.toast({
             html: JSON.parse(jqXHR.responseText)["message"]
           });
         },
-        data: {
-          user_id: user_id
-        }
+        data: JSON.stringify({
+          user_id: user_id,
+          pwd : pwd
+        })
       });
     }
+
+    function getAuctionResult() {
+      $.ajax({
+        url: `/auctions/${auction_id}/result`,
+        method: "GET",
+        success: function (result) {
+          console.log(result);
+          $('#result').html(`Auction has ended. The winner is ${result.WinnerID} who gave a price of \$${result.Price}.`);
+          $('#result').show();
+        },
+        error: function (result) {
+          alert(result);
+        }
+      })
+    }
+
     $(document).ready(function(){
       $('.modal').modal();
       updateTimer();
