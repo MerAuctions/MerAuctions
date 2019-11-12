@@ -73,6 +73,8 @@ func main() {
 	flag.Parse()
 
 	server.ConnectToDB(*dbURL, *dbName)
-	RemoveAuctionsFromDB()
+	if err := data.DBclient.DeleteAllCollections(); err != nil {
+		log.Fatal("Could not delete all collections in database")
+	}
 	InsertAuctionsToDB()
 }

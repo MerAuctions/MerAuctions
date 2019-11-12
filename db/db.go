@@ -48,6 +48,34 @@ func ConnectDB(url string, db string) *DBClient {
 }
 
 //Insert a user in db
+func (c *DBClient) DeleteAllCollections() error {
+	if err := c.client.Database(c.DBname).Collection("users").Drop(context.TODO()); err != nil {
+		if err != nil {
+			fmt.Println("Could not drop users collection in database")
+			return err
+		}
+	}
+	fmt.Println("Dropped users collection from database")
+
+	if err := c.client.Database(c.DBname).Collection("bids").Drop(context.TODO()); err != nil {
+		if err != nil {
+			fmt.Println("Could not drop bids collection in database")
+			return err
+		}
+	}
+	fmt.Println("Dropped bids collection from database")
+
+	if err := c.client.Database(c.DBname).Collection("auctions").Drop(context.TODO()); err != nil {
+		if err != nil {
+			fmt.Println("Could not drop auctions collection in database")
+			return err
+		}
+	}
+	fmt.Println("Dropped auctions collection from database")
+	return nil
+}
+
+//Insert a user in db
 func (c *DBClient) InsertUser(usr *models.User) error {
 	collection := c.client.Database(c.DBname).Collection("users")
 	insertResult, err := collection.InsertOne(context.TODO(), usr)
