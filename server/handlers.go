@@ -32,8 +32,11 @@ func getAuctionsByID(c *gin.Context) {
 		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
+	fmt.Println("At the start: auction ", auc.AuctionID, " the end")
 
 	top5bids := data.GetTopFiveBids(id)
+	fmt.Println("top 5 bids ", top5bids)
+
 	if top5bids == nil {
 		c.JSON(200, fmt.Sprintf("Given id: %v not found", id))
 		return
@@ -56,6 +59,7 @@ func getAuctionsByID(c *gin.Context) {
 		"auction":        auc,
 		"bids":           top5bids,
 		"isUserSignedIn": isUserSignedIn,
+		"auctionID":      auc.AuctionID.Hex(),
 	})
 }
 
@@ -95,8 +99,8 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	auc_id := c.Param("auction_id")
 	usr_id := c.Param("user_id")
 
-	newbid.AuctionID = models.ID(auc_id)
-	newbid.UserID = models.ID(usr_id)
+	newbid.AuctionID = auc_id
+	newbid.UserID = usr_id
 
 	//TODO: check for price limits
 	status := data.AddNewBid(&newbid)
