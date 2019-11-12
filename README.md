@@ -24,11 +24,6 @@ ps -ef | grep mongod #check if mongodb is working
 go run cmd/auctions/merauctions.go --mongodb-url=mongodb://localhost:27017/testing --database=testing
 ```
 * If you want to populate initial data you can run `cd server/seed-data/ && go run seeddb.go`
-## Minimal Viable Product (MVP) [Using a User Story]
-
-
-## Essential Features
-
 
 ## Technologies Used
 ### Front-end
