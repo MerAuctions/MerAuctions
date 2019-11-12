@@ -1,0 +1,35 @@
+{{ define "auction_list/index.tmpl" }}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="/css/materialize.min.css" media="screen,projection" />
+  <link type="text/css" rel="stylesheet" href="/css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>merauc</title>
+</head>
+
+<body>
+  {{ template "common/navbar.tmpl" }}
+  <!-- auction list page -->
+  <main class="container">
+    <section>
+      <div class="row">
+
+        {{ range $auction := . -}}
+        {{ template "auction_list/card.tmpl" $auction }}
+        {{- end }}
+
+      </div>
+    </section>
+  </main>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/js/materialize.min.js"></script>
+  <script type="text/javascript">
+
+  </script>
+</body>
+
+</html>
+{{ end }}

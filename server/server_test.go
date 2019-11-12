@@ -18,6 +18,10 @@ import (
 	. "github.com/MerAuctions/MerAuctions/server"
 )
 
+func init() {
+	gin.SetMode(gin.TestMode)
+}
+
 func performRequest(r http.Handler, method, path string, body []byte) *httptest.ResponseRecorder {
 	req, _ := http.NewRequest(method, path, bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")

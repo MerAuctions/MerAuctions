@@ -1,0 +1,64 @@
+{{ define "auction/post.tmpl" }}
+<h5>Participate in auction</h5>
+<div class="row">
+  {{ if .isUserSignedIn }}
+  <div class="input-field col s6">
+    <input id="input-price" type="text" class="validate">
+    <label for="input-price">Price</label>
+  </div>
+  <div class="col s6 post-bid-buttons">
+    <a id="submit-button" class="waves-effect waves-light btn" onclick="submitBid();">Submit</a>
+  </div>
+  {{ else }}
+  <a id="signup-button" class="waves-effect waves-light btn modal-trigger" data-target="signup-modal">Sign up</a>
+  <a id="signin-button" class="waves-effect waves-light btn modal-trigger" data-target="signin-modal">Login</a>
+  {{ end }}
+  </div>
+</div>
+
+<div id="signup-modal" class="modal">
+  <div class="modal-content">
+    <h4>New User Registration</h4>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <input id="signup-input-username" type="text" class="validate">
+        <label for="signup-input-username">Enter new user ID...</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <input id="signup-input-password" type="password" class="validate">
+        <label for="signup-input-password">Enter your password...</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <a href="#!" class="waves-effect waves-light btn" onclick="signUp();">Sign Up</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="signin-modal" class="modal">
+  <div class="modal-content">
+    <h4>Login</h4>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <input id="login-input-username" type="text" class="validate">
+        <label for="login-input-username">Enter existing user ID...</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <input id="login-input-password" type="password" class="validate">
+        <label for="login-input-password">Enter your password...</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <a href="#!" class="waves-effect waves-light btn" onclick="login();">Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}
