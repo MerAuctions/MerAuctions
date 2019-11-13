@@ -1,5 +1,5 @@
 # MerAuctions
-
+ 
 [![CircleCI](https://circleci.com/gh/MerAuctions/MerAuctions/tree/master.svg?style=svg)](https://circleci.com/gh/MerAuctions/MerAuctions/tree/master)
 
 ### Mercari Greenfield Project by [Harsh](https://github.com/sipian), [Deepak](https://github.com/deepakbhatt329), [Vamshi](https://github.com/vamshiteja) & [Bowei](https://github.com/b-z)

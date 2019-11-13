@@ -158,7 +158,7 @@ func PopulateDB() bool{
 	//setting the time for different aucitons
 	auc[0].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
 	auc[1].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
-	auc[2].EndTime = int64(time.Now().Add(time.Minute * 5 ).Unix())
+	auc[2].EndTime = int64(time.Now().Add(time.Minute * 2 ).Unix())
 	err = DBclient.InsertAuctions(&auc)
 	if err != nil {
 		log.Fatal("Error populating auctions.json : ", err.Error())
