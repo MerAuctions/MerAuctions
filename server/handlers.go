@@ -15,6 +15,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var maxBidsToRewards int = 5
+
+
 func hello(c *gin.Context) {
 	c.String(200, "Hello World")
 }
@@ -185,4 +188,40 @@ func addDataDB(c *gin.Context) {
 		c.String(200,"DB is populated Successfully")
 	}
 
+}
+
+//addRewardsToUsers is handler function to offer rewards when the auction ends
+func addRewardsToUsers(c *gin.Context) {
+	id := c.Param("auction_id")
+
+	bids := data.GetAllSortedBidsForAuction(id)
+	userBidFreq := make(map[string]int)
+
+
+	for _, bid := range bids {
+		freq, ok := userBidFreq[bid.UserID]
+		if ok == false {
+			userBidFreq[bid.UserID] = 1
+		} else {
+			userBidFreq[bid.UserID] = freq + 1
+		}
+
+		if freq <= maxBidsToRewards + 1 {
+			//c.JSON(200, "got in")
+			points := int64(1 * bid.Price)
+			err := data.UpdateUser(bid.UserID, points)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+
+
+	//for _, bid := range bids {
+	//	usr, _ := data.GetUserById(bid.UserID)
+	//	fmt.Println(usr)
+	//	c.JSON(200, usr)
+	//}
+
+	c.JSON(200, bids)
 }

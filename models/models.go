@@ -13,6 +13,7 @@ type User struct {
 	UserID   string `json:"user_id, string"`
 	UserName string
 	Password string `json:"pwd, string"`
+	Points int64     `json:"Points int64"`
 }
 
 //Bid represents a single bid in an Auction

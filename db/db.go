@@ -5,13 +5,12 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
-
 	"github.com/MerAuctions/MerAuctions/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
 
 type DBClient struct {
@@ -98,6 +97,7 @@ func (c *DBClient) InsertBid(bid *models.Bid) error {
 	fmt.Println("Inserted bid: ", insertResult.InsertedID)
 	return err
 }
+
 
 func (c *DBClient) InsertBids(bids *models.BidList) error {
 	collection := c.client.Database(c.DBname).Collection("bids")
@@ -269,6 +269,27 @@ func (c *DBClient) Getuser(id string) (*models.User, error) {
 
 	return &user, nil
 }
+
+//Update User in db by UserID
+func (c *DBClient) UpdateUser(userID string, points int64) error {
+	collection := c.client.Database(c.DBname).Collection("users")
+
+	filter := bson.D{{"userid", userID}}
+	update := bson.D{
+		{"$inc", bson.D{
+			{"points", points},
+		}},
+	}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+
 // // Following is for testing the db locally
 // func main(){
 //   dbclient := ConnectDB("mongodb://localhost:27017","test7")
