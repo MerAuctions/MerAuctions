@@ -6,7 +6,8 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOMOD=$(GOCMD) mod
 BINARY_NAME=merauction
-CLUSTER_NAME=merauction
+CLUSTER_NAME=merauc-cluster-1
+REGION=asia-northeast1
 DB_PASSWORD = ${MONGODB_PASSWORD}
 
 all: test build
@@ -26,14 +27,14 @@ deps:
 docker: docker-push
 
 docker-build:
-		docker build -t gcr.io/kouzoh-p-harsh/merauctions:v0.1 .
+		docker build -t gcr.io/kouzoh-p-s-liu/merauctions:v0.1 .
 
 docker-push: docker-build
-		docker push gcr.io/kouzoh-p-harsh/merauctions:v0.1
+		docker push gcr.io/kouzoh-p-s-liu/merauctions:v0.1
 
 cluster-create:
 	gcloud container clusters create merauction --num-nodes=2 --machine-type=g1-small
 
 kubernetes-build:
-	gcloud container clusters get-credentials $(CLUSTER_NAME)
+	gcloud container clusters get-credentials $(CLUSTER_NAME)  --region=$(REGION)
 	kubectl apply -f kubernetes
