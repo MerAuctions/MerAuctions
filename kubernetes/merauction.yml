@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: merauctions-app
-          image: gcr.io/kouzoh-p-harsh/merauctions:v0.1
+          image: gcr.io/kouzoh-p-s-liu/merauctions:v0.1
           command: [ "/app/merauction" ]
           args: [
           "--mongodb-url=mongodb://mongo-service:27017/testing",
