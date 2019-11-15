@@ -6,13 +6,14 @@ import (
 )
 
 //Price of the item or the bid made on the item
-type Price float64
+type Price int64
 
 //User represents the users making the bid
 type User struct {
 	UserID   string `json:"user_id, string"`
 	UserName string
 	Password string `json:"pwd, string"`
+	Points   int    `json:"Points int"`
 	Interest []string
 }
 
@@ -27,7 +28,8 @@ type Bid struct {
 
 //Auction represents a single auction
 type Auction struct {
-	AuctionID   primitive.ObjectID `bson:"_id, omitempty"`
+	AuctionID primitive.ObjectID `bson:"_id, omitempty"`
+	// AuctionID   primitive.ObjectID
 	Title       string
 	Image       []string // image encode in base64
 	Tag         []string
@@ -39,11 +41,18 @@ type Auction struct {
 //AuctionList is a list of auctions
 type AuctionList []Auction
 
+// Result to store the result of an auction
 type Result struct {
 	AuctionID string
 	WinnerID  string
 	Price     Price
 }
 
-//List of bids
+// Response stores response of /auction/create endpoint
+type Response struct {
+	Message string
+	Auction Auction
+}
+
+//BidList to store List of bids
 type BidList []Bid

@@ -2,13 +2,12 @@ package data
 
 // package main
 import (
-	// "context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"sort"
 	"time"
-	"io/ioutil"
-	"encoding/json"
 
 	"github.com/MerAuctions/MerAuctions/db"
 	"github.com/MerAuctions/MerAuctions/models"
@@ -45,6 +44,20 @@ func GetTopFiveBids(auctionID string) *[]models.Bid {
 	return &result
 }
 
+// This function returns all the bids for an auction by price sorted
+func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
+	tmp_bids, err := DBclient.GetBids(auctionID)
+	if err != nil {
+		return nil //TODO: also give error
+	}
+	bids := *tmp_bids
+	sort.SliceStable(bids, func(i, j int) bool {
+		return bids[i].Time > bids[j].Time
+	})
+
+	return bids
+}
+
 func AddNewUser(usr *models.User) int {
 	_, err := DBclient.Getuser(string(usr.UserID))
 	if err == nil {
@@ -58,6 +71,40 @@ func AddNewUser(usr *models.User) int {
 		return 2 //TODO: discuss which status code to give
 	}
 
+	return 0
+}
+
+//This function returns User by UserID
+func GetUserByID(userID string) models.User {
+	temp_user, err := DBclient.Getuser(userID)
+	if err != nil {
+		log.Fatal("User not Found!")
+	}
+	user := *temp_user
+	return user
+}
+
+//This function updates an User details by ID
+func UpdateUser(userID string, points int) error {
+	return DBclient.UpdateUser(userID, points)
+}
+
+func AddNewAuction(auction *models.Auction) int {
+	if auction.Title == "" {
+		log.Println("Invalid Auction Title")
+		return 2
+	} else if len(auction.Image) == 0 {
+		log.Println("Please upload auction image")
+		return 3
+	}
+
+	err := DBclient.InsertAuction(auction)
+	if err != nil {
+		log.Fatal("Error in creating new auction")
+		return 1
+	}
+
+	log.Println("Auction created successfully")
 	return 0
 }
 
@@ -140,7 +187,7 @@ func GetUserById(id string) (*models.User, error) {
 }
 
 //this will populate the db
-func PopulateDB() bool{
+func PopulateDB() bool {
 	var auc models.AuctionList
 	file, err := ioutil.ReadFile("./server/seed-data/auctions.json")
 	if err != nil {
@@ -154,11 +201,11 @@ func PopulateDB() bool{
 	if err != nil {
 		log.Fatal("Error in deleting pre-existing data : ", err.Error())
 	}
-	
+
 	//setting the time for different aucitons
-	auc[0].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
-	auc[1].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
-	auc[2].EndTime = int64(time.Now().Add(time.Minute * 2 ).Unix())
+	auc[0].EndTime = int64(time.Now().Add(time.Hour * 2).Unix())
+	auc[1].EndTime = int64(time.Now().Add(time.Hour * 2).Unix())
+	auc[2].EndTime = int64(time.Now().Add(time.Minute * 2).Unix())
 	err = DBclient.InsertAuctions(&auc)
 	if err != nil {
 		log.Fatal("Error populating auctions.json : ", err.Error())
@@ -166,7 +213,6 @@ func PopulateDB() bool{
 	return true
 
 }
-
 
 //
 // func main(){

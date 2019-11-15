@@ -40,4 +40,4 @@ kubernetes-build:
 	kubectl apply -f kubernetes
 
 kubernetes-delete:
-	gcloud container clusters delete $(CLUSTER_NAME)  --region=$(ZONE)
+	gcloud container clusters delete $(CLUSTER_NAME)  --zone=$(ZONE)

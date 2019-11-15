@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
+
 	// "io/ioutil"
 
 	"github.com/MerAuctions/MerAuctions/data"
@@ -14,6 +16,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
+
+var maxBidsToRewards int = 5
 
 func hello(c *gin.Context) {
 	c.String(200, "Hello World")
@@ -101,6 +105,33 @@ func addNewUser(c *gin.Context) {
 
 }
 
+func createAuction(c *gin.Context) {
+	var newAuction models.Auction
+	var response models.Response
+	var responseCode int
+
+	c.ShouldBindJSON(&newAuction)
+
+	status := data.AddNewAuction(&newAuction)
+	response.Auction = newAuction
+
+	if status == 0 {
+		response.Message = "Auction Successfully created."
+		responseCode = 200
+	} else if status == 2 {
+		response.Message = "Invalid Auction Title"
+		responseCode = 500
+	} else if status == 3 {
+		response.Message = "Please upload auction image"
+		responseCode = 500
+	} else {
+		response.Message = "Error in creating new auction"
+		responseCode = 500
+	}
+
+	c.JSON(responseCode, response)
+}
+
 //addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
 
@@ -179,10 +210,68 @@ func getResultByAuctionId(c *gin.Context) {
 //this will populate the db
 func addDataDB(c *gin.Context) {
 	ok := data.PopulateDB()
-	if ok==false{
-		c.String(400,"Can't populate DB")
-	}else {
-		c.String(200,"DB is populated Successfully")
+	if ok == false {
+		c.String(400, "Can't populate DB")
+	} else {
+		c.String(200, "DB is populated Successfully")
 	}
 
+}
+
+//addRewardsToUsers is handler function to offer rewards when the auction ends
+func addRewardsToUsers(c *gin.Context) {
+	rewardPercentage := 0.005
+	id := c.Param("auction_id")
+	auc := data.GetAuctionById(id)
+
+	bids := data.GetAllSortedBidsForAuction(id)
+	userBidFreq := make(map[string]int)
+
+	for _, bid := range bids {
+		freq, ok := userBidFreq[bid.UserID]
+		if ok == false {
+			userBidFreq[bid.UserID] = 1
+		} else {
+			userBidFreq[bid.UserID] = freq + 1
+		}
+
+		if freq <= maxBidsToRewards+1 {
+			pointsForBidPrice := (rewardPercentage * float64(bid.Price))
+			pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
+
+			//TODO after auction creation done
+			//pointsFromTime := float64(duration*60/(auc.EndTime - bid.Time))
+
+			points := int(pointsForHighBid * pointsForBidPrice)
+			if points <= 0 {
+				continue
+			} else {
+				err := data.UpdateUser(bid.UserID, points)
+				if err != nil {
+					c.JSON(404, fmt.Sprint("User Not Found!"))
+				}
+			}
+		}
+	}
+
+	c.JSON(200, "Bidders are rewarded!")
+
+}
+
+func uploadPicture(c *gin.Context) {
+	name := c.PostForm("name")
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+		return
+	}
+
+	filename := filepath.Base(file.Filename)
+	if err := c.SaveUploadedFile(file, "media/images/"+filename); err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
+		return
+	}
+
+	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully with fields name=%s", file.Filename, name))
 }
