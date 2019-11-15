@@ -207,12 +207,10 @@ func addRewardsToUsers(c *gin.Context) {
 		}
 
 		if freq <= maxBidsToRewards + 1 {
-			//c.JSON(200, "got in")
 			points := int64(0.005 * bid.Price)
-			fmt.Println(bid.UserID, ":", points)
 			err := data.UpdateUser(bid.UserID, points)
 			if err != nil {
-				fmt.Println(err)
+				c.JSON(404, fmt.Sprint("User Not Found!"))
 			}
 		}
 	}

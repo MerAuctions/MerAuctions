@@ -77,7 +77,7 @@ func AddNewUser(usr *models.User) int {
 
 //This function returns User by UserID
 func GetUserByID(userID string) models.User {
-	temp_user, _ := DBclient.Getuser(userID)
+	temp_user, err := DBclient.Getuser(userID)
 	user := *temp_user
 	return user
 }
