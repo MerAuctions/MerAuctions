@@ -13,13 +13,15 @@ type User struct {
 	UserID   string `json:"user_id, string"`
 	UserName string
 	Password string `json:"pwd, string"`
+	Interest []string
 }
 
 //Bid represents a single bid in an Auction
 type Bid struct {
 	AuctionID string
 	UserID    string
-	Price     Price 
+	Price     Price
+	Count     int
 	Time      int64
 }
 
@@ -27,8 +29,10 @@ type Bid struct {
 type Auction struct {
 	AuctionID   primitive.ObjectID `bson:"_id, omitempty"`
 	Title       string
-	Image       string // image encode in base64
+	Image       []string // image encode in base64
+	Tag         []string
 	Description string
+	BasePrice   Price
 	EndTime     int64
 }
 
