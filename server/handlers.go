@@ -197,7 +197,6 @@ func addDataDB(c *gin.Context) {
 //addRewardsToUsers is handler function to offer rewards when the auction ends
 func addRewardsToUsers(c *gin.Context) {
 	rewardPercentage := 0.005
-	rewardThreshold := 2
 	id := c.Param("auction_id")
 	auc := data.GetAuctionById(id)
 
@@ -214,7 +213,7 @@ func addRewardsToUsers(c *gin.Context) {
 
 		if freq <= maxBidsToRewards + 1 {
 			pointsForBidPrice := (rewardPercentage * float64(bid.Price))
-			pointsForHighBid := float64(bid.Price - rewardThreshold * auc.BasePrice) / float64(rewardThreshold * auc.BasePrice)
+			pointsForHighBid := float64(bid.Price - 2 * auc.BasePrice) / float64(2 * auc.BasePrice)
 
 			//TODO after auction creation done
 			//pointsFromTime := float64(duration*60/(auc.EndTime - bid.Time))
@@ -230,12 +229,6 @@ func addRewardsToUsers(c *gin.Context) {
 			}
 		}
 	}
-
-	usrId1 := "shashank"
-	usrId2 := "shas"
-	fmt.Println(data.GetUserById(usrId1))
-	fmt.Println(data.GetUserById(usrId2))
-
 
 	c.JSON(200, "Bidders are rewarded!")
 }
