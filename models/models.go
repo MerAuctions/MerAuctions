@@ -22,8 +22,8 @@ type Bid struct {
 	AuctionID string
 	UserID    string
 	Price     Price
-	Time      int64
 	Count     int
+	Time      int64
 }
 
 //Auction represents a single auction
@@ -32,8 +32,8 @@ type Auction struct {
 	// AuctionID   primitive.ObjectID
 	Title       string
 	Image       []string // image encode in base64
-	Description string
 	Tag         []string
+	Description string
 	BasePrice   Price
 	EndTime     int64
 }
