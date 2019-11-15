@@ -3,7 +3,6 @@ package data
 // package main
 import (
 	"encoding/json"
-	// "context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -88,6 +87,25 @@ func GetUserByID(userID string) models.User {
 //This function updates an User details by ID
 func UpdateUser(userID string, points int) error {
 	return DBclient.UpdateUser(userID, points)
+}
+
+func AddNewAuction(auction *models.Auction) int {
+	if auction.Title == "" {
+		log.Println("Invalid Auction Title")
+		return 2
+	} else if len(auction.Image) == 0 {
+		log.Println("Please upload auction image")
+		return 3
+	}
+
+	err := DBclient.InsertAuction(auction)
+	if err != nil {
+		log.Fatal("Error in creating new auction")
+		return 1
+	}
+
+	log.Println("Auction created successfully")
+	return 0
 }
 
 func AddNewBid(bid *models.Bid) int {

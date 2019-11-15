@@ -6,7 +6,7 @@ import (
 )
 
 //Price of the item or the bid made on the item
-type Price int
+type Price int64
 
 //User represents the users making the bid
 type User struct {
@@ -46,6 +46,12 @@ type Result struct {
 	AuctionID string
 	WinnerID  string
 	Price     Price
+}
+
+// Response stores response of /auction/create endpoint
+type Response struct {
+	Message string
+	Auction Auction
 }
 
 //BidList to store List of bids
