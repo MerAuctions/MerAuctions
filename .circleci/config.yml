@@ -6,11 +6,11 @@ orbs:
 executors:
   golang:
     docker:
-    - image: circleci/golang:1.13.4
+      - image: circleci/golang:1.13.4
   golang-mongo:
     docker:
-    - image: circleci/golang:1.13.4
-    - image: circleci/mongo:4.2.1
+      - image: circleci/golang:1.13.4
+      - image: circleci/mongo:4.2.1
 
 jobs:
   build:
@@ -44,10 +44,10 @@ jobs:
       - gcp-gke/install
       - gcp-gke/init
       - gcp-gke/rollout-image:
-          cluster: merauction
+          cluster: merauc-cluster-1
           deployment: merauctions-deployment
           container: merauctions-app
-          image: gcr.io/kouzoh-p-harsh/merauctions:v0.1
+          image: gcr.io/kouzoh-p-s-liu/merauctions:v0.1
       - run:
           command: kubectl rollout restart deployment/merauctions-deployment
 
