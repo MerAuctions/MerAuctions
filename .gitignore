@@ -14,7 +14,7 @@
 # CI built binary
 merauction
 *.DS_Store
-**/.idea
+.idea/
 
 # media files
 media
