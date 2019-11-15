@@ -101,6 +101,33 @@ func addNewUser(c *gin.Context) {
 
 }
 
+func createAuction(c *gin.Context) {
+	var newAuction models.Auction
+	var response models.Response
+	var responseCode int
+
+	c.ShouldBindJSON(&newAuction)
+
+	status := data.AddNewAuction(&newAuction)
+	response.Auction = newAuction
+
+	if status == 0 {
+		response.Message = "Auction Successfully created."
+		responseCode = 200
+	} else if status == 2 {
+		response.Message = "Invalid Auction Title"
+		responseCode = 500
+	} else if status == 3 {
+		response.Message = "Please upload auction image"
+		responseCode = 500
+	} else {
+		response.Message = "Error in creating new auction"
+		responseCode = 500
+	}
+
+	c.JSON(responseCode, response)
+}
+
 //addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
 
@@ -179,10 +206,10 @@ func getResultByAuctionId(c *gin.Context) {
 //this will populate the db
 func addDataDB(c *gin.Context) {
 	ok := data.PopulateDB()
-	if ok==false{
-		c.String(400,"Can't populate DB")
-	}else {
-		c.String(200,"DB is populated Successfully")
+	if ok == false {
+		c.String(400, "Can't populate DB")
+	} else {
+		c.String(200, "DB is populated Successfully")
 	}
 
 }
