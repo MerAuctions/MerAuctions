@@ -108,6 +108,7 @@ func setupRoutes(router *gin.Engine) {
 	router.Static("/js", "./static/js")
 	router.Static("/css", "./static/css")
 	router.Static("/fonts", "./static/fonts")
+	router.Static("/images", "./media/images")
 
 	router.GET("/hello", hello)
 	router.GET("/", getAllAuctions)
@@ -123,4 +124,6 @@ func setupRoutes(router *gin.Engine) {
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 
 	auth.POST("/auctions/:auction_id/bids", addBidAuctionIdByUserId)
+
+	router.POST("/upload", uploadPicture)
 }
