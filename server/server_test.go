@@ -44,6 +44,10 @@ func InsertAuctionsToDB() *models.AuctionList {
 	return &auc
 }
 
+// func GetAuctions() *models.AuctionList {
+//
+// }
+
 func RemoveAuctionsFromDB() {
 	var auc models.AuctionList
 	file, err := ioutil.ReadFile("./seed-data/auctions.json")
@@ -149,6 +153,23 @@ var _ = Describe("Server", func() {
 			Expect(receivedBidsList).To(Equal(returnedBids))
 		})
 	})
+
+	// Describe("The POST auctions/create endpoint", func() {
+	// 	var newAuction models.Auction
+	// 	getAuction
+	// 	BeforeEach(func() {
+	// 		var data []byte
+	// 		response = performRequest(router, "POST", "/auctions/create", data)
+	// 	})
+	// 	It("Returns with Status 200", func() {
+	// 		Expect(response.Code).To(Equal(200))
+	// 	})
+	// 	It("Returns top 5 bids of running auction 5dca6431de52283587609581", func() {
+	// 		var auction models.Auction
+	// 		json.Unmarshal(response.Body.Bytes(), &auction)
+	// 		Expect(auction).To(Equal(newAuction))
+	// 	})
+	// })
 
 	// Describe("The POST /users endpoint", func() {
 	// 	BeforeEach(func() {

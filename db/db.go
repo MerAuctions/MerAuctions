@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/MerAuctions/MerAuctions/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -172,13 +173,18 @@ func (c *DBClient) InsertAuctions(auctions *models.AuctionList) error {
 }
 
 func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
+	ctx, _ := context.WithTimeout(context.Background(), 1000*time.Second)
 	collection := c.client.Database(c.DBname).Collection("auctions")
-	for _, auc := range *auctions {
-		_, err := collection.DeleteOne(context.TODO(), auc)
-		if err != nil {
-			// log.Fatal(err)
-			return err
-		}
+	_, err := collection.DeleteMany(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+		return err
+		// for _, auc := range *auctions {
+		// 	_, err := collection.DeleteOne(context.TODO(), auc)
+		// 	if err != nil {
+		// 		// log.Fatal(err)
+		// 		return err
+		// 	}
 	}
 	fmt.Println("Deleted all auctions")
 	return nil
@@ -269,6 +275,7 @@ func (c *DBClient) Getuser(id string) (*models.User, error) {
 
 	return &user, nil
 }
+
 // // Following is for testing the db locally
 // func main(){
 //   dbclient := ConnectDB("mongodb://localhost:27017","test7")
