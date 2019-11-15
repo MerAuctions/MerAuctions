@@ -1,19 +1,23 @@
 [
     {
         "UserID" : "vamshi",
-        "UserName" : "vamshi"
+        "UserName" : "vamshi",
+        "Points" : 0
     },
     {
         "UserID" : "deepak",
-        "UserName" : "deepak"
+        "UserName" : "deepak",
+        "Points" : 0
     },
     {
         "UserID" : "deepak",
-        "UserName" : "deepak"
+        "UserName" : "deepak",
+        "Points" : 0
     },
     {
         "UserID" : "harsh",
-        "UserName" : "harsh"
+        "UserName" : "harsh",
+        "Points" : 0
     }
 
 ]
