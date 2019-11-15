@@ -44,9 +44,17 @@ func InsertAuctionsToDB() *models.AuctionList {
 	return &auc
 }
 
-// func GetAuctions() *models.AuctionList {
-//
-// }
+func GetAuctions() *models.AuctionList {
+	var auc models.AuctionList
+	file, err := ioutil.ReadFile("./seed-data/auctions.json")
+	if err != nil {
+		log.Fatal("Error reading auctions.json : ", err.Error())
+	}
+	// fmt.Println(string(file))
+	json.Unmarshal([]byte(file), &auc)
+
+	return &auc
+}
 
 func RemoveAuctionsFromDB() {
 	var auc models.AuctionList
@@ -154,22 +162,89 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	// Describe("The POST auctions/create endpoint", func() {
-	// 	var newAuction models.Auction
-	// 	getAuction
-	// 	BeforeEach(func() {
-	// 		var data []byte
-	// 		response = performRequest(router, "POST", "/auctions/create", data)
-	// 	})
-	// 	It("Returns with Status 200", func() {
-	// 		Expect(response.Code).To(Equal(200))
-	// 	})
-	// 	It("Returns top 5 bids of running auction 5dca6431de52283587609581", func() {
-	// 		var auction models.Auction
-	// 		json.Unmarshal(response.Body.Bytes(), &auction)
-	// 		Expect(auction).To(Equal(newAuction))
-	// 	})
-	// })
+	Describe("The POST auctions/create endpoint: Successfully created", func() {
+		var newAuction models.Auction
+		var responseAuction models.Response
+		newAuction = (*GetAuctions())[0]
+		BeforeEach(func() {
+			dbURL := "mongodb://localhost:27017"
+			dbName := "testing"
+			ConnectToDB(dbURL, dbName)
+			RemoveAuctionsFromDB()
+			data, err := json.Marshal(newAuction)
+			if err != nil {
+				log.Fatal(err)
+			}
+			response = performRequest(router, "POST", "/auction/create", data)
+		})
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
+		})
+		It("Returns with Message Auction Successfully created.", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseAuction)
+			Expect(responseAuction.Message).To(Equal("Auction Successfully created."))
+		})
+		It("Returns auction details", func() {
+
+			Expect(responseAuction.Auction).To(Equal(newAuction))
+		})
+	})
+
+	Describe("The POST auctions/create endpoint: Title Error", func() {
+		var newAuction models.Auction
+		var responseAuction models.Response
+		newAuction = (*GetAuctions())[0]
+		BeforeEach(func() {
+			dbURL := "mongodb://localhost:27017"
+			dbName := "testing"
+			ConnectToDB(dbURL, dbName)
+			RemoveAuctionsFromDB()
+			newAuction.Title = ""
+			data, err := json.Marshal(newAuction)
+			if err != nil {
+				log.Fatal(err)
+			}
+			response = performRequest(router, "POST", "/auction/create", data)
+		})
+		It("Returns with Status 500", func() {
+			Expect(response.Code).To(Equal(500))
+		})
+		It("Returns with Message Invalid Auction Title", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseAuction)
+			Expect(responseAuction.Message).To(Equal("Invalid Auction Title"))
+		})
+		It("Returns auction details", func() {
+			Expect(responseAuction.Auction).To(Equal(newAuction))
+		})
+	})
+
+	Describe("The POST auctions/create endpoint: Image Error", func() {
+		var newAuction models.Auction
+		var responseAuction models.Response
+		newAuction = (*GetAuctions())[0]
+		BeforeEach(func() {
+			dbURL := "mongodb://localhost:27017"
+			dbName := "testing"
+			ConnectToDB(dbURL, dbName)
+			RemoveAuctionsFromDB()
+			newAuction.Image = []string{}
+			data, err := json.Marshal(newAuction)
+			if err != nil {
+				log.Fatal(err)
+			}
+			response = performRequest(router, "POST", "/auction/create", data)
+		})
+		It("Returns with Status 500", func() {
+			Expect(response.Code).To(Equal(500))
+		})
+		It("Returns with Message Please upload auction image", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseAuction)
+			Expect(responseAuction.Message).To(Equal("Please upload auction image"))
+		})
+		It("Returns auction details", func() {
+			Expect(responseAuction.Auction).To(Equal(newAuction))
+		})
+	})
 
 	// Describe("The POST /users endpoint", func() {
 	// 	BeforeEach(func() {

@@ -48,5 +48,11 @@ type Result struct {
 	Price     Price
 }
 
+// Response stores response of /auction/create endpoint
+type Response struct {
+	Message string
+	Auction Auction
+}
+
 //BidList to store List of bids
 type BidList []Bid
