@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -234,9 +235,9 @@ func addRewardsToUsers(c *gin.Context) {
 			userBidFreq[bid.UserID] = freq + 1
 		}
 
-		if freq <= maxBidsToRewards + 1 {
+		if freq <= maxBidsToRewards+1 {
 			pointsForBidPrice := (rewardPercentage * float64(bid.Price))
-			pointsForHighBid := float64(bid.Price - 2 * auc.BasePrice) / float64(2 * auc.BasePrice)
+			pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
 
 			//TODO after auction creation done
 			//pointsFromTime := float64(duration*60/(auc.EndTime - bid.Time))
@@ -254,4 +255,23 @@ func addRewardsToUsers(c *gin.Context) {
 	}
 
 	c.JSON(200, "Bidders are rewarded!")
+
+}
+
+func uploadPicture(c *gin.Context) {
+	name := c.PostForm("name")
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+		return
+	}
+
+	filename := filepath.Base(file.Filename)
+	if err := c.SaveUploadedFile(file, "media/images/"+filename); err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
+		return
+	}
+
+	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully with fields name=%s", file.Filename, name))
 }
