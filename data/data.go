@@ -78,15 +78,17 @@ func AddNewUser(usr *models.User) int {
 //This function returns User by UserID
 func GetUserByID(userID string) models.User {
 	temp_user, err := DBclient.Getuser(userID)
+	if err != nil {
+		log.Fatal("User not Found!")
+	}
 	user := *temp_user
 	return user
 }
 
 //This function updates an User details by ID
-func UpdateUser(userID string, points int64) error {
+func UpdateUser(userID string, points int) error {
 	return DBclient.UpdateUser(userID, points)
 }
-
 
 func AddNewBid(bid *models.Bid) int {
 	//check if the given user and the given auction is present in db
@@ -167,7 +169,7 @@ func GetUserById(id string) (*models.User, error) {
 }
 
 //this will populate the db
-func PopulateDB() bool{
+func PopulateDB() bool {
 	var auc models.AuctionList
 	file, err := ioutil.ReadFile("./server/seed-data/auctions.json")
 	if err != nil {
@@ -181,11 +183,11 @@ func PopulateDB() bool{
 	if err != nil {
 		log.Fatal("Error in deleting pre-existing data : ", err.Error())
 	}
-	
+
 	//setting the time for different aucitons
-	auc[0].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
-	auc[1].EndTime = int64(time.Now().Add(time.Hour * 2 ).Unix())
-	auc[2].EndTime = int64(time.Now().Add(time.Minute * 2 ).Unix())
+	auc[0].EndTime = int64(time.Now().Add(time.Hour * 2).Unix())
+	auc[1].EndTime = int64(time.Now().Add(time.Hour * 2).Unix())
+	auc[2].EndTime = int64(time.Now().Add(time.Minute * 2).Unix())
 	err = DBclient.InsertAuctions(&auc)
 	if err != nil {
 		log.Fatal("Error populating auctions.json : ", err.Error())
@@ -193,7 +195,6 @@ func PopulateDB() bool{
 	return true
 
 }
-
 
 //
 // func main(){

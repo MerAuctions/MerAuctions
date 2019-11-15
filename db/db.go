@@ -5,12 +5,14 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/MerAuctions/MerAuctions/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 type DBClient struct {
@@ -98,7 +100,6 @@ func (c *DBClient) InsertBid(bid *models.Bid) error {
 	return err
 }
 
-
 func (c *DBClient) InsertBids(bids *models.BidList) error {
 	collection := c.client.Database(c.DBname).Collection("bids")
 	for _, bid := range *bids {
@@ -172,13 +173,18 @@ func (c *DBClient) InsertAuctions(auctions *models.AuctionList) error {
 }
 
 func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
+	ctx, _ := context.WithTimeout(context.Background(), 1000*time.Second)
 	collection := c.client.Database(c.DBname).Collection("auctions")
-	for _, auc := range *auctions {
-		_, err := collection.DeleteOne(context.TODO(), auc)
-		if err != nil {
-			// log.Fatal(err)
-			return err
-		}
+	_, err := collection.DeleteMany(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+		return err
+		// for _, auc := range *auctions {
+		// 	_, err := collection.DeleteOne(context.TODO(), auc)
+		// 	if err != nil {
+		// 		// log.Fatal(err)
+		// 		return err
+		// 	}
 	}
 	fmt.Println("Deleted all auctions")
 	return nil
@@ -271,7 +277,7 @@ func (c *DBClient) Getuser(id string) (*models.User, error) {
 }
 
 //Update User in db by UserID
-func (c *DBClient) UpdateUser(userID string, points int64) error {
+func (c *DBClient) UpdateUser(userID string, points int) error {
 	collection := c.client.Database(c.DBname).Collection("users")
 
 	filter := bson.D{{"userid", userID}}
@@ -288,7 +294,6 @@ func (c *DBClient) UpdateUser(userID string, points int64) error {
 
 	return err
 }
-
 
 // // Following is for testing the db locally
 // func main(){

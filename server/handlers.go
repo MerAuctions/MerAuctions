@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
 	// "io/ioutil"
 
 	"github.com/MerAuctions/MerAuctions/data"
@@ -16,7 +17,6 @@ import (
 )
 
 var maxBidsToRewards int = 5
-
 
 func hello(c *gin.Context) {
 	c.String(200, "Hello World")
@@ -104,6 +104,10 @@ func addNewUser(c *gin.Context) {
 
 }
 
+func createAuction(c *gin.Context) {
+
+}
+
 //addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
 
@@ -182,10 +186,10 @@ func getResultByAuctionId(c *gin.Context) {
 //this will populate the db
 func addDataDB(c *gin.Context) {
 	ok := data.PopulateDB()
-	if ok==false{
-		c.String(400,"Can't populate DB")
-	}else {
-		c.String(200,"DB is populated Successfully")
+	if ok == false {
+		c.String(400, "Can't populate DB")
+	} else {
+		c.String(200, "DB is populated Successfully")
 	}
 
 }
@@ -193,10 +197,10 @@ func addDataDB(c *gin.Context) {
 //addRewardsToUsers is handler function to offer rewards when the auction ends
 func addRewardsToUsers(c *gin.Context) {
 	id := c.Param("auction_id")
+	auc := data.GetAuctionById(id)
 
 	bids := data.GetAllSortedBidsForAuction(id)
 	userBidFreq := make(map[string]int)
-
 
 	for _, bid := range bids {
 		freq, ok := userBidFreq[bid.UserID]
@@ -207,13 +211,28 @@ func addRewardsToUsers(c *gin.Context) {
 		}
 
 		if freq <= maxBidsToRewards + 1 {
-			points := int64(0.005 * bid.Price)
-			err := data.UpdateUser(bid.UserID, points)
-			if err != nil {
-				c.JSON(404, fmt.Sprint("User Not Found!"))
+			pointsForBidPrice := (0.005 * float64(bid.Price))
+			pointsForHighBid := float64(bid.Price - 2 * auc.BasePrice) / float64(2 * auc.BasePrice)
+
+			//TODO after auction creation done
+			//pointsFromTime := float64(duration*60/(auc.EndTime - bid.Time))
+
+			points := int(pointsForHighBid * pointsForBidPrice)
+			if points <= 0 {
+				continue
+			} else {
+				err := data.UpdateUser(bid.UserID, points)
+				if err != nil {
+					c.JSON(404, fmt.Sprint("User Not Found!"))
+				}
 			}
 		}
 	}
+
+	usrId1 := "shashank"
+	usrId2 := "shas"
+	fmt.Println(data.GetUserById(usrId1))
+	fmt.Println(data.GetUserById(usrId2))
 
 
 	c.JSON(200, "Bidders are rewarded!")
