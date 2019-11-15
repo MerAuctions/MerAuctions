@@ -276,6 +276,25 @@ func (c *DBClient) Getuser(id string) (*models.User, error) {
 	return &user, nil
 }
 
+//Update User in db by UserID
+func (c *DBClient) UpdateUser(userID string, points int) error {
+	collection := c.client.Database(c.DBname).Collection("users")
+
+	filter := bson.D{{"userid", userID}}
+	update := bson.D{
+		{"$inc", bson.D{
+			{"points", points},
+		}},
+	}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 // // Following is for testing the db locally
 // func main(){
 //   dbclient := ConnectDB("mongodb://localhost:27017","test7")
