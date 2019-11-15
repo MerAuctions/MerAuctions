@@ -108,6 +108,7 @@ func setupRoutes(router *gin.Engine) {
 	router.Static("/js", "./static/js")
 	router.Static("/css", "./static/css")
 	router.Static("/fonts", "./static/fonts")
+	router.Static("/images", "./media/images")
 
 	router.GET("/hello", hello)
 	router.GET("/", getAllAuctions)
@@ -115,11 +116,13 @@ func setupRoutes(router *gin.Engine) {
 	router.GET("/auctions/:auction_id/bids", getBidsAuctionsById)
 	router.GET("/auctions/:auction_id/result", getResultByAuctionId)
 
-	router.GET("/db/populate",addDataDB)
+	router.GET("/db/populate", addDataDB)
 
 	auth := router.Group("")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 
 	auth.POST("/auctions/:auction_id/bids", addBidAuctionIdByUserId)
+
+	router.POST("/upload", uploadPicture)
 }

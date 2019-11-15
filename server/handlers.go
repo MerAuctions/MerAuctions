@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
+
 	// "io/ioutil"
 
 	"github.com/MerAuctions/MerAuctions/data"
@@ -179,10 +181,28 @@ func getResultByAuctionId(c *gin.Context) {
 //this will populate the db
 func addDataDB(c *gin.Context) {
 	ok := data.PopulateDB()
-	if ok==false{
-		c.String(400,"Can't populate DB")
-	}else {
-		c.String(200,"DB is populated Successfully")
+	if ok == false {
+		c.String(400, "Can't populate DB")
+	} else {
+		c.String(200, "DB is populated Successfully")
 	}
 
+}
+
+func uploadPicture(c *gin.Context) {
+	name := c.PostForm("name")
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+		return
+	}
+
+	filename := filepath.Base(file.Filename)
+	if err := c.SaveUploadedFile(file, "media/images/"+filename); err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
+		return
+	}
+
+	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully with fields name=%s", file.Filename, name))
 }

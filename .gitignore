@@ -14,3 +14,6 @@
 # CI built binary
 merauction
 *.DS_Store
+
+# media files
+media
