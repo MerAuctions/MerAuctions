@@ -29,7 +29,9 @@ type Auction struct {
 	AuctionID   primitive.ObjectID `bson:"_id, omitempty"`
 	Title       string
 	Image       string // image encode in base64
+	Tag         []string
 	Description string
+	BasePrice   Price
 	EndTime     int64
 }
 
