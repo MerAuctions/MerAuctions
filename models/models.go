@@ -21,6 +21,7 @@ type Bid struct {
 	AuctionID string
 	UserID    string
 	Price     Price
+	Count     int
 	Time      int64
 }
 
