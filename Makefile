@@ -33,8 +33,11 @@ docker-push: docker-build
 		docker push gcr.io/kouzoh-p-s-liu/merauctions:v0.1
 
 cluster-create:
-	gcloud container clusters create merauction --num-nodes=2 --machine-type=g1-small
+	gcloud container clusters create $(CLUSTER_NAME) --num-nodes=2 --machine-type=g1-small
 
 kubernetes-build:
 	gcloud container clusters get-credentials $(CLUSTER_NAME)  --region=$(REGION)
 	kubectl apply -f kubernetes
+
+kubernetes-delete:
+	gcloud container clusters delete $(CLUSTER_NAME)  --region=$(REGION)
