@@ -208,7 +208,8 @@ func addRewardsToUsers(c *gin.Context) {
 
 		if freq <= maxBidsToRewards + 1 {
 			//c.JSON(200, "got in")
-			points := int64(1 * bid.Price)
+			points := int64(0.005 * bid.Price)
+			fmt.Println(bid.UserID, ":", points)
 			err := data.UpdateUser(bid.UserID, points)
 			if err != nil {
 				fmt.Println(err)
@@ -217,11 +218,5 @@ func addRewardsToUsers(c *gin.Context) {
 	}
 
 
-	//for _, bid := range bids {
-	//	usr, _ := data.GetUserById(bid.UserID)
-	//	fmt.Println(usr)
-	//	c.JSON(200, usr)
-	//}
-
-	c.JSON(200, bids)
+	c.JSON(200, "Bidders are rewarded!")
 }
