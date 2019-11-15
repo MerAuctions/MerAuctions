@@ -162,6 +162,8 @@ var _ = Describe("Server", func() {
 		})
 	})
 
+
+
 	Describe("The POST auctions/create endpoint: Successfully created", func() {
 		var newAuction models.Auction
 		var responseAuction models.Response
@@ -244,6 +246,7 @@ var _ = Describe("Server", func() {
 			Expect(responseAuction.Auction).To(Equal(newAuction))
 		})
 	})
+
 
 	// Describe("The POST /users endpoint", func() {
 	// 	BeforeEach(func() {
