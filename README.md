@@ -1,4 +1,4 @@
-# MerAuctions
+# merAuc
 
 [![CircleCI](https://circleci.com/gh/MerAuctions/MerAuctions/tree/master.svg?style=svg)](https://circleci.com/gh/MerAuctions/MerAuctions/tree/master)
 
