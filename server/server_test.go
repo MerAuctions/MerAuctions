@@ -185,7 +185,6 @@ var _ = Describe("Server", func() {
 			Expect(responseAuction.Message).To(Equal("Auction Successfully created."))
 		})
 		It("Returns auction details", func() {
-
 			Expect(responseAuction.Auction).To(Equal(newAuction))
 		})
 	})
