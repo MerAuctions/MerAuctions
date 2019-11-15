@@ -52,3 +52,7 @@ go run cmd/auctions/merauctions.go --mongodb-url=mongodb://localhost:27017/testi
 - CircleCI
 - Docker
 - GCP
+
+## StyleGuide for Codebase
+
+Please refer to the StyleGuide [here](https://docs.google.com/document/d/1IYPQ_jkVBBcz7EZHN6GanW2wtXnp1Lvu0Xkz9rLg6hk/edit?usp=sharing)
