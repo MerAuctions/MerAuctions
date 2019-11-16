@@ -47,7 +47,7 @@ jobs:
           cluster: merauc-cluster-1
           deployment: merauctions-deployment
           container: merauctions-app
-          image: gcr.io/kouzoh-p-s-liu/merauctions:v0.1
+          image: gcr.io/kouzoh-p-sahilkhokhar/merauctions:v0.1
       - run:
           command: kubectl rollout restart deployment/merauctions-deployment
 
