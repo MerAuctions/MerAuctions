@@ -105,6 +105,7 @@ func addNewUser(c *gin.Context) {
 
 }
 
+// createAuction create a new auction for the user
 func createAuction(c *gin.Context) {
 	var newAuction models.Auction
 	var response models.Response
