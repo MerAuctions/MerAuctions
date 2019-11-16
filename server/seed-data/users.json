@@ -18,6 +18,10 @@
         "UserID" : "harsh",
         "UserName" : "harsh",
         "Points" : 0
+    },
+    {
+        "UserID" : "bowei",
+        "UserName" : "bowei",
+        "Points" : 0
     }
-
 ]
