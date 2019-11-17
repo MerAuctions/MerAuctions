@@ -33,7 +33,6 @@
     <script type="text/javascript" src="/js/materialize.min.js"></script>
     <script type="text/javascript">
       function uploadPics() {
-        console.log("here");
         var file_data = $("#file").prop("files")[0];
         var form_data = new FormData();
         form_data.append("file", file_data);
@@ -52,8 +51,22 @@
             $("#msg").html(response); // display error response from the server
           }
         });
-        console.log(file_data);
       }
+
+      function readFile() {
+        if (this.files && this.files[0]) {
+          var FR = new FileReader();
+
+          FR.addEventListener("load", function(e) {
+            document.getElementById("img").src = e.target.result;
+            document.getElementById("b64").innerHTML = e.target.result;
+          });
+
+          FR.readAsDataURL(this.files[0]);
+        }
+      }
+
+      document.getElementById("file").addEventListener("change", readFile);
       function login() {
         var user_id = $("#login-input-username").val();
         var password = $("#login-input-password").val();
