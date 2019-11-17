@@ -1,36 +1,65 @@
 {{ define "create_auction/form.tmpl" }}
 <h3>Create a New Auction</h3>
-<br>
+<br />
 <div class="row">
   {{ if .isUserSignedIn }}
-  <!-- <form class="col s12">
-    <div class="input-field col s12">
-        <input id="title" type="text" class="validate">
-        <label for="title">Title</label>
-    </div>
-    <div class="file-field input-field row">
-        <div class="btn right col s2">
-            <span>Select Images</span>
-            <input type="file">
-        </div>
-        <div class="file-path-wrapper left col s10">
-            <input class="file-path validate" name="file" id="file" type="text" placeholder="Upload image">
-        </div>
-    </div>
-    <div class="col s6 post-bid-buttons">
-    <a id="next-button" class="waves-effect waves-light btn" onclick="uploadPics();">Next</a>
-    </div>
-  </form> -->
-        <p id="msg"></p>
-        <p id="b64"></p>
-        <img id="img" height="150">
-        <input type="file" id="file" name="file" multiple />
-        <button id="upload" onclick="uploadPics()">Upload</button>
-  {{ else }}
-  <a id="signup-button" class="waves-effect waves-light btn modal-trigger" data-target="signup-modal">Sign up</a>
-  <a id="signin-button" class="waves-effect waves-light btn modal-trigger" data-target="signin-modal">Login</a>
-  {{ end }}
+  <div class="input-field col s12">
+    <input id="auction-title" type="text" class="validate" />
+    <label for="auction-title">Title</label>
   </div>
+  <div class="col s12">
+    <input type="file" id="file" name="file" multiple />
+    <button
+      id="upload"
+      class="waves-effect waves-light btn"
+      onclick="uploadPics()"
+    >
+      Upload Image
+    </button>
+  </div>
+  <div class="col s12">
+    <p id="msg"></p>
+    <input id="b64" type="text" />
+    <img id="img" height="250" />
+  </div>
+  <div class="input-field col s12">
+    <input id="auction-tags" type="text" class="validate" />
+    <label for="auction-tags">Tags</label>
+  </div>
+  <div class="input-field col s12">
+    <input id="auction-description" type="text" class="validate" />
+    <label for="auction-description">Description</label>
+  </div>
+  <div class="input-field col s12">
+    <input id="auction-base-price" type="text" class="validate" />
+    <label for="auction-base-price">Base Price</label>
+  </div>
+  <div class="input-field col s12">
+    <input id="auction-end-time" type="text" class="validate" />
+    <label for="auction-end-time">End Time</label>
+  </div>
+  <div class="col s12 post-bid-buttons">
+    <a
+      id="submit-button"
+      class="waves-effect waves-light btn"
+      onclick="submitAuc();"
+      >Submit</a
+    >
+  </div>
+  {{ else }}
+  <a
+    id="signup-button"
+    class="waves-effect waves-light btn modal-trigger"
+    data-target="signup-modal"
+    >Sign up</a
+  >
+  <a
+    id="signin-button"
+    class="waves-effect waves-light btn modal-trigger"
+    data-target="signin-modal"
+    >Login</a
+  >
+  {{ end }}
 </div>
 
 <div id="signup-modal" class="modal">
@@ -38,19 +67,21 @@
     <h4>New User Registration</h4>
     <div class="row">
       <div class="input-field col s12 m7">
-        <input id="signup-input-username" type="text" class="validate">
+        <input id="signup-input-username" type="text" class="validate" />
         <label for="signup-input-username">Enter new user ID...</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12 m7">
-        <input id="signup-input-password" type="password" class="validate">
+        <input id="signup-input-password" type="password" class="validate" />
         <label for="signup-input-password">Enter your password...</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12 m7">
-        <a href="#!" class="waves-effect waves-light btn" onclick="signUp();">Sign Up</a>
+        <a href="#!" class="waves-effect waves-light btn" onclick="signUp();"
+          >Sign Up</a
+        >
       </div>
     </div>
   </div>
@@ -61,19 +92,21 @@
     <h4>Login</h4>
     <div class="row">
       <div class="input-field col s12 m7">
-        <input id="login-input-username" type="text" class="validate">
+        <input id="login-input-username" type="text" class="validate" />
         <label for="login-input-username">Enter existing user ID...</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12 m7">
-        <input id="login-input-password" type="password" class="validate">
+        <input id="login-input-password" type="password" class="validate" />
         <label for="login-input-password">Enter your password...</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12 m7">
-        <a href="#!" class="waves-effect waves-light btn" onclick="login();">Login</a>
+        <a href="#!" class="waves-effect waves-light btn" onclick="login();"
+          >Login</a
+        >
       </div>
     </div>
   </div>

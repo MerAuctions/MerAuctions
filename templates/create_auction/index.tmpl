@@ -16,10 +16,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create a New Auction</title>
   </head>
-
   <body>
     {{ template "common/navbar.tmpl" }}
-
     <!-- create auction page -->
     <main class="container">
       <div class="divider"></div>
@@ -59,7 +57,7 @@
 
           FR.addEventListener("load", function(e) {
             document.getElementById("img").src = e.target.result;
-            document.getElementById("b64").innerHTML = e.target.result;
+            document.getElementById("b64").value = e.target.result;
           });
 
           FR.readAsDataURL(this.files[0]);
