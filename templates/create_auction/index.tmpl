@@ -66,7 +66,10 @@
         }
       }
 
-      document.getElementById("file").addEventListener("change", readFile);
+      if (document.getElementById("file")) {
+        document.getElementById("file").addEventListener("change", readFile);
+      }
+
       function login() {
         var user_id = $("#login-input-username").val();
         var password = $("#login-input-password").val();
@@ -123,10 +126,6 @@
 
       $(document).ready(function() {
         $(".modal").modal();
-        updateTimer();
-        updateBids();
-        end_timer = setInterval(updateTimer, 1000);
-        bid_timer = setInterval(updateBids, 10000);
       });
     </script>
   </body>
