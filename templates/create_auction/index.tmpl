@@ -1,0 +1,81 @@
+{{ define "create_auction/index.tmpl" }}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="/css/materialize.min.css" media="screen,projection" />
+  <link type="text/css" rel="stylesheet" href="/css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create a New Auction</title>
+</head>
+
+<body>
+  {{ template "common/navbar.tmpl" }}
+
+  <!-- auction details page -->
+  <main class="container">
+    <div class="divider"></div>
+    <br>
+  </main>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/js/materialize.min.js"></script>
+  <script type="text/javascript">
+    function login() {
+      var user_id = $('#login-input-username').val();
+      var password = $('#login-input-password').val();
+      $.ajax({
+        url: `/login`,
+        method: 'POST',
+        success: function (result) {
+          M.toast({
+            html: "Successfully logged in"
+          });
+          setTimeout(function () {
+            location.reload();
+          }, 500);
+        },
+        error: function (jqXHR, exception) {
+          M.toast({
+            html: JSON.parse(jqXHR.responseText)["message"]
+          });
+        },
+        data: {
+          username: user_id,
+          password: password
+        }
+      });
+    }
+
+    function signUp() {
+      var user_id = $('#signup-input-username').val();
+      var pwd = $('#signup-input-password').val();
+      $.ajax({
+        url: `/users`,
+        method: 'POST',
+        datatype: "json",
+        contentType: 'application/json',
+        success: function (result) {
+          M.toast({
+            html: "Successfully signed up"
+          });
+          setTimeout(function () {
+            location.reload();
+          }, 500);
+        },
+        error: function (jqXHR, exception) {
+          M.toast({
+            html: jqXHR.responseText
+          });
+        },
+        data: JSON.stringify({
+          user_id: user_id,
+          pwd : pwd
+        })
+      });
+    }
+  </script>
+</body>
+
+</html>
+{{ end }}

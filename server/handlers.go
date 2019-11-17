@@ -68,6 +68,27 @@ func getAuctionsByID(c *gin.Context) {
 	})
 }
 
+//getAuctionsByID is handler function for getting particular auction page
+func getCreateAuction(c *gin.Context) {
+	isUserSignedIn := false
+	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
+		if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok && jwtToken.Valid {
+			if userID, ok := claims[jwtIdentityKey].(string); ok == true {
+				if user, _ := data.GetUserById(userID); user != nil {
+					isUserSignedIn = true
+				}
+			} else {
+				log.Printf("Could not convert claim to string")
+			}
+		} else {
+			log.Printf("Could not extract claims into JWT")
+		}
+	}
+	c.HTML(http.StatusOK, "create_auction/index.tmpl", gin.H{
+		"isUserSignedIn": isUserSignedIn,
+	})
+}
+
 //getBidsAuctionsById is handler function to get all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
