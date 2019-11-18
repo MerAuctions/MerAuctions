@@ -28,6 +28,21 @@ func GetAuctionById(id string) *models.Auction {
 	return auc
 }
 
+func GetAuctionByUserId(id string) *models.AuctionList {
+	bids, err := DBclient.GetBidsbyUser(id)
+	if err != nil {
+		return nil
+	}
+	log.Println(bids)
+	var aucs models.AuctionList
+	for _, bid := range *bids {
+		auc, _ := DBclient.GetAuction(bid.AuctionID)
+		aucs = append(aucs, *auc)
+	}
+	log.Println(aucs)
+	return &aucs
+}
+
 func GetTopFiveBids(auctionID string) *[]models.Bid {
 	tmp_bids, err := DBclient.GetBids(auctionID)
 	if err != nil {

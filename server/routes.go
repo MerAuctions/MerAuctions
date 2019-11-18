@@ -120,6 +120,8 @@ func setupRoutes(router *gin.Engine) {
 	router.GET("/auctions/:auction_id/result", getResultByAuctionId)
 	router.POST("/auction/create", createAuction)
 
+	router.GET("/user/:id/auctions", getUserAuctions)
+
 	router.GET("/auction/create/getTagsfromImage", getTagsfromImage)
 	router.GET("/auction/create/getDescriptionfromImage", getDescriptionfromImage)
 
