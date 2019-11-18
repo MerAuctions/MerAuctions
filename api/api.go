@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/MerAuctions/MerAuctions/models"
 )
@@ -29,7 +30,8 @@ func getLocalIP() string {
 func GetTagsForImage(name string) models.TagList {
 	var tagList models.TagList
 	var w http.ResponseWriter
-	imageURL := "http://" + getLocalIP() + "/images/" + name
+	imageURL := "http://" + string(os.Getenv("DOMAIN")) + "/images/" + name
+
 	//imageURL := "https://cms.hostelworld.com/hwblog/wp-content/uploads/sites/2/2017/08/lovelyforliving.jpg"
 	resp, err := http.Get("https://cat-that-pic-bak.herokuapp.com/api/v1/getTagsfromImage?fileName=" + imageURL)
 	if err != nil {
