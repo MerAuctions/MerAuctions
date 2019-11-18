@@ -81,11 +81,36 @@ func (c *DBClient) InsertUser(usr *models.User) error {
 	collection := c.client.Database(c.DBname).Collection("users")
 	insertResult, err := collection.InsertOne(context.TODO(), usr)
 	if err != nil {
-		log.Fatal("Error in creating new user: ", err)
+		log.Fatal("Error in creating new user(Insert User) : ", err)
 		return err
 	}
 	fmt.Println("Inserted user: ", insertResult.InsertedID)
-	return err
+	return nil
+}
+
+func (c *DBClient) InsertUsers(users *[]models.User) error {
+	collection := c.client.Database(c.DBname).Collection("users")
+	for _, usr := range *users {
+		insertResult, err := collection.InsertOne(context.TODO(), usr)
+		if err != nil {
+			log.Fatal("Error in inserting users: ", err)
+			return err
+		}
+		fmt.Println("Inserted user: ", insertResult.InsertedID)
+	}
+	return nil
+}
+
+func (c *DBClient) DeleteUsers(users *[]models.User) error {
+	collection := c.client.Database(c.DBname).Collection("users")
+	for _, user := range *users {
+		_, err := collection.DeleteOne(context.TODO(), user)
+		if err != nil {
+			return err
+		}
+	}
+	fmt.Println("Deleted all users")
+	return nil
 }
 
 //Insert a bid in db
@@ -322,6 +347,30 @@ func (c *DBClient) DeleteAllUsers() error {
 	}
 	fmt.Println("Deleted all users")
 	return nil
+}
+
+//get the list of all the users
+func (c *DBClient) GetUsers(AuctionId string) (*[]models.User, error) {
+	var users []models.User
+	collection := c.client.Database(c.DBname).Collection("users")
+	filter := bson.D{{"auctionid", AuctionId}}
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+	for cur.Next(context.Background()) {
+		var elem models.User
+		err := cur.Decode(&elem)
+		users = append(users, elem)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+	return &users, nil
 }
 
 // // Following is for testing the db locally

@@ -1,18 +1,17 @@
 [
     {
         "user_id" : "vamshi",
-        "UserName" : "vamshi"
+        "user_name" : "vamshi",
         "pwd" : "pwd_vamshi"
     },
     {
         "user_id" : "deepak",
-        "UserName" : "deepak"
+        "user_name" : "deepak",
         "pwd" : "pwd_deepak"
     },
     {
         "user_id" : "harsh",
-        "UserName" : "harsh"
+        "user_name" : "harsh",
         "pwd" : "pwd_harsh"
     }
-
 ]

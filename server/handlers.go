@@ -260,10 +260,10 @@ func addDataDB(c *gin.Context) {
 //addRewardsToUsers is handler function to offer rewards when the auction ends
 func addRewardsToUsers(c *gin.Context) {
 	rewardPercentage := 0.005
-	id := c.Param("auction_id")
-	auc := data.GetAuctionById(id)
+	auctionID := c.Param("auction_id")
+	auc := data.GetAuctionById(auctionID)
 
-	bids := data.GetAllSortedBidsForAuction(id)
+	bids := data.GetAllSortedBidsForAuction(auctionID)
 	userBidFreq := make(map[string]int)
 
 	for _, bid := range bids {
@@ -293,7 +293,52 @@ func addRewardsToUsers(c *gin.Context) {
 		}
 	}
 
-	c.JSON(200, "Bidders are rewarded!")
+	c.JSON(200, fmt.Sprintf("Bidders are rewarded!"))
+
+}
+
+func addRewardsToUser(c *gin.Context) {
+	rewardPercentage := 0.005
+	auctionID := c.Param("auction_id")
+	userID := c.Param("user_id")
+	user, err := data.GetUserById(userID)
+
+	if err != nil {
+		log.Printf("Error in getting user details for '%s' from DB: %s", userID, err.Error())
+	}
+	auc := data.GetAuctionById(auctionID)
+	bids := data.GetAllSortedBidsForAuction(auctionID)
+	userBidFreq := 0
+
+	for _, bid := range bids {
+		if bid.UserID == userID {
+			if userBidFreq < maxBidsToRewards {
+				pointsForBidPrice := (rewardPercentage * float64(bid.Price))
+				fmt.Println("auc.BasePrice:", auc.BasePrice)
+				pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
+
+				//TODO after auction creation done
+				//pointsFromTime := float64(duration*60/(auc.EndTime - bid.Time))
+
+				points := int(pointsForHighBid * pointsForBidPrice)
+				fmt.Println("pointsForBidPrice:", pointsForBidPrice, "  pointsForHighBid:", pointsForHighBid, "  points:", points)
+				if points <= 0 {
+					continue
+				} else {
+					err := data.UpdateUser(bid.UserID, points)
+					if err != nil {
+						c.JSON(404, fmt.Sprint("User Not Found!"))
+					}
+				}
+			}
+			userBidFreq++
+		}
+	}
+	user, err = data.GetUserById(userID)
+	if err != nil {
+		log.Printf("Error in getting user details for '%s' from DB: %s", userID, err.Error())
+	}
+	c.JSON(200, fmt.Sprintf("Congrats!, you have been awarded %v points.", user.Points))
 
 }
 

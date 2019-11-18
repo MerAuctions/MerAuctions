@@ -58,6 +58,16 @@ func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 	return bids
 }
 
+// This function returns all user who bid for an auction
+func GetAllUsersForAuction(auctionID string) []models.User {
+	users, err := DBclient.GetUsers(auctionID)
+	if err != nil {
+		log.Fatal("No bidders for auction ", auctionID)
+	}
+
+	return *users
+}
+
 func AddNewUser(usr *models.User) (*models.User, int) {
 	var user *models.User
 	var err error
@@ -71,6 +81,7 @@ func AddNewUser(usr *models.User) (*models.User, int) {
 	}
 
 	user, err = DBclient.Getuser(string(usr.UserID))
+
 	if err == nil {
 		//user already existst, so exists
 		log.Println("User already exists")
@@ -81,13 +92,13 @@ func AddNewUser(usr *models.User) (*models.User, int) {
 	err = DBclient.InsertUser(usr)
 	if err != nil {
 		//unable to insert user
-		log.Fatal("Error in creating new user ", err)
+		log.Fatal("Error in creating new user (AddNewUser) ", err)
 		return user, 5 //TODO: discuss which status code to give
 	}
 
 	user, err = DBclient.Getuser(string(usr.UserID))
 	if err != nil {
-		log.Fatal("Error in creating new user: ", err)
+		log.Fatal("Error in creating new user (Getuser): ", err)
 		return user, 5
 	}
 
@@ -99,7 +110,7 @@ func AddNewUser(usr *models.User) (*models.User, int) {
 func GetUserByID(userID string) models.User {
 	temp_user, err := DBclient.Getuser(userID)
 	if err != nil {
-		log.Fatal("User not Found!")
+		log.Fatal(userID, " User not Found!")
 	}
 	user := *temp_user
 	return user

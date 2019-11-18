@@ -13,7 +13,7 @@ type User struct {
 	UserID   string `json:"user_id, string"`
 	UserName string `json:"user_name, string"`
 	Password string `json:"pwd, string"`
-	Points   int    `json:"points int"`
+	Points   int    `json:"points, int"`
 	Interest []string
 }
 
