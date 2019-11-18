@@ -11,6 +11,7 @@ import (
 
 	// "io/ioutil"
 
+	"github.com/MerAuctions/MerAuctions/api"
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
 	"github.com/dgrijalva/jwt-go"
@@ -326,8 +327,8 @@ func addRewardsToUser(c *gin.Context) {
 
 }
 
+// get picture user uploaded and save to /media/images
 func uploadPicture(c *gin.Context) {
-	name := c.PostForm("name")
 	// Source
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -341,5 +342,11 @@ func uploadPicture(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully with fields name=%s", file.Filename, name))
+	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully", file.Filename))
+}
+
+func getTagsfromImage(c *gin.Context) {
+	imageName := c.Request.URL.Query().Get("imageName")
+	tags := api.GetTagsForImage(imageName)
+	c.JSON(http.StatusOK, tags)
 }

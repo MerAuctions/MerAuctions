@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: merauctions-app
-          image: gcr.io/kouzoh-p-sahilkhokhar/merauctions:v0.1
+          image: gcr.io/kouzoh-p-s-liu/merauctions:v0.1
           command: [ "/app/merauction" ]
           args: [
           "--mongodb-url=mongodb://mongo-service:27017/testing",
@@ -25,6 +25,9 @@ spec:
           ports:
             - containerPort: 8080
               name: merauction-port
+          env:
+            - name: DOMAIN
+              value: merauc.rocuku.cc
 ---
 apiVersion: v1
 kind: Service
