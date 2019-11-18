@@ -1,18 +1,18 @@
 [
     {
-        "UserID" : "vamshi",
+        "user_id" : "vamshi",
         "UserName" : "vamshi"
-        "Password" : "pwd_vamshi"
+        "pwd" : "pwd_vamshi"
     },
     {
-        "UserID" : "deepak",
+        "user_id" : "deepak",
         "UserName" : "deepak"
-        "Password" : "pwd_deepak"
+        "pwd" : "pwd_deepak"
     },
     {
-        "UserID" : "harsh",
+        "user_id" : "harsh",
         "UserName" : "harsh"
-        "Password" : "pwd_harsh"
+        "pwd" : "pwd_harsh"
     }
 
 ]

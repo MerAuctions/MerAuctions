@@ -96,6 +96,13 @@ func RemoveBidsFromDB() {
 	}
 }
 
+func RemoveUsersFromDB() {
+	err := data.DBclient.DeleteAllUsers()
+	if err != nil {
+		log.Fatal("Error deleting users: ", err.Error())
+	}
+}
+
 var _ = Describe("Server", func() {
 	var (
 		router           *gin.Engine
@@ -111,6 +118,7 @@ var _ = Describe("Server", func() {
 		ConnectToDB(dbURL, dbName)
 		RemoveAuctionsFromDB()
 		RemoveBidsFromDB()
+		RemoveUsersFromDB()
 		insertedAuctions = InsertAuctionsToDB()
 		InsertBidsToDB()
 	})
@@ -185,6 +193,9 @@ var _ = Describe("Server", func() {
 			Expect(responseAuction.Message).To(Equal("Auction Successfully created."))
 		})
 		It("Returns auction details", func() {
+			responseAuction.Auction.AuctionID = newAuction.AuctionID
+			// log.Println(responseAuction)
+			// log.Println(responseAuction.Auction.CreatedBy)
 			Expect(responseAuction.Auction).To(Equal(newAuction))
 		})
 	})
@@ -245,11 +256,11 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	Describe("The POST /user/signup endpoint", func() {
+	Describe("The POST /user/signup endpoint: User signup successful", func() {
 		var newUser []byte
 		var responseSignup models.ResponseSignup
 		BeforeEach(func() {
-			newUser = []byte(`{"UserID":"jd", "UserName":"john_doe", "Password":"pwd_john_doe"}`)
+			newUser = []byte(`{"user_id":"jd", "user_name":"john_doe", "pwd":"pwd_john_doe"}`)
 			response = performRequest(router, "POST", "/user/signup", newUser)
 		})
 
@@ -265,7 +276,64 @@ var _ = Describe("Server", func() {
 		It("adds new user jd", func() {
 			var user models.User
 			json.Unmarshal(newUser, &user)
+			log.Println("User: ", user)
+			log.Println("Response: ", responseSignup)
 			Expect(responseSignup.User).To(Equal(user))
+		})
+	})
+
+	Describe("The POST /user/signup endpoint: User already exist", func() {
+		var newUser []byte
+		var responseSignup models.ResponseSignup
+		BeforeEach(func() {
+			newUser = []byte(`{"user_id":"jd", "user_name":"john_doe", "pwd":"pwd_john_doe"}`)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+		})
+
+		It("Returns with Status 500", func() {
+			Expect(response.Code).To(Equal(500))
+		})
+
+		It("Returns with Message User already exists", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			Expect(responseSignup.Message).To(Equal("User already exists"))
+		})
+	})
+
+	Describe("The POST /user/signup endpoint: UserID is empty", func() {
+		var newUser []byte
+		var responseSignup models.ResponseSignup
+		BeforeEach(func() {
+			newUser = []byte(`{"user_id":"", "user_name":"john_doe", "pwd":"pwd_john_doe"}`)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+		})
+
+		It("Returns with Status 500", func() {
+			Expect(response.Code).To(Equal(500))
+		})
+
+		It("Returns with Message UserID is empty", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			Expect(responseSignup.Message).To(Equal("UserID is empty"))
+		})
+	})
+
+	Describe("The POST /user/signup endpoint: Password is empty", func() {
+		var newUser []byte
+		var responseSignup models.ResponseSignup
+		BeforeEach(func() {
+			newUser = []byte(`{"user_id":"jd", "user_name":"john_doe", "pwd":""}`)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+		})
+
+		It("Returns with Status 500", func() {
+			Expect(response.Code).To(Equal(500))
+		})
+
+		It("Returns with Message UserID is empty", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			Expect(responseSignup.Message).To(Equal("Password is empty"))
 		})
 	})
 

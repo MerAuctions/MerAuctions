@@ -11,9 +11,9 @@ type Price int64
 //User represents the users making the bid
 type User struct {
 	UserID   string `json:"user_id, string"`
-	UserName string
+	UserName string `json:"user_name, string"`
 	Password string `json:"pwd, string"`
-	Points   int    `json:"Points int"`
+	Points   int    `json:"points int"`
 	Interest []string
 }
 
@@ -30,12 +30,13 @@ type Bid struct {
 type Auction struct {
 	AuctionID primitive.ObjectID `bson:"_id, omitempty"`
 	// AuctionID   primitive.ObjectID
-	Title       string
-	Image       []string // image encode in base64
-	Tag         []string
-	Description string
-	BasePrice   Price `json:"price"`
-	EndTime     int64 `json:"time"`
+	Title       string   `json:"title"`
+	Image       []string `json:"image"` // image encode in base64
+	Tag         []string `json:"tag"`
+	Description string   `json:"description"`
+	BasePrice   Price    `json:"price"`
+	EndTime     int64    `json:"time"`
+	CreatedBy   string   `json:"created_by, string"`
 }
 
 //AuctionList is a list of auctions

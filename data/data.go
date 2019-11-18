@@ -58,24 +58,23 @@ func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 	return bids
 }
 
-func AddNewUser(usr *models.User) int {
+func AddNewUser(usr *models.User) (*models.User, int) {
+	var user *models.User
+	var err error
 
 	if usr.UserID == "" {
 		log.Println("UserID is empty")
-		return 2
-	} else if usr.UserName == "" {
-		log.Println("UserName is empty")
-		return 3
+		return user, 2
 	} else if usr.Password == "" {
 		log.Println("Password is empty")
-		return 4
+		return user, 4
 	}
 
-	_, err := DBclient.Getuser(string(usr.UserID))
+	user, err = DBclient.Getuser(string(usr.UserID))
 	if err == nil {
 		//user already existst, so exists
 		log.Println("User already exists")
-		return 1
+		return user, 1
 	}
 
 	//User doesn't exit and needed to be inserted in the db
@@ -83,11 +82,17 @@ func AddNewUser(usr *models.User) int {
 	if err != nil {
 		//unable to insert user
 		log.Fatal("Error in creating new user ", err)
-		return 5 //TODO: discuss which status code to give
+		return user, 5 //TODO: discuss which status code to give
+	}
+
+	user, err = DBclient.Getuser(string(usr.UserID))
+	if err != nil {
+		log.Fatal("Error in creating new user: ", err)
+		return user, 5
 	}
 
 	log.Println("User signup successful")
-	return 0
+	return user, 0
 }
 
 //This function returns User by UserID
@@ -105,23 +110,24 @@ func UpdateUser(userID string, points int) error {
 	return DBclient.UpdateUser(userID, points)
 }
 
-func AddNewAuction(auction *models.Auction) int {
+func AddNewAuction(auction *models.Auction) (models.Auction, int) {
 	if auction.Title == "" {
 		log.Println("Invalid Auction Title")
-		return 2
+		return *auction, 2
 	} else if len(auction.Image) == 0 {
 		log.Println("Please upload auction image")
-		return 3
+		return *auction, 3
 	}
 
-	err := DBclient.InsertAuction(auction)
+	id, err := DBclient.InsertAuction(auction)
 	if err != nil {
 		log.Fatal("Error in creating new auction")
-		return 1
+		return *auction, 1
 	}
 
+	auction, err = DBclient.GetAuctionByID(id)
 	log.Println("Auction created successfully")
-	return 0
+	return *auction, 0
 }
 
 func AddNewBid(bid *models.Bid) int {
