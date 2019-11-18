@@ -7,6 +7,8 @@ GOTEST=$(GOCMD) test
 GOMOD=$(GOCMD) mod
 BINARY_NAME=merauction
 CLUSTER_NAME=merauc-cluster-1
+PROJECT_NAME=kouzoh-p-s-liu
+#PROJECT_NAME=kouzoh-p-sahilkhokhar
 ZONE=asia-northeast1-a
 DB_PASSWORD = ${MONGODB_PASSWORD}
 
@@ -27,10 +29,10 @@ deps:
 docker: docker-push
 
 docker-build:
-		docker build -t gcr.io/kouzoh-p-sahilkhokhar/merauctions:v0.1 .
+		docker build -t gcr.io/$(PROJECT_NAME)/merauctions:v0.1 .
 
 docker-push: docker-build
-		docker push gcr.io/kouzoh-p-sahilkhokhar/merauctions:v0.1
+		docker push gcr.io/$(PROJECT_NAME)/merauctions:v0.1
 
 cluster-create:
 	gcloud container clusters create $(CLUSTER_NAME) --num-nodes=2 --machine-type=g1-small

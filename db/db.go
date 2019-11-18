@@ -81,11 +81,36 @@ func (c *DBClient) InsertUser(usr *models.User) error {
 	collection := c.client.Database(c.DBname).Collection("users")
 	insertResult, err := collection.InsertOne(context.TODO(), usr)
 	if err != nil {
-		//log.Fatal(err)
+		log.Fatal("Error in creating new user(Insert User) : ", err)
 		return err
 	}
 	fmt.Println("Inserted user: ", insertResult.InsertedID)
-	return err
+	return nil
+}
+
+func (c *DBClient) InsertUsers(users *[]models.User) error {
+	collection := c.client.Database(c.DBname).Collection("users")
+	for _, usr := range *users {
+		insertResult, err := collection.InsertOne(context.TODO(), usr)
+		if err != nil {
+			log.Fatal("Error in inserting users: ", err)
+			return err
+		}
+		fmt.Println("Inserted user: ", insertResult.InsertedID)
+	}
+	return nil
+}
+
+func (c *DBClient) DeleteUsers(users *[]models.User) error {
+	collection := c.client.Database(c.DBname).Collection("users")
+	for _, user := range *users {
+		_, err := collection.DeleteOne(context.TODO(), user)
+		if err != nil {
+			return err
+		}
+	}
+	fmt.Println("Deleted all users")
+	return nil
 }
 
 //Insert a bid in db
@@ -137,15 +162,18 @@ func (c *DBClient) DeleteBids(bids *models.BidList) error {
 }
 
 //Insert a auction in db
-func (c *DBClient) InsertAuction(auction *models.Auction) error {
+func (c *DBClient) InsertAuction(auction *models.Auction) (primitive.ObjectID, error) {
 	collection := c.client.Database(c.DBname).Collection("auctions")
+	auction.AuctionID = primitive.NewObjectIDFromTimestamp(time.Now())
 	insertResult, err := collection.InsertOne(context.TODO(), auction)
+	id := insertResult.InsertedID.(primitive.ObjectID)
+
 	if err != nil {
-		// log.Fatal(err)
-		return err
+		log.Fatal(err)
+		return id, err
 	}
 	fmt.Println("Inserted auction: ", insertResult.InsertedID)
-	return err
+	return id, err
 }
 
 func (c *DBClient) DeleteAuction(auction *models.Auction) error {
@@ -194,12 +222,28 @@ func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
 func (c *DBClient) GetAuction(id string) (*models.Auction, error) {
 	var auction models.Auction
 	collection := c.client.Database(c.DBname).Collection("auctions")
+	log.Println(id)
 	docID, err := primitive.ObjectIDFromHex(id)
+
 	if err != nil {
+		log.Fatal("Error in fetching auction(GetAuction) ", err)
 		return nil, err
 	}
 	filter := bson.D{{"_id", docID}}
 	err = collection.FindOne(context.TODO(), filter).Decode(&auction)
+	if err != nil {
+		// log.Fatal(err)
+		return nil, err
+	}
+
+	return &auction, nil
+}
+
+func (c *DBClient) GetAuctionByID(id primitive.ObjectID) (*models.Auction, error) {
+	var auction models.Auction
+	collection := c.client.Database(c.DBname).Collection("auctions")
+	filter := bson.D{{"_id", id}}
+	err := collection.FindOne(context.TODO(), filter).Decode(&auction)
 	if err != nil {
 		// log.Fatal(err)
 		return nil, err
@@ -240,7 +284,34 @@ func (c *DBClient) GetAuctions() *models.AuctionList {
 func (c *DBClient) GetBids(AuctionId string) (*[]models.Bid, error) {
 	var bids []models.Bid
 	collection := c.client.Database(c.DBname).Collection("bids")
-	filter := bson.D{{"auctionid", AuctionId}}
+	filter := bson.D{{"_id", AuctionId}}
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		// log.Fatal(err)
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+	for cur.Next(context.Background()) {
+		var elem models.Bid
+		err := cur.Decode(&elem)
+		bids = append(bids, elem)
+		if err != nil {
+			// log.Fatal(err)
+			return nil, err
+		}
+	}
+	if err := cur.Err(); err != nil {
+		// log.Fatal(err)
+		return nil, err
+	}
+	return &bids, nil
+}
+
+//get the list of all the bids by user id
+func (c *DBClient) GetBidsbyUser(UserId string) (*[]models.Bid, error) {
+	var bids []models.Bid
+	collection := c.client.Database(c.DBname).Collection("bids")
+	filter := bson.D{{"userid", UserId}}
 	cur, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		// log.Fatal(err)
@@ -293,6 +364,46 @@ func (c *DBClient) UpdateUser(userID string, points int) error {
 	}
 
 	return err
+}
+
+func (c *DBClient) DeleteAllUsers() error {
+	ctx, _ := context.WithTimeout(context.Background(), 1000*time.Second)
+	collection := c.client.Database(c.DBname).Collection("users")
+	_, err := collection.DeleteMany(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	fmt.Println("Deleted all users")
+	return nil
+}
+
+//get the list of all the users
+func (c *DBClient) GetUsers(AuctionId string) (*[]models.User, error) {
+	var users []models.User
+	collection := c.client.Database(c.DBname).Collection("users")
+	filter := bson.D{{"auctionid", AuctionId}}
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+	for cur.Next(context.Background()) {
+		var elem models.User
+		err := cur.Decode(&elem)
+		users = append(users, elem)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+	return &users, nil
+}
+
+func ObjectIDToString(id primitive.ObjectID) string {
+	return id.Hex()
 }
 
 // // Following is for testing the db locally

@@ -17,4 +17,6 @@ merauction
 .idea/
 
 # media files
-media
+# media
+
+.env

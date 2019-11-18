@@ -1,0 +1,220 @@
+{{ define "create_auction/index.tmpl" }}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="/css/materialize.min.css"
+      media="screen,projection"
+    />
+    <link type="text/css" rel="stylesheet" href="/css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create a New Auction</title>
+  </head>
+  <body>
+    {{ template "common/navbar.tmpl" }}
+    <!-- create auction page -->
+    <main class="container">
+      <div class="divider"></div>
+      <br />
+      <section id="section-post">
+        <!-- create auction form -->
+        {{ template "create_auction/form.tmpl" . }}
+      </section>
+    </main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/materialize.min.js"></script>
+    <script type="text/javascript">
+      function uploadPics() {
+        var file_data = $("#file").prop("files")[0];
+        var fileName = file_data.name;
+        var form_data = new FormData();
+        // var name = "cooldogee";
+        form_data.append("file", file_data);
+        // form_data.append("name", name);
+        $.ajax({
+          url: "/upload",
+          dataType: "text",
+          cache: false,
+          contentType: false,
+          processData: false,
+          data: form_data,
+          type: "post",
+          success: function(response) {
+            M.toast({
+              html: response
+            });
+            $.ajax({
+              method: "GET",
+              url: "/auction/create/getTagsfromImage?imageName=" + fileName,
+              dataType: "json",
+              success: function(response) {
+                var len = response.length;
+                var tags = "";
+                for (var i = 0; i < len; i++) {
+                  tags += response[i].Name + ";";
+                }
+                document.getElementById("auction-tags").value = tags;
+              },
+              error: function(response) {
+                console.log(response);
+              }
+            });
+            $.ajax({
+              method: "GET",
+              url:
+                "/auction/create/getDescriptionfromImage?imageName=" + fileName,
+              dataType: "json",
+              success: function(response) {
+                document.getElementById("auction-description").value = response;
+              },
+              error: function(response) {
+                console.log(response);
+              }
+            });
+          },
+          error: function(response) {
+            M.toast({
+              html: response
+            });
+          }
+        });
+      }
+
+      function readFile() {
+        if (this.files && this.files[0]) {
+          var FR = new FileReader();
+
+          FR.addEventListener("load", function(e) {
+            document.getElementById("img").src = e.target.result;
+            document.getElementById("b64").value = e.target.result;
+          });
+
+          FR.readAsDataURL(this.files[0]);
+        }
+      }
+
+      if (document.getElementById("file")) {
+        document.getElementById("file").addEventListener("change", readFile);
+      }
+
+      function submitAuc() {
+        var title = $("#auction-title").val();
+        var b64_image = new Array(
+          $("#b64")
+            .val()
+            .split(",")[1]
+        );
+        var tags = $("#auction-tags")
+          .val()
+          .split(";");
+        var description = $("#auction-description").val();
+        var basePrice = $("#auction-base-price").val();
+        var endTime = $("#auction-end-time").val();
+        var unixEndTime = (Date.now(endTime) / 1000) | 0;
+        if (
+          title.length == 0 ||
+          b64_image.length == 0 ||
+          tags.length == 0 ||
+          description.length == 0 ||
+          basePrice.length == 0 ||
+          endTime.length == 0
+        ) {
+          M.toast({
+            html: "Please complete the form!"
+          });
+        } else {
+          $.ajax({
+            url: `/auction/create`,
+            method: "POST",
+            datatype: "json",
+            contentType: "application/json",
+            success: function(result) {
+              console.log(result);
+              M.toast({
+                html: result.Message
+              });
+            },
+            error: function(jqXHR, exception) {
+              M.toast({
+                html: JSON.parse(jqXHR.responseText)["message"]
+              });
+            },
+            data: JSON.stringify({
+              title: title,
+              image: b64_image,
+              tag: tags,
+              description: description,
+              price: parseInt(basePrice),
+              time: unixEndTime
+            })
+          });
+        }
+      }
+
+      function login() {
+        var user_id = $("#login-input-username").val();
+        var password = $("#login-input-password").val();
+        $.ajax({
+          url: `/login`,
+          method: "POST",
+          success: function(result) {
+            M.toast({
+              html: "Successfully logged in"
+            });
+            setTimeout(function() {
+              location.reload();
+            }, 500);
+          },
+          error: function(jqXHR, exception) {
+            M.toast({
+              html: JSON.parse(jqXHR.responseText)["message"]
+            });
+          },
+          data: {
+            username: user_id,
+            password: password
+          }
+        });
+      }
+
+      function signUp() {
+        var user_id = $("#signup-input-username").val();
+        var pwd = $("#signup-input-password").val();
+        $.ajax({
+          url: `/user/signup`,
+          method: "POST",
+          datatype: "json",
+          contentType: "application/json",
+          success: function(result) {
+            M.toast({
+              html: "Successfully signed up"
+            });
+            setTimeout(function() {
+              location.reload();
+            }, 500);
+          },
+          error: function(jqXHR, exception) {
+            M.toast({
+              html: jqXHR.responseText
+            });
+          },
+          data: JSON.stringify({
+            user_id: user_id,
+            pwd: pwd
+          })
+        });
+      }
+
+      $(document).ready(function() {
+        $(".modal").modal();
+      });
+    </script>
+  </body>
+</html>
+{{ end }}

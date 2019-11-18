@@ -1,23 +1,17 @@
 [
     {
-        "UserID" : "vamshi",
-        "UserName" : "vamshi",
-        "Points" : 0
+        "user_id" : "vamshi",
+        "user_name" : "vamshi",
+        "pwd" : "pwd_vamshi"
     },
     {
-        "UserID" : "deepak",
-        "UserName" : "deepak",
-        "Points" : 0
+        "user_id" : "deepak",
+        "user_name" : "deepak",
+        "pwd" : "pwd_deepak"
     },
     {
-        "UserID" : "deepak",
-        "UserName" : "deepak",
-        "Points" : 0
-    },
-    {
-        "UserID" : "harsh",
-        "UserName" : "harsh",
-        "Points" : 0
+        "user_id" : "harsh",
+        "user_name" : "harsh",
+        "pwd" : "pwd_harsh"
     }
-
 ]

@@ -7,7 +7,7 @@
   <link type="text/css" rel="stylesheet" href="/css/materialize.min.css" media="screen,projection" />
   <link type="text/css" rel="stylesheet" href="/css/style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>merauc</title>
+  <title>merAuc: An online live auction portal</title>
 </head>
 
 <body>
@@ -16,11 +16,9 @@
   <main class="container">
     <section>
       <div class="row">
-
         {{ range $auction := . -}}
         {{ template "auction_list/card.tmpl" $auction }}
         {{- end }}
-
       </div>
     </section>
   </main>

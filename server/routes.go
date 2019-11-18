@@ -94,7 +94,9 @@ func setupRoutes(router *gin.Engine) {
 
 	setUpJWT()
 	router.POST("/login", authMiddleware.LoginHandler)
-	router.POST("/users", addNewUser) //handle signing up
+	router.POST("/user/signup", addNewUser)       //handle signing up
+	router.GET("/user/:user_id", getUserByUserID) // get user info
+	router.GET("/user/:user_id/auctions", getUserAuctions)
 
 	router.SetFuncMap(template.FuncMap{
 		"formatAuctionIDAsHexString": formatAuctionIDAsHexString,
@@ -112,11 +114,16 @@ func setupRoutes(router *gin.Engine) {
 
 	router.GET("/hello", hello)
 	router.GET("/", getAllAuctions)
+	router.GET("/create_auction", getCreateAuction)
 	router.GET("/auctions/:auction_id", getAuctionsByID)
 	router.GET("/auctions/:auction_id/bids", getBidsAuctionsById)
 	router.GET("/auctions/:auction_id/rewards", addRewardsToUsers)
+	router.GET("/auctions/:auction_id/rewards/:user_id", addRewardsToUser)
 	router.GET("/auctions/:auction_id/result", getResultByAuctionId)
 	router.POST("/auction/create", createAuction)
+
+	router.GET("/auction/create/getTagsfromImage", getTagsfromImage)
+	router.GET("/auction/create/getDescriptionfromImage", getDescriptionfromImage)
 
 	router.GET("/db/populate", addDataDB)
 

@@ -11,6 +11,7 @@ import (
 
 	// "io/ioutil"
 
+	"github.com/MerAuctions/MerAuctions/api"
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
 	"github.com/dgrijalva/jwt-go"
@@ -26,6 +27,7 @@ func hello(c *gin.Context) {
 //getAllAuctions is handler function to return list of all auctions
 func getAllAuctions(c *gin.Context) {
 	allAuctions := data.GetAllAuctions()
+	// log.Println(allAuctions)
 	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 
@@ -68,6 +70,27 @@ func getAuctionsByID(c *gin.Context) {
 	})
 }
 
+//getAuctionsByID is handler function for getting particular auction page
+func getCreateAuction(c *gin.Context) {
+	isUserSignedIn := false
+	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
+		if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok && jwtToken.Valid {
+			if userID, ok := claims[jwtIdentityKey].(string); ok == true {
+				if user, _ := data.GetUserById(userID); user != nil {
+					isUserSignedIn = true
+				}
+			} else {
+				log.Printf("Could not convert claim to string")
+			}
+		} else {
+			log.Printf("Could not extract claims into JWT")
+		}
+	}
+	c.HTML(http.StatusOK, "create_auction/index.tmpl", gin.H{
+		"isUserSignedIn": isUserSignedIn,
+	})
+}
+
 //getBidsAuctionsById is handler function to get all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
@@ -82,37 +105,56 @@ func getBidsAuctionsById(c *gin.Context) {
 //addNewUser registers a new user
 func addNewUser(c *gin.Context) {
 	var newuser models.User
-	//TODO check for error
+	var responseSignup models.ResponseSignup
+	var responseCode int
+
 	c.ShouldBindJSON(&newuser)
 
-	//status:0-->success, status:1-->user exists
-	//TODO: status:2-->userid not according to standard
-	status := data.AddNewUser(&newuser)
+	newUser, status := data.AddNewUser(&newuser)
+	log.Println("User object: ", newUser)
+	log.Println("Status: ", status)
+
+	if newUser != nil {
+		responseSignup.User = *newUser
+	}
+
 	if status == 0 {
-		log.Println("User Successfully added.")
 		usr := models.User{
 			UserID: newuser.UserID,
 		}
 		token, _, _ := authMiddleware.TokenGenerator(&usr)
 		log.Println("cookie token ", token)
-		//TODO fix domain name
 		c.SetCookie("token", token, 60*60, "/", "", false, false)
-		c.String(200, fmt.Sprintf("User Successfully added"))
-	} else {
-		log.Println("User already exists")
-		c.String(400, fmt.Sprintf("User Already exists"))
+		responseCode = 200
+		responseSignup.Message = "User signup successful"
+	} else if status == 1 {
+		responseCode = 500
+		responseSignup.Message = "User already exists"
+	} else if status == 2 {
+		responseCode = 500
+		responseSignup.Message = "UserID is empty"
+	} else if status == 4 {
+		responseCode = 500
+		responseSignup.Message = "Password is empty"
+	} else if status == 5 {
+		responseCode = 500
+		responseSignup.Message = "Error in creating new user"
 	}
 
+	c.JSON(responseCode, responseSignup)
 }
 
+// createAuction create a new auction for the user
 func createAuction(c *gin.Context) {
 	var newAuction models.Auction
-	var response models.Response
+	var response models.ResponseCreateAuction
 	var responseCode int
 
 	c.ShouldBindJSON(&newAuction)
 
-	status := data.AddNewAuction(&newAuction)
+	log.Println(newAuction)
+
+	newAuction, status := data.AddNewAuction(&newAuction)
 	response.Auction = newAuction
 
 	if status == 0 {
@@ -134,7 +176,6 @@ func createAuction(c *gin.Context) {
 
 //addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
-
 	isUserSignedIn := false
 	usr_id := ""
 	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
@@ -164,6 +205,7 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	json.Unmarshal(rawData, &price_map)
 
 	auc_id := c.Param("auction_id")
+	auc := data.GetAuctionById(auc_id)
 
 	str_price, ok := price_map["price"].(string)
 	if ok == false {
@@ -178,19 +220,38 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 		return
 	}
 
-	newbid.AuctionID = auc_id
-	newbid.UserID = usr_id
-	newbid.Price = models.Price(tmp_price)
-
-	//TODO: check for price limits
-	status := data.AddNewBid(&newbid)
-	if status == 0 {
-		log.Printf("User's Bid Successfully added.")
-		c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
-	} else {
-		log.Printf("User's Bid could not be added with status %d.", status)
-		c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
+	currentBid := models.Price(tmp_price)
+	bids := data.GetAllSortedBidsForAuction(auc_id)
+	var highestBid models.Price = 0
+	for _, bid := range bids {
+		fmt.Println(bid)
+		if highestBid < bid.Price {
+			highestBid = bid.Price
+		}
 	}
+
+	if (len(bids) == 0 && highestBid == auc.BasePrice) || (currentBid >= auc.BasePrice && currentBid > highestBid) &&
+		currentBid <= 10*auc.BasePrice {
+		newbid.AuctionID = auc_id
+		newbid.UserID = usr_id
+		newbid.Price = models.Price(currentBid)
+
+		//TODO: check for price limits
+		status := data.AddNewBid(&newbid)
+		if status == 0 {
+			log.Printf("User's Bid Successfully added.")
+			c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
+		} else {
+			log.Printf("User's Bid could not be added with status %d.", status)
+			c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
+		}
+		if err != nil {
+			c.JSON(404, fmt.Sprint("Auction Not Found!"))
+		}
+	} else {
+		c.JSON(500, fmt.Sprintf("You can only bid above the current highest bid!"))
+	}
+
 }
 
 //getResultByAuctionId is handler function to check result by ID
@@ -207,6 +268,17 @@ func getResultByAuctionId(c *gin.Context) {
 	}
 }
 
+func getUserByUserID(c *gin.Context) {
+	id := c.Param("user_id")
+	user, err := data.GetUserById(id)
+
+	if err != nil {
+		c.JSON(500, user)
+	}
+
+	c.JSON(200, user)
+}
+
 //this will populate the db
 func addDataDB(c *gin.Context) {
 	ok := data.PopulateDB()
@@ -221,10 +293,10 @@ func addDataDB(c *gin.Context) {
 //addRewardsToUsers is handler function to offer rewards when the auction ends
 func addRewardsToUsers(c *gin.Context) {
 	rewardPercentage := 0.005
-	id := c.Param("auction_id")
-	auc := data.GetAuctionById(id)
+	auctionID := c.Param("auction_id")
+	auc := data.GetAuctionById(auctionID)
 
-	bids := data.GetAllSortedBidsForAuction(id)
+	bids := data.GetAllSortedBidsForAuction(auctionID)
 	userBidFreq := make(map[string]int)
 
 	for _, bid := range bids {
@@ -254,12 +326,57 @@ func addRewardsToUsers(c *gin.Context) {
 		}
 	}
 
-	c.JSON(200, "Bidders are rewarded!")
+	c.JSON(200, fmt.Sprintf("Bidders are rewarded!"))
 
 }
 
+func addRewardsToUser(c *gin.Context) {
+	rewardPercentage := 0.005
+	auctionID := c.Param("auction_id")
+	userID := c.Param("user_id")
+	user, err := data.GetUserById(userID)
+
+	if err != nil {
+		log.Printf("Error in getting user details for '%s' from DB: %s", userID, err.Error())
+	}
+	auc := data.GetAuctionById(auctionID)
+	bids := data.GetAllSortedBidsForAuction(auctionID)
+	userBidFreq := 0
+
+	for _, bid := range bids {
+		if bid.UserID == userID {
+			if userBidFreq < maxBidsToRewards {
+				pointsForBidPrice := (rewardPercentage * float64(bid.Price))
+				fmt.Println("auc.BasePrice:", auc.BasePrice)
+				pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
+
+				//TODO after auction creation done
+				//pointsFromTime := float64(duration*60/(auc.EndTime - bid.Time))
+
+				points := int(pointsForHighBid * pointsForBidPrice)
+				fmt.Println("pointsForBidPrice:", pointsForBidPrice, "  pointsForHighBid:", pointsForHighBid, "  points:", points)
+				if points <= 0 {
+					continue
+				} else {
+					err := data.UpdateUser(bid.UserID, points)
+					if err != nil {
+						c.JSON(404, fmt.Sprint("User Not Found!"))
+					}
+				}
+			}
+			userBidFreq++
+		}
+	}
+	user, err = data.GetUserById(userID)
+	if err != nil {
+		log.Printf("Error in getting user details for '%s' from DB: %s", userID, err.Error())
+	}
+	c.JSON(200, fmt.Sprintf("Congrats!, you have been awarded %v points.", user.Points))
+
+}
+
+// get picture user uploaded and save to /media/images
 func uploadPicture(c *gin.Context) {
-	name := c.PostForm("name")
 	// Source
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -273,5 +390,26 @@ func uploadPicture(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully with fields name=%s", file.Filename, name))
+	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully", file.Filename))
+}
+
+func getTagsfromImage(c *gin.Context) {
+	imageName := c.Request.URL.Query().Get("imageName")
+	tags := api.GetTagsForImage(imageName)
+	log.Println("tags : ", tags)
+	c.JSON(http.StatusOK, tags)
+}
+
+func getDescriptionfromImage(c *gin.Context) {
+	imageName := c.Request.URL.Query().Get("imageName")
+	description := api.GetDescriptionForImage(imageName)
+	log.Println("description : ", description)
+	c.JSON(http.StatusOK, description)
+}
+
+func getUserAuctions(c *gin.Context) {
+	listAuctions := data.GetAuctionByUserId(c.Param("user_id"))
+	log.Println(c.Param("user_id"))
+	log.Println(listAuctions)
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", listAuctions)
 }

@@ -28,6 +28,21 @@ func GetAuctionById(id string) *models.Auction {
 	return auc
 }
 
+func GetAuctionByUserId(id string) *models.AuctionList {
+	bids, err := DBclient.GetBidsbyUser(id)
+	if err != nil {
+		return nil
+	}
+	log.Println(bids)
+	var aucs models.AuctionList
+	for _, bid := range *bids {
+		auc, _ := DBclient.GetAuction(bid.AuctionID)
+		aucs = append(aucs, *auc)
+	}
+	log.Println(aucs)
+	return &aucs
+}
+
 func GetTopFiveBids(auctionID string) *[]models.Bid {
 	tmp_bids, err := DBclient.GetBids(auctionID)
 	if err != nil {
@@ -48,37 +63,70 @@ func GetTopFiveBids(auctionID string) *[]models.Bid {
 func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 	tmp_bids, err := DBclient.GetBids(auctionID)
 	if err != nil {
+		log.Fatal("Error in finding bids ", err)
 		return nil //TODO: also give error
 	}
 	bids := *tmp_bids
 	sort.SliceStable(bids, func(i, j int) bool {
 		return bids[i].Time > bids[j].Time
 	})
-
+	log.Println("Bids: ", bids)
 	return bids
 }
 
-func AddNewUser(usr *models.User) int {
-	_, err := DBclient.Getuser(string(usr.UserID))
-	if err == nil {
-		//user already exit
-		return 1
+// This function returns all user who bid for an auction
+func GetAllUsersForAuction(auctionID string) []models.User {
+	users, err := DBclient.GetUsers(auctionID)
+	if err != nil {
+		log.Fatal("No bidders for auction ", auctionID)
 	}
+
+	return *users
+}
+
+func AddNewUser(usr *models.User) (*models.User, int) {
+	var user *models.User
+	var err error
+
+	if usr.UserID == "" {
+		log.Println("UserID is empty")
+		return user, 2
+	} else if usr.Password == "" {
+		log.Println("Password is empty")
+		return user, 4
+	}
+
+	user, err = DBclient.Getuser(string(usr.UserID))
+
+	if err == nil {
+		//user already existst, so exists
+		log.Println("User already exists")
+		return user, 1
+	}
+
 	//User doesn't exit and needed to be inserted in the db
 	err = DBclient.InsertUser(usr)
 	if err != nil {
 		//unable to insert user
-		return 2 //TODO: discuss which status code to give
+		log.Fatal("Error in creating new user (AddNewUser) ", err)
+		return user, 5 //TODO: discuss which status code to give
 	}
 
-	return 0
+	user, err = DBclient.Getuser(string(usr.UserID))
+	if err != nil {
+		log.Fatal("Error in creating new user (Getuser): ", err)
+		return user, 5
+	}
+
+	log.Println("User signup successful")
+	return user, 0
 }
 
 //This function returns User by UserID
 func GetUserByID(userID string) models.User {
 	temp_user, err := DBclient.Getuser(userID)
 	if err != nil {
-		log.Fatal("User not Found!")
+		log.Fatal(userID, " User not Found!")
 	}
 	user := *temp_user
 	return user
@@ -89,23 +137,24 @@ func UpdateUser(userID string, points int) error {
 	return DBclient.UpdateUser(userID, points)
 }
 
-func AddNewAuction(auction *models.Auction) int {
+func AddNewAuction(auction *models.Auction) (models.Auction, int) {
 	if auction.Title == "" {
 		log.Println("Invalid Auction Title")
-		return 2
+		return *auction, 2
 	} else if len(auction.Image) == 0 {
 		log.Println("Please upload auction image")
-		return 3
+		return *auction, 3
 	}
 
-	err := DBclient.InsertAuction(auction)
+	id, err := DBclient.InsertAuction(auction)
 	if err != nil {
 		log.Fatal("Error in creating new auction")
-		return 1
+		return *auction, 1
 	}
 
+	auction, err = DBclient.GetAuctionByID(id)
 	log.Println("Auction created successfully")
-	return 0
+	return *auction, 0
 }
 
 func AddNewBid(bid *models.Bid) int {
@@ -181,6 +230,7 @@ func GetResult(auctionID string) *models.Result {
 func GetUserById(id string) (*models.User, error) {
 	usr, err := DBclient.Getuser(id)
 	if err != nil {
+		log.Println("Error fetching user details: ", err)
 		return nil, err
 	}
 	return usr, nil
@@ -213,9 +263,3 @@ func PopulateDB() bool {
 	return true
 
 }
-
-//
-// func main(){
-// 	DBclient = db.ConnectDB("mongodb://localhost:27017","test7")
-// 	fmt.Println(GetResult("5dc937cc88d9a2eaff817723"))
-// }

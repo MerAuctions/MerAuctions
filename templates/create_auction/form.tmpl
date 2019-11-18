@@ -1,0 +1,112 @@
+{{ define "create_auction/form.tmpl" }}
+<h3>Create a New Auction</h3>
+<br />
+<div class="row">
+  {{ if .isUserSignedIn }}
+  <div class="input-field col s12">
+    <input id="auction-title" type="text" class="validate" />
+    <label for="auction-title">Title</label>
+  </div>
+  <div class="col s12">
+    <input type="file" id="file" name="file" multiple />
+    <button
+      id="upload"
+      class="waves-effect waves-light btn"
+      onclick="uploadPics()"
+    >
+      Upload Image
+    </button>
+  </div>
+  <div class="col s12">
+    <input id="b64" type="hidden" />
+    <img id="img" height="250" />
+  </div>
+  <div class="input-field col s12">
+    <input id="auction-tags" type="text" class="validate" />
+    <label for="auction-tags">Tags</label>
+  </div>
+  <div class="input-field col s12">
+    <input id="auction-description" type="text" class="validate" />
+    <label for="auction-description">Description</label>
+  </div>
+  <div class="input-field col s12">
+    <input id="auction-base-price" type="text" class="validate" />
+    <label for="auction-base-price">Base Price</label>
+  </div>
+  <div class="input-field col s12">
+    <input id="auction-end-time" type="datetime-local" class="validate" />
+  </div>
+  <div class="col s12 post-bid-buttons">
+    <a
+      id="submit-button"
+      class="waves-effect waves-light btn"
+      onclick="submitAuc();"
+      >Submit</a
+    >
+  </div>
+  {{ else }}
+  <a
+    id="signup-button"
+    class="waves-effect waves-light btn modal-trigger"
+    data-target="signup-modal"
+    >Sign up</a
+  >
+  <a
+    id="signin-button"
+    class="waves-effect waves-light btn modal-trigger"
+    data-target="signin-modal"
+    >Login</a
+  >
+  {{ end }}
+</div>
+
+<div id="signup-modal" class="modal">
+  <div class="modal-content">
+    <h4>New User Registration</h4>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <input id="signup-input-username" type="text" class="validate" />
+        <label for="signup-input-username">Enter new user ID...</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <input id="signup-input-password" type="password" class="validate" />
+        <label for="signup-input-password">Enter your password...</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <a href="#!" class="waves-effect waves-light btn" onclick="signUp();"
+          >Sign Up</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="signin-modal" class="modal">
+  <div class="modal-content">
+    <h4>Login</h4>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <input id="login-input-username" type="text" class="validate" />
+        <label for="login-input-username">Enter existing user ID...</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <input id="login-input-password" type="password" class="validate" />
+        <label for="login-input-password">Enter your password...</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m7">
+        <a href="#!" class="waves-effect waves-light btn" onclick="login();"
+          >Login</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}
