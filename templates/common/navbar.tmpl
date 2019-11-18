@@ -1,13 +1,17 @@
 {{ define "common/navbar.tmpl" }}
 
-<nav class="white">
-  <div class="nav-wrapper container">
-    <div class="row">
-      <div class="col s12">
-        <a href="/" class="brand-logo"><span style="color: #4cc9ff;">mer</span><span style="color: #ff0010;">auc</span></a>
+  <nav class="blue darken-2">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="/" class="brand-logo left"><span style="color: #4cc9ff;">mer</span><span style="color: #ff0010;">auc</span></a>
+        <ul class="right hide-on-med-and-down">
+          <li><a href=""><i class="material-icons">search</i></a></li>
+          <li><a href="create_auction/"><i class="material-icons">add</i></a></li>
+          <li><a href=""><i class="material-icons">refresh</i></a></li>
+          <li><a href=""><i class="material-icons">more_vert</i></a></li>
+        </ul>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
 {{ end }}

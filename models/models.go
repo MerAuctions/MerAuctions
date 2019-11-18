@@ -34,8 +34,8 @@ type Auction struct {
 	Image       []string // image encode in base64
 	Tag         []string
 	Description string
-	BasePrice   Price
-	EndTime     int64
+	BasePrice   Price `json:"price"`
+	EndTime     int64 `json:"time"`
 }
 
 //AuctionList is a list of auctions
