@@ -54,9 +54,7 @@
               url: "/auction/create/getTagsfromImage?imageName=" + fileName,
               dataType: "json",
               success: function(response) {
-                console.log(response);
                 var len = response.length;
-                console.log(len);
                 var tags = "";
                 for (var i = 0; i < len; i++) {
                   tags += response[i].Name + ";";
@@ -111,7 +109,6 @@
         var tags = $("#auction-tags")
           .val()
           .split(";");
-        console.log($("#auction-tags").val());
         var description = $("#auction-description").val();
         var basePrice = $("#auction-base-price").val();
         var endTime = $("#auction-end-time").val();
