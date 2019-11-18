@@ -416,6 +416,28 @@ var _ = Describe("Server", func() {
 		})
 	})
 
+	Describe("The /user/:user_id endpoint", func() {
+		var new_user []byte
+		var responseSignup models.ResponseSignup
+		var newUser, responseUser models.User
+		BeforeEach(func() {
+			new_user = []byte(`{"user_id":"jd", "user_name":"john_doe", "pwd":"pwd_john_doe"}`)
+			response = performRequest(router, "POST", "/user/signup", new_user)
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			newUser = responseSignup.User
+			response = performRequest(router, "GET", "/user/jd", nil)
+		})
+
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
+		})
+
+		It("Returns the user details with input id", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseUser)
+			Expect(responseUser).To(Equal(newUser))
+		})
+	})
+
 	// Describe("The POST /auctions/:auction_id/users/:user_id/bids endpoint", func() {
 	// 	BeforeEach(func() {
 	// 		newbid := []byte(`{"BidID":"0", "AuctionID":"1", "UserID":"vamshi", "Price":"2000", "Count": 11, "Time":""}`)
