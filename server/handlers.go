@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -386,16 +387,20 @@ func getPersonalisedAuctions(c *gin.Context) {
 	auctions := *data.GetAllAuctions()
 	similarityMap := make(map[primitive.ObjectID]int)
 
-	for _, interest := range interests {
-		for _, auc := range auctions {
-			count := 0
-			for _, tag := range auc.Tag {
-				if tag == interest {
-					count++
-				}
-			}
-			similarityMap[auc.AuctionID] = count
+	for _, auc := range auctions {
+		count := 0
+		tagMap := make(map[string]int)
+		for _, tag := range auc.Tag {
+			tagMap[strings.ToLower(tag)] = 0
 		}
+		for _, interest := range interests {
+			_, ok := tagMap[strings.ToLower(interest)]
+			if ok == true {
+				count++
+			}
+		}
+		similarityMap[auc.AuctionID] = count
+
 	}
 
 	var sortedAuctions entries
@@ -405,23 +410,14 @@ func getPersonalisedAuctions(c *gin.Context) {
 
 	sort.Sort(sort.Reverse(sortedAuctions))
 
-	for _, e := range sortedAuctions {
-		fmt.Printf("%q : %d\n", e.key, e.val)
+	var personalisedAuctions []primitive.ObjectID
+
+	for _, auc := range sortedAuctions {
+		fmt.Println("auction:", auc.key, " similar:", auc.val)
+		personalisedAuctions = append(personalisedAuctions, auc.key)
 	}
 
-	// for _, k := range keys {
-	// 	fmt.Println(k, m[k])
-	// }
-
-	// sortedMap := rankByWordCount(similarityMap)
-
-	// var personalisedAuctions []models.Auction
-
-	// for key, value := range sortedMap {
-	// 	personalisedAuctions = append(personalisedAuctions, data.GetAuctionById(key))
-	// }
-
-	c.JSON(200, sortedAuctions)
+	c.JSON(200, personalisedAuctions)
 }
 
 // get picture user uploaded and save to /media/images
