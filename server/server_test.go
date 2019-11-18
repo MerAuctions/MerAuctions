@@ -98,6 +98,30 @@ func InsertBidsToDB() *models.BidList {
 	return &bids
 }
 
+func InsertBidsForAuction(id string) *models.BidList {
+	var bids models.BidList
+	file, err := ioutil.ReadFile("./seed-data/bids.json")
+	if err != nil {
+		log.Fatal("Error reading bids.json : ", err.Error())
+	}
+
+	json.Unmarshal([]byte(file), &bids)
+
+	// log.Println(bids)
+
+	for i := range bids {
+		bids[i].AuctionID = id
+	}
+
+	// log.Println(bids)
+
+	err = data.DBclient.InsertBids(&bids)
+	if err != nil {
+		log.Fatal("Error populating bids.json : ", err.Error())
+	}
+	return &bids
+}
+
 func RemoveBidsFromDB() {
 	var bids models.BidList
 	file, err := ioutil.ReadFile("./seed-data/bids.json")
@@ -168,44 +192,32 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	Describe("The GET auctions/:auction_id/bids endpoint", func() {
-
-		auctionID := "5dca6431de52283587609581"
-		BeforeEach(func() {
-			// InsertBidsToDB()
-			response = performRequest(router, "GET", "/auctions/"+auctionID+"/bids", nil)
-		})
-		It("Returns with Status 200", func() {
-			Expect(response.Code).To(Equal(200))
-		})
-		It("Returns top 5 bids of running auction 5dca6431de52283587609581", func() {
-			var receivedBidsList *[]models.Bid
-			json.Unmarshal(response.Body.Bytes(), &receivedBidsList)
-			returnedBids := data.GetTopFiveBids(auctionID)
-			Expect(receivedBidsList).To(Equal(returnedBids))
-		})
-	})
-
 	// Describe("The GET auctions/:auction_id/rewards/:user_id endpoint", func() {
-	// 	auctionID := "5dca6431de52283587609581"
 	// 	userID := "deepak"
 	// 	rewardPercentage := 0.005
 	// 	var bids []models.Bid
-	// 	var auc models.Auction
+	// 	var auc *models.Auction
 	// 	var user models.User
-	//
+	// 	var responseAuction models.ResponseCreateAuction
 	// 	BeforeEach(func() {
-	// 		newAuction = (*GetAuctions())[0]
-	// 		data, err := json.Marshal(newAuction)
+	// 		newAuction := (*GetAuctions())[0]
+	// 		databytes, err := json.Marshal(newAuction)
 	// 		if err != nil {
 	// 			log.Fatal(err)
 	// 		}
-	// 		response = performRequest(router, "POST", "/auction/create", data)
-	// 		newAuction.
-	// 		bids = data.GetAllSortedBidsForAuction(auctionID)
-	// 		auc = *data.GetAuctionById(auctionID)
+	// 		response = performRequest(router, "POST", "/auction/create", databytes)
+	// 		json.Unmarshal(response.Body.Bytes(), &responseAuction)
+	// 		newAuction = responseAuction.Auction
+	// 		auctionID := newAuction.AuctionID
+	// 		bytes, _ := auctionID.MarshalJSON()
+	// 		// n := bytes.Index(bytes, []byte{0})
+	// 		// id = string(id[:])
+	// 		// id := fmt.Sprintf("%s", bytes[1:])
+	// 		log.Println("Id: ", id)
+	// 		InsertBidsForAuction(id)
+	// 		bids = data.GetAllSortedBidsForAuction(id)
 	// 		user = data.GetUserByID(userID)
-	// 		response = performRequest(router, "GET", "/auctions/"+auctionID+"/rewards/"+userID, nil)
+	// 		response = performRequest(router, "GET", "/auctions/"+id+"/rewards/"+userID, nil)
 	// 	})
 	// 	It("Returns with Status 200", func() {
 	// 		Expect(response.Code).To(Equal(200))
