@@ -32,25 +32,56 @@
     <script type="text/javascript">
       function uploadPics() {
         var file_data = $("#file").prop("files")[0];
-        console.log(file_data);
+        var fileName = file_data.name;
         var form_data = new FormData();
         // var name = "cooldogee";
         form_data.append("file", file_data);
         // form_data.append("name", name);
-        console.log(form_data);
         $.ajax({
-          url: "/upload", // point to server-side controller method
-          dataType: "text", // what to expect back from the server
+          url: "/upload",
+          dataType: "text",
           cache: false,
           contentType: false,
           processData: false,
           data: form_data,
           type: "post",
           success: function(response) {
-            $("#msg").html(response); // display success response from the server
+            M.toast({
+              html: response
+            });
+            $.ajax({
+              method: "GET",
+              url: "/auction/create/getTagsfromImage?imageName=" + fileName,
+              dataType: "json",
+              success: function(response) {
+                var len = response.length;
+                var tags = "";
+                for (var i = 0; i < len; i++) {
+                  tags += response[i].Name + ";";
+                }
+                document.getElementById("auction-tags").value = tags;
+              },
+              error: function(response) {
+                console.log(response);
+              }
+            });
+            $.ajax({
+              method: "GET",
+              url:
+                "/auction/create/getDescriptionfromImage?imageName=" + fileName,
+              dataType: "json",
+              success: function(response) {
+                document.getElementById("auction-description").value = response;
+              },
+              error: function(response) {
+                console.log(response);
+              }
+            });
           },
           error: function(response) {
-            $("#msg").html(response); // display error response from the server
+            M.toast({
+              html: response
+            });
           }
         });
       }
@@ -75,8 +106,9 @@
       function submitAuc() {
         var title = $("#auction-title").val();
         var b64_image = new Array($("#b64").val());
-        console.log(b64_image);
-        var tags = $("#auction-tags").val();
+        var tags = $("#auction-tags")
+          .val()
+          .split(";");
         var description = $("#auction-description").val();
         var basePrice = $("#auction-base-price").val();
         var endTime = $("#auction-end-time").val();
