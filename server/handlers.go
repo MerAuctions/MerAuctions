@@ -152,6 +152,8 @@ func createAuction(c *gin.Context) {
 
 	c.ShouldBindJSON(&newAuction)
 
+	log.Println(newAuction)
+
 	newAuction, status := data.AddNewAuction(&newAuction)
 	response.Auction = newAuction
 
