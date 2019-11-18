@@ -63,3 +63,15 @@ type ResponseSignup struct {
 
 //BidList to store List of bids
 type BidList []Bid
+
+//Tag to store image tag
+type Tag struct {
+	Name       string
+	Confidence float64
+}
+
+//TagList to store List of image tags
+type TagList []Tag
+
+//Description to store image description
+type Description string
