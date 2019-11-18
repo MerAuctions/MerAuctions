@@ -445,6 +445,7 @@ func uploadPicture(c *gin.Context) {
 func getTagsfromImage(c *gin.Context) {
 	imageName := c.Request.URL.Query().Get("imageName")
 	tags := api.GetTagsForImage(imageName)
+	log.Println("tags : ", tags)
 	c.JSON(http.StatusOK, tags)
 }
 
