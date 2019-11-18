@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/MerAuctions/MerAuctions/models"
 )
@@ -14,7 +13,8 @@ import (
 func GetTagsForImage(name string) models.TagList {
 	var tagList models.TagList
 	var w http.ResponseWriter
-	imageURL := "http://34.84.23.245" + "/images/" + name
+	var IP = "34.84.23.245"
+	imageURL := "http://" + IP + "/images/" + name
 	resp, err := http.Get("https://cat-that-pic-bak.herokuapp.com/api/v1/getTagsfromImage?fileName=" + imageURL)
 	if err != nil {
 		const status = http.StatusInternalServerError
@@ -35,7 +35,8 @@ func GetTagsForImage(name string) models.TagList {
 func GetDescriptionForImage(name string) models.Description {
 	var description models.Description
 	var w http.ResponseWriter
-	imageURL := "http://" + string(os.Getenv("DOMAIN")) + "/images/" + name
+	var IP = "34.84.23.245"
+	imageURL := "http://" + IP + "/images/" + name
 	resp, err := http.Get("https://cat-that-pic-bak.herokuapp.com/api/v1/getcaption?fileName=" + imageURL)
 	if err != nil {
 		const status = http.StatusInternalServerError

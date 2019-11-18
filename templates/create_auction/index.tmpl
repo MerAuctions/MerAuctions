@@ -55,10 +55,34 @@
               dataType: "json",
               success: function(response) {
                 console.log(response);
-                console.log("success");
+                var len = response.length;
+                console.log(len);
+                var tags = "";
+                for (var i = 0; i < len; i++) {
+                  tags += response[i].Name + "; ";
+                }
+                document.getElementById("auction-tags").value = tags;
               },
               error: function(response) {
-                console.log("failure");
+                console.log(response);
+              }
+            });
+            $.ajax({
+              method: "GET",
+              url:
+                "/auction/create/getDescriptionfromImage?imageName=" + fileName,
+              dataType: "json",
+              success: function(response) {
+                console.log(response);
+                // var len = response.length;
+                // console.log(len);
+                // var tags = "";
+                // for (var i = 0; i < len; i++) {
+                //   tags += response[i].Name + "; ";
+                // }
+                // document.getElementById("auction-tags").value = tags;
+              },
+              error: function(response) {
                 console.log(response);
               }
             });
