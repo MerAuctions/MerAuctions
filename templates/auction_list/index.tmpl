@@ -16,11 +16,9 @@
   <main class="container">
     <section>
       <div class="row">
-
         {{ range $auction := . -}}
         {{ template "auction_list/card.tmpl" $auction }}
         {{- end }}
-
       </div>
     </section>
   </main>
