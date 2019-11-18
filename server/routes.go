@@ -121,6 +121,7 @@ func setupRoutes(router *gin.Engine) {
 	router.POST("/auction/create", createAuction)
 
 	router.GET("/auction/create/getTagsfromImage", getTagsfromImage)
+	router.GET("/auction/create/getDescriptionfromImage", getDescriptionfromImage)
 
 	router.GET("/db/populate", addDataDB)
 
