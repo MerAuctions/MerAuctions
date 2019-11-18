@@ -47,10 +47,29 @@
           data: form_data,
           type: "post",
           success: function(response) {
-            $("#msg").html(response); // display success response from the server
+            M.toast({
+              html: response
+            });
+            $.ajax({
+              type: "get",
+              url: "http://34.84.147.175/auction/create/getTagsfromImage",
+              dataType: "jsonp",
+              data: {
+                imageName: "test1.png"
+              },
+              contentType: "application/json; charset=utf-8",
+              success: function(response) {
+                console.log(response[0].Name);
+              },
+              error: function(response) {
+                console.log(response);
+              }
+            });
           },
           error: function(response) {
-            $("#msg").html(response); // display error response from the server
+            M.toast({
+              html: response
+            });
           }
         });
       }
