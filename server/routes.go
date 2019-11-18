@@ -94,7 +94,7 @@ func setupRoutes(router *gin.Engine) {
 
 	setUpJWT()
 	router.POST("/login", authMiddleware.LoginHandler)
-	router.POST("/users", addNewUser) //handle signing up
+	router.POST("/user/signup", addNewUser) //handle signing up
 
 	router.SetFuncMap(template.FuncMap{
 		"formatAuctionIDAsHexString": formatAuctionIDAsHexString,

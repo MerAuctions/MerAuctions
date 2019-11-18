@@ -27,7 +27,7 @@ func hello(c *gin.Context) {
 //getAllAuctions is handler function to return list of all auctions
 func getAllAuctions(c *gin.Context) {
 	allAuctions := data.GetAllAuctions()
-	log.Println(allAuctions)
+	// log.Println(allAuctions)
 	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 
@@ -105,38 +105,54 @@ func getBidsAuctionsById(c *gin.Context) {
 //addNewUser registers a new user
 func addNewUser(c *gin.Context) {
 	var newuser models.User
-	//TODO check for error
+	var responseSignup models.ResponseSignup
+	var responseCode int
+
 	c.ShouldBindJSON(&newuser)
 
-	//status:0-->success, status:1-->user exists
-	//TODO: status:2-->userid not according to standard
-	status := data.AddNewUser(&newuser)
+	newUser, status := data.AddNewUser(&newuser)
+	log.Println("User object: ", newUser)
+	log.Println("Status: ", status)
+
+	if newUser != nil {
+		responseSignup.User = *newUser
+	}
+
 	if status == 0 {
-		log.Println("User Successfully added.")
 		usr := models.User{
 			UserID: newuser.UserID,
 		}
 		token, _, _ := authMiddleware.TokenGenerator(&usr)
 		log.Println("cookie token ", token)
-		//TODO fix domain name
 		c.SetCookie("token", token, 60*60, "/", "", false, false)
-		c.String(200, fmt.Sprintf("User Successfully added"))
-	} else {
-		log.Println("User already exists")
-		c.String(400, fmt.Sprintf("User Already exists"))
+		responseCode = 200
+		responseSignup.Message = "User signup successful"
+	} else if status == 1 {
+		responseCode = 500
+		responseSignup.Message = "User already exists"
+	} else if status == 2 {
+		responseCode = 500
+		responseSignup.Message = "UserID is empty"
+	} else if status == 4 {
+		responseCode = 500
+		responseSignup.Message = "Password is empty"
+	} else if status == 5 {
+		responseCode = 500
+		responseSignup.Message = "Error in creating new user"
 	}
 
+	c.JSON(responseCode, responseSignup)
 }
 
 // createAuction create a new auction for the user
 func createAuction(c *gin.Context) {
 	var newAuction models.Auction
-	var response models.Response
+	var response models.ResponseCreateAuction
 	var responseCode int
 
 	c.ShouldBindJSON(&newAuction)
 
-	status := data.AddNewAuction(&newAuction)
+	newAuction, status := data.AddNewAuction(&newAuction)
 	response.Auction = newAuction
 
 	if status == 0 {
