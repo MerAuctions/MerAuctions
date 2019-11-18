@@ -10,11 +10,11 @@ type Price int64
 
 //User represents the users making the bid
 type User struct {
-	UserID   string `json:"user_id, string"`
-	UserName string `json:"user_name, string"`
-	Password string `json:"pwd, string"`
-	Points   int    `json:"points, int"`
-	Interest []string
+	UserID   string   `json:"user_id, string"`
+	UserName string   `json:"user_name, string"`
+	Password string   `json:"pwd, string"`
+	Points   int      `json:"points, int"`
+	Interest []string `json:"interest"`
 }
 
 //Bid represents a single bid in an Auction

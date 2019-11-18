@@ -2,12 +2,14 @@
     {
         "user_id" : "vamshi",
         "user_name" : "vamshi",
-        "pwd" : "pwd_vamshi"
+        "pwd" : "pwd_vamshi",
+        "interest" : ["car", "Motor Cycle"]
     },
     {
         "user_id" : "deepak",
         "user_name" : "deepak",
-        "pwd" : "pwd_deepak"
+        "pwd" : "pwd_deepak",
+        "interest" : ["Luxury"]
     },
     {
         "user_id" : "harsh",

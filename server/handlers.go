@@ -6,8 +6,11 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	// "io/ioutil"
 
@@ -21,7 +24,7 @@ import (
 var maxBidsToRewards int = 5
 
 func hello(c *gin.Context) {
-	c.String(200, "Hello World")
+	c.JSON(200, "hello")
 }
 
 //getAllAuctions is handler function to return list of all auctions
@@ -375,6 +378,52 @@ func addRewardsToUser(c *gin.Context) {
 
 }
 
+// This function gets personalised Auctions based on User Interests
+func getPersonalisedAuctions(c *gin.Context) {
+	userID := c.Param("user_id")
+	user := data.GetUserByID(userID)
+	interests := user.Interest
+	auctions := *data.GetAllAuctions()
+	similarityMap := make(map[primitive.ObjectID]int)
+
+	for _, interest := range interests {
+		for _, auc := range auctions {
+			count := 0
+			for _, tag := range auc.Tag {
+				if tag == interest {
+					count++
+				}
+			}
+			similarityMap[auc.AuctionID] = count
+		}
+	}
+
+	var sortedAuctions entries
+	for k, v := range similarityMap {
+		sortedAuctions = append(sortedAuctions, entry{val: v, key: k})
+	}
+
+	sort.Sort(sort.Reverse(sortedAuctions))
+
+	for _, e := range sortedAuctions {
+		fmt.Printf("%q : %d\n", e.key, e.val)
+	}
+
+	// for _, k := range keys {
+	// 	fmt.Println(k, m[k])
+	// }
+
+	// sortedMap := rankByWordCount(similarityMap)
+
+	// var personalisedAuctions []models.Auction
+
+	// for key, value := range sortedMap {
+	// 	personalisedAuctions = append(personalisedAuctions, data.GetAuctionById(key))
+	// }
+
+	c.JSON(200, sortedAuctions)
+}
+
 // get picture user uploaded and save to /media/images
 func uploadPicture(c *gin.Context) {
 	// Source
@@ -404,3 +453,14 @@ func getDescriptionfromImage(c *gin.Context) {
 	description := api.GetDescriptionForImage(imageName)
 	c.JSON(http.StatusOK, description)
 }
+
+type entry struct {
+	val int
+	key primitive.ObjectID
+}
+
+type entries []entry
+
+func (s entries) Len() int           { return len(s) }
+func (s entries) Less(i, j int) bool { return s[i].val < s[j].val }
+func (s entries) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
