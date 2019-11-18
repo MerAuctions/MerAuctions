@@ -114,7 +114,7 @@
               image: b64_image,
               tag: tags,
               description: description,
-              price: basePrice,
+              price: parseInt(basePrice),
               time: unixEndTime
             })
           });
@@ -151,7 +151,7 @@
         var user_id = $("#signup-input-username").val();
         var pwd = $("#signup-input-password").val();
         $.ajax({
-          url: `/users`,
+          url: `/user/signup`,
           method: "POST",
           datatype: "json",
           contentType: "application/json",

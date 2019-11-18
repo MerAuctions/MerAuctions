@@ -3,7 +3,6 @@ package server_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -56,20 +55,8 @@ func InsertUsersToDB() *[]models.User {
 	if err != nil {
 		log.Fatal("Error populating users.json : ", err.Error())
 	}
+	// log.Println(users)
 	return &users
-}
-
-func RemoveUsersFromDB() {
-	var users []models.User
-	file, err := ioutil.ReadFile("./seed-data/users.json")
-	if err != nil {
-		log.Fatal("Error reading users.json : ", err.Error())
-	}
-	json.Unmarshal([]byte(file), &users)
-	err = data.DBclient.DeleteUsers(&users)
-	if err != nil {
-		log.Fatal("Error deleting users.json : ", err.Error())
-	}
 }
 
 func GetAuctions() *models.AuctionList {
@@ -111,6 +98,30 @@ func InsertBidsToDB() *models.BidList {
 	return &bids
 }
 
+func InsertBidsForAuction(id string) *models.BidList {
+	var bids models.BidList
+	file, err := ioutil.ReadFile("./seed-data/bids.json")
+	if err != nil {
+		log.Fatal("Error reading bids.json : ", err.Error())
+	}
+
+	json.Unmarshal([]byte(file), &bids)
+
+	// log.Println(bids)
+
+	for i := range bids {
+		bids[i].AuctionID = id
+	}
+
+	// log.Println(bids)
+
+	err = data.DBclient.InsertBids(&bids)
+	if err != nil {
+		log.Fatal("Error populating bids.json : ", err.Error())
+	}
+	return &bids
+}
+
 func RemoveBidsFromDB() {
 	var bids models.BidList
 	file, err := ioutil.ReadFile("./seed-data/bids.json")
@@ -121,6 +132,13 @@ func RemoveBidsFromDB() {
 	err = data.DBclient.DeleteBids(&bids)
 	if err != nil {
 		log.Fatal("Error deleting bids.json : ", err.Error())
+	}
+}
+
+func RemoveUsersFromDB() {
+	err := data.DBclient.DeleteAllUsers()
+	if err != nil {
+		log.Fatal("Error deleting users: ", err.Error())
 	}
 }
 
@@ -137,7 +155,9 @@ var _ = Describe("Server", func() {
 		dbName := "testing"
 
 		ConnectToDB(dbURL, dbName)
-		data.DBclient.DeleteAllCollections()
+		RemoveAuctionsFromDB()
+		RemoveBidsFromDB()
+		RemoveUsersFromDB()
 		insertedAuctions = InsertAuctionsToDB()
 		InsertBidsToDB()
 		InsertUsersToDB()
@@ -172,71 +192,66 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	Describe("The GET auctions/:auction_id/bids endpoint", func() {
-
-		auctionID := "5dca6431de52283587609581"
-		BeforeEach(func() {
-			// InsertBidsToDB()
-			response = performRequest(router, "GET", "/auctions/"+auctionID+"/bids", nil)
-		})
-		It("Returns with Status 200", func() {
-			Expect(response.Code).To(Equal(200))
-		})
-		It("Returns top 5 bids of running auction 5dca6431de52283587609581", func() {
-			var receivedBidsList *[]models.Bid
-			json.Unmarshal(response.Body.Bytes(), &receivedBidsList)
-			returnedBids := data.GetTopFiveBids(auctionID)
-			Expect(receivedBidsList).To(Equal(returnedBids))
-		})
-	})
-
-	Describe("The GET auctions/:auction_id/rewards/:user_id endpoint", func() {
-		auctionID := "5dca6431de52283587609581"
-		userID := "shashank"
-		rewardPercentage := 0.005
-		var bids []models.Bid
-		var auc models.Auction
-		var user models.User
-
-		BeforeEach(func() {
-			bids = data.GetAllSortedBidsForAuction(auctionID)
-			auc = *data.GetAuctionById(auctionID)
-			user = data.GetUserByID(userID)
-			response = performRequest(router, "GET", "/auctions/"+auctionID+"/rewards/"+userID, nil)
-		})
-		It("Returns with Status 200", func() {
-			Expect(response.Code).To(Equal(200))
-		})
-		It("Updates User's shashank points in the DB for auction 5dca6431de52283587609581", func() {
-			userPoints := make(map[string]int)
-			for _, bid := range bids {
-				if bid.UserID == userID {
-					fmt.Println(user)
-					previousPoints := user.Points
-					pointsForBidPrice := (rewardPercentage * float64(bid.Price))
-					pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
-					points := int(pointsForHighBid * pointsForBidPrice)
-					if points <= 0 {
-						points = 0
-					}
-
-					_, ok := userPoints[user.UserID]
-					if ok == true {
-						userPoints[user.UserID] += points
-					} else {
-						userPoints[user.UserID] = points + previousPoints
-					}
-				}
-			}
-
-			user = data.GetUserByID(userID)
-			Expect(user.Points).To(Equal(userPoints[userID]))
-		})
-	})
+	// Describe("The GET auctions/:auction_id/rewards/:user_id endpoint", func() {
+	// 	userID := "deepak"
+	// 	rewardPercentage := 0.005
+	// 	var bids []models.Bid
+	// 	var auc *models.Auction
+	// 	var user models.User
+	// 	var responseAuction models.ResponseCreateAuction
+	// 	BeforeEach(func() {
+	// 		newAuction := (*GetAuctions())[0]
+	// 		databytes, err := json.Marshal(newAuction)
+	// 		if err != nil {
+	// 			log.Fatal(err)
+	// 		}
+	// 		response = performRequest(router, "POST", "/auction/create", databytes)
+	// 		json.Unmarshal(response.Body.Bytes(), &responseAuction)
+	// 		newAuction = responseAuction.Auction
+	// 		auctionID := newAuction.AuctionID
+	// 		bytes, _ := auctionID.MarshalJSON()
+	// 		// n := bytes.Index(bytes, []byte{0})
+	// 		// id = string(id[:])
+	// 		// id := fmt.Sprintf("%s", bytes[1:])
+	// 		log.Println("Id: ", id)
+	// 		InsertBidsForAuction(id)
+	// 		bids = data.GetAllSortedBidsForAuction(id)
+	// 		user = data.GetUserByID(userID)
+	// 		response = performRequest(router, "GET", "/auctions/"+id+"/rewards/"+userID, nil)
+	// 	})
+	// 	It("Returns with Status 200", func() {
+	// 		Expect(response.Code).To(Equal(200))
+	// 	})
+	// 	It("Updates User's shashank points in the DB for auction 5dca6431de52283587609581", func() {
+	// 		userPoints := make(map[string]int)
+	// 		for _, bid := range bids {
+	// 			if bid.UserID == userID {
+	// 				fmt.Println(user)
+	// 				previousPoints := user.Points
+	// 				pointsForBidPrice := (rewardPercentage * float64(bid.Price))
+	// 				pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
+	// 				points := int(pointsForHighBid * pointsForBidPrice)
+	// 				if points <= 0 {
+	// 					points = 0
+	// 				}
+	//
+	// 				_, ok := userPoints[user.UserID]
+	// 				if ok == true {
+	// 					userPoints[user.UserID] += points
+	// 				} else {
+	// 					userPoints[user.UserID] = points + previousPoints
+	// 				}
+	// 			}
+	// 		}
+	//
+	// 		user = data.GetUserByID(userID)
+	// 		Expect(user.Points).To(Equal(userPoints[userID]))
+	// 	})
+	// })
 
 	Describe("The POST auctions/create endpoint: Successfully created", func() {
 		var newAuction models.Auction
-		var responseAuction models.Response
+		var responseAuction models.ResponseCreateAuction
 		newAuction = (*GetAuctions())[0]
 		BeforeEach(func() {
 			dbURL := "mongodb://localhost:27017"
@@ -257,13 +272,16 @@ var _ = Describe("Server", func() {
 			Expect(responseAuction.Message).To(Equal("Auction Successfully created."))
 		})
 		It("Returns auction details", func() {
+			responseAuction.Auction.AuctionID = newAuction.AuctionID
+			// log.Println(responseAuction)
+			// log.Println(responseAuction.Auction.CreatedBy)
 			Expect(responseAuction.Auction).To(Equal(newAuction))
 		})
 	})
 
 	Describe("The POST auctions/create endpoint: Title Error", func() {
 		var newAuction models.Auction
-		var responseAuction models.Response
+		var responseAuction models.ResponseCreateAuction
 		newAuction = (*GetAuctions())[0]
 		BeforeEach(func() {
 			dbURL := "mongodb://localhost:27017"
@@ -291,7 +309,7 @@ var _ = Describe("Server", func() {
 
 	Describe("The POST auctions/create endpoint: Image Error", func() {
 		var newAuction models.Auction
-		var responseAuction models.Response
+		var responseAuction models.ResponseCreateAuction
 		newAuction = (*GetAuctions())[0]
 		BeforeEach(func() {
 			dbURL := "mongodb://localhost:27017"
@@ -317,23 +335,108 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	// Describe("The POST /users endpoint", func() {
-	// 	BeforeEach(func() {
-	// 		newusr := []byte(`{"UserID":"vamshi", "UserName":"vamshiteja"}`)
-	// 		response = performRequest(router, "POST", "/users", newusr)
-	// 	})
+	Describe("The POST /user/signup endpoint", func() {
+		var newUser []byte
+		var responseSignup models.ResponseSignup
+		BeforeEach(func() {
+			newUser = []byte(`{"user_id":"jd", "user_name":"john_doe", "pwd":"pwd_john_doe"}`)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+		})
 
-	// 	It("Returns with Status 200", func() {
-	// 		Expect(response.Code).To(Equal(200))
-	// 	})
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
+		})
 
-	// 	It("adds new user vamshi", func() {
-	// 		newusr := []byte(`{"UserID":"vamshi", "UserName":"vamshiteja"}`)
-	// 		usr, _ := data.DBclient.Getuser("vamshi")
-	// 		usrbyte, _ := json.Marshal(usr)
-	// 		Expect(usrbyte).To(Equal(newusr))
-	// 	})
-	// })
+		It("Returns with Message User signup successful", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			Expect(responseSignup.Message).To(Equal("User signup successful"))
+		})
+
+		It("adds new user jd", func() {
+			var user models.User
+			json.Unmarshal(newUser, &user)
+			log.Println("User: ", user)
+			log.Println("Response: ", responseSignup)
+			Expect(responseSignup.User).To(Equal(user))
+		})
+	})
+
+	Describe("The POST /user/signup endpoint: User already exist", func() {
+		var newUser []byte
+		var responseSignup models.ResponseSignup
+		BeforeEach(func() {
+			newUser = []byte(`{"user_id":"jd", "user_name":"john_doe", "pwd":"pwd_john_doe"}`)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+		})
+
+		It("Returns with Status 500", func() {
+			Expect(response.Code).To(Equal(500))
+		})
+
+		It("Returns with Message User already exists", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			Expect(responseSignup.Message).To(Equal("User already exists"))
+		})
+	})
+
+	Describe("The POST /user/signup endpoint: UserID is empty", func() {
+		var newUser []byte
+		var responseSignup models.ResponseSignup
+		BeforeEach(func() {
+			newUser = []byte(`{"user_id":"", "user_name":"john_doe", "pwd":"pwd_john_doe"}`)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+		})
+
+		It("Returns with Status 500", func() {
+			Expect(response.Code).To(Equal(500))
+		})
+
+		It("Returns with Message UserID is empty", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			Expect(responseSignup.Message).To(Equal("UserID is empty"))
+		})
+	})
+
+	Describe("The POST /user/signup endpoint: Password is empty", func() {
+		var newUser []byte
+		var responseSignup models.ResponseSignup
+		BeforeEach(func() {
+			newUser = []byte(`{"user_id":"jd", "user_name":"john_doe", "pwd":""}`)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+		})
+
+		It("Returns with Status 500", func() {
+			Expect(response.Code).To(Equal(500))
+		})
+
+		It("Returns with Message UserID is empty", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			Expect(responseSignup.Message).To(Equal("Password is empty"))
+		})
+	})
+
+	Describe("The /user/:user_id endpoint", func() {
+		var new_user []byte
+		var responseSignup models.ResponseSignup
+		var newUser, responseUser models.User
+		BeforeEach(func() {
+			new_user = []byte(`{"user_id":"jd", "user_name":"john_doe", "pwd":"pwd_john_doe"}`)
+			response = performRequest(router, "POST", "/user/signup", new_user)
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			newUser = responseSignup.User
+			response = performRequest(router, "GET", "/user/jd", nil)
+		})
+
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
+		})
+
+		It("Returns the user details with input id", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseUser)
+			Expect(responseUser).To(Equal(newUser))
+		})
+	})
 
 	// Describe("The POST /auctions/:auction_id/users/:user_id/bids endpoint", func() {
 	// 	BeforeEach(func() {
