@@ -368,3 +368,9 @@ func getTagsfromImage(c *gin.Context) {
 	tags := api.GetTagsForImage(imageName)
 	c.JSON(http.StatusOK, tags)
 }
+
+func getDescriptionfromImage(c *gin.Context) {
+	imageName := c.Request.URL.Query().Get("imageName")
+	description := api.GetDescriptionForImage(imageName)
+	c.JSON(http.StatusOK, description)
+}
