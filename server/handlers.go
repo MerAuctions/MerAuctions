@@ -26,6 +26,7 @@ func hello(c *gin.Context) {
 //getAllAuctions is handler function to return list of all auctions
 func getAllAuctions(c *gin.Context) {
 	allAuctions := data.GetAllAuctions()
+	log.Println(allAuctions)
 	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 

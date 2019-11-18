@@ -74,6 +74,8 @@
         console.log(b64_image);
         var tags = $("#auction-tags").val();
         var description = $("#auction-description").val();
+        var basePrice = $("#auction-base-price").val();
+        var endTime = $("#auction-end-time").val();
         if (
           title.length == 0 ||
           b64_image.length == 0 ||
@@ -104,8 +106,10 @@
             data: JSON.stringify({
               title: title,
               image: b64_image,
-              tags: tags,
-              description: description
+              tag: tags,
+              description: description,
+              price: basePrice,
+              time: endTime
             })
           });
         }
