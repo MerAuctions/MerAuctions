@@ -83,20 +83,42 @@ func GetAllUsersForAuction(auctionID string) []models.User {
 	return *users
 }
 
-func AddNewUser(usr *models.User) int {
-	_, err := DBclient.Getuser(string(usr.UserID))
-	if err == nil {
-		//user already exit
-		return 1
+func AddNewUser(usr *models.User) (*models.User, int) {
+	var user *models.User
+	var err error
+
+	if usr.UserID == "" {
+		log.Println("UserID is empty")
+		return user, 2
+	} else if usr.Password == "" {
+		log.Println("Password is empty")
+		return user, 4
 	}
+
+	user, err = DBclient.Getuser(string(usr.UserID))
+
+	if err == nil {
+		//user already existst, so exists
+		log.Println("User already exists")
+		return user, 1
+	}
+
 	//User doesn't exit and needed to be inserted in the db
 	err = DBclient.InsertUser(usr)
 	if err != nil {
 		//unable to insert user
-		return 2 //TODO: discuss which status code to give
+		log.Fatal("Error in creating new user (AddNewUser) ", err)
+		return user, 5 //TODO: discuss which status code to give
 	}
 
-	return 0
+	user, err = DBclient.Getuser(string(usr.UserID))
+	if err != nil {
+		log.Fatal("Error in creating new user (Getuser): ", err)
+		return user, 5
+	}
+
+	log.Println("User signup successful")
+	return user, 0
 }
 
 //This function returns User by UserID
@@ -114,23 +136,24 @@ func UpdateUser(userID string, points int) error {
 	return DBclient.UpdateUser(userID, points)
 }
 
-func AddNewAuction(auction *models.Auction) int {
+func AddNewAuction(auction *models.Auction) (models.Auction, int) {
 	if auction.Title == "" {
 		log.Println("Invalid Auction Title")
-		return 2
+		return *auction, 2
 	} else if len(auction.Image) == 0 {
 		log.Println("Please upload auction image")
-		return 3
+		return *auction, 3
 	}
 
-	err := DBclient.InsertAuction(auction)
+	id, err := DBclient.InsertAuction(auction)
 	if err != nil {
 		log.Fatal("Error in creating new auction")
-		return 1
+		return *auction, 1
 	}
 
+	auction, err = DBclient.GetAuctionByID(id)
 	log.Println("Auction created successfully")
-	return 0
+	return *auction, 0
 }
 
 func AddNewBid(bid *models.Bid) int {
@@ -238,9 +261,3 @@ func PopulateDB() bool {
 	return true
 
 }
-
-//
-// func main(){
-// 	DBclient = db.ConnectDB("mongodb://localhost:27017","test7")
-// 	fmt.Println(GetResult("5dc937cc88d9a2eaff817723"))
-// }
