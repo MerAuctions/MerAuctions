@@ -14,7 +14,7 @@ import (
 func GetTagsForImage(name string) models.TagList {
 	var tagList models.TagList
 	var w http.ResponseWriter
-	imageURL := "http://" + string(os.Getenv("DOMAIN")) + "/images/" + name
+	imageURL := "http://34.84.23.245" + "/images/" + name
 	resp, err := http.Get("https://cat-that-pic-bak.herokuapp.com/api/v1/getTagsfromImage?fileName=" + imageURL)
 	if err != nil {
 		const status = http.StatusInternalServerError
