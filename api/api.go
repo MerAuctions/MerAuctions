@@ -3,22 +3,12 @@ package api
 // package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"net"
 	"net/http"
-	"net/http/httptest"
 
 	"github.com/MerAuctions/MerAuctions/models"
 )
-
-func performRequest(r http.Handler, method, path string, body []byte) *httptest.ResponseRecorder {
-	req, _ := http.NewRequest(method, path, bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	return w
-}
 
 func getLocalIP() string {
 	addrs, err := net.InterfaceAddrs()
@@ -38,8 +28,22 @@ func getLocalIP() string {
 
 func GetTagsForImage(name string) models.TagList {
 	var tagList models.TagList
-	imageURL := getLocalIP() + "/images/" + name
-	response := performRequest(router, "GET", imageURL, nil)
-	json.Unmarshal(response.Body.Bytes(), &tagList)
+	var w http.ResponseWriter
+	imageURL := "http://" + getLocalIP() + "/images/" + name
+	//imageURL := "https://cms.hostelworld.com/hwblog/wp-content/uploads/sites/2/2017/08/lovelyforliving.jpg"
+	resp, err := http.Get("https://cat-that-pic-bak.herokuapp.com/api/v1/getTagsfromImage?fileName=" + imageURL)
+	if err != nil {
+		const status = http.StatusInternalServerError
+		http.Error(w, http.StatusText(status), status)
+		return tagList
+	}
+	defer resp.Body.Close()
+
+	if err := json.NewDecoder(resp.Body).Decode(&tagList); err != nil {
+		const status = http.StatusInternalServerError
+		http.Error(w, http.StatusText(status), status)
+		return tagList
+	}
+
 	return tagList
 }

@@ -11,6 +11,7 @@ import (
 
 	// "io/ioutil"
 
+	"github.com/MerAuctions/MerAuctions/api"
 	"github.com/MerAuctions/MerAuctions/data"
 	"github.com/MerAuctions/MerAuctions/models"
 	"github.com/dgrijalva/jwt-go"
@@ -297,4 +298,10 @@ func uploadPicture(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully", file.Filename))
+}
+
+func getTagsfromImage(c *gin.Context) {
+	imageName := c.Request.URL.Query().Get("imageName")
+	tags := api.GetTagsForImage(imageName)
+	c.JSON(http.StatusOK, tags)
 }
