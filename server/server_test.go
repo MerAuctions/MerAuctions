@@ -164,7 +164,7 @@ var _ = Describe("Server", func() {
 
 	Describe("The POST auctions/create endpoint: Successfully created", func() {
 		var newAuction models.Auction
-		var responseAuction models.Response
+		var responseAuction models.ResponseCreateAuction
 		newAuction = (*GetAuctions())[0]
 		BeforeEach(func() {
 			dbURL := "mongodb://localhost:27017"
@@ -191,7 +191,7 @@ var _ = Describe("Server", func() {
 
 	Describe("The POST auctions/create endpoint: Title Error", func() {
 		var newAuction models.Auction
-		var responseAuction models.Response
+		var responseAuction models.ResponseCreateAuction
 		newAuction = (*GetAuctions())[0]
 		BeforeEach(func() {
 			dbURL := "mongodb://localhost:27017"
@@ -219,7 +219,7 @@ var _ = Describe("Server", func() {
 
 	Describe("The POST auctions/create endpoint: Image Error", func() {
 		var newAuction models.Auction
-		var responseAuction models.Response
+		var responseAuction models.ResponseCreateAuction
 		newAuction = (*GetAuctions())[0]
 		BeforeEach(func() {
 			dbURL := "mongodb://localhost:27017"
@@ -245,23 +245,29 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	// Describe("The POST /users endpoint", func() {
-	// 	BeforeEach(func() {
-	// 		newusr := []byte(`{"UserID":"vamshi", "UserName":"vamshiteja"}`)
-	// 		response = performRequest(router, "POST", "/users", newusr)
-	// 	})
+	Describe("The POST /user/signup endpoint", func() {
+		var newUser []byte
+		var responseSignup models.ResponseSignup
+		BeforeEach(func() {
+			newUser = []byte(`{"UserID":"jd", "UserName":"john_doe", "Password":"pwd_john_doe"}`)
+			response = performRequest(router, "POST", "/user/signup", newUser)
+		})
 
-	// 	It("Returns with Status 200", func() {
-	// 		Expect(response.Code).To(Equal(200))
-	// 	})
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
+		})
 
-	// 	It("adds new user vamshi", func() {
-	// 		newusr := []byte(`{"UserID":"vamshi", "UserName":"vamshiteja"}`)
-	// 		usr, _ := data.DBclient.Getuser("vamshi")
-	// 		usrbyte, _ := json.Marshal(usr)
-	// 		Expect(usrbyte).To(Equal(newusr))
-	// 	})
-	// })
+		It("Returns with Message User signup successful", func() {
+			json.Unmarshal(response.Body.Bytes(), &responseSignup)
+			Expect(responseSignup.Message).To(Equal("User signup successful"))
+		})
+
+		It("adds new user jd", func() {
+			var user models.User
+			json.Unmarshal(newUser, &user)
+			Expect(responseSignup.User).To(Equal(user))
+		})
+	})
 
 	// Describe("The POST /auctions/:auction_id/users/:user_id/bids endpoint", func() {
 	// 	BeforeEach(func() {

@@ -46,18 +46,34 @@ func GetTopFiveBids(auctionID string) *[]models.Bid {
 }
 
 func AddNewUser(usr *models.User) int {
+
+	if usr.UserID == "" {
+		log.Println("UserID is empty")
+		return 2
+	} else if usr.UserName == "" {
+		log.Println("UserName is empty")
+		return 3
+	} else if usr.Password == "" {
+		log.Println("Password is empty")
+		return 4
+	}
+
 	_, err := DBclient.Getuser(string(usr.UserID))
 	if err == nil {
-		//user already exit
+		//user already existst, so exists
+		log.Println("User already exists")
 		return 1
 	}
+
 	//User doesn't exit and needed to be inserted in the db
 	err = DBclient.InsertUser(usr)
 	if err != nil {
 		//unable to insert user
-		return 2 //TODO: discuss which status code to give
+		log.Fatal("Error in creating new user ", err)
+		return 5 //TODO: discuss which status code to give
 	}
 
+	log.Println("User signup successful")
 	return 0
 }
 
@@ -185,9 +201,3 @@ func PopulateDB() bool {
 	return true
 
 }
-
-//
-// func main(){
-// 	DBclient = db.ConnectDB("mongodb://localhost:27017","test7")
-// 	fmt.Println(GetResult("5dc937cc88d9a2eaff817723"))
-// }

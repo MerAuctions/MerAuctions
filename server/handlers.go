@@ -94,16 +94,16 @@ func addNewUser(c *gin.Context) {
 		//TODO fix domain name
 		c.SetCookie("token", token, 60*60, "/", "", false, false)
 		c.String(200, fmt.Sprintf("User Successfully added"))
-	} else {
+	} else if status == 1 {
 		log.Println("User already exists")
-		c.String(400, fmt.Sprintf("User Already exists"))
+		c.String(500, fmt.Sprintf("User Already exists"))
 	}
 
 }
 
 func createAuction(c *gin.Context) {
 	var newAuction models.Auction
-	var response models.Response
+	var response models.ResponseCreateAuction
 	var responseCode int
 
 	c.ShouldBindJSON(&newAuction)

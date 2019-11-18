@@ -34,8 +34,8 @@ type Auction struct {
 	Image       []string // image encode in base64
 	Tag         []string
 	Description string
-	BasePrice   Price
-	EndTime     int64
+	BasePrice   Price `json:"price"`
+	EndTime     int64 `json:"time"`
 }
 
 //AuctionList is a list of auctions
@@ -48,10 +48,16 @@ type Result struct {
 	Price     Price
 }
 
-// Response stores response of /auction/create endpoint
-type Response struct {
+// ResponseCreateAuction stores response of /auction/create endpoint
+type ResponseCreateAuction struct {
 	Message string
 	Auction Auction
+}
+
+// ResponseSignup stores response of /user/signup endpoint
+type ResponseSignup struct {
+	Message string
+	User    User
 }
 
 //BidList to store List of bids
