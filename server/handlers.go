@@ -286,6 +286,7 @@ func addRewardsToUser(c *gin.Context) {
 	auctionID := c.Param("auction_id")
 	userID := c.Param("user_id")
 	user, err := data.GetUserById(userID)
+
 	if err != nil {
 		log.Printf("Error in getting user details for '%s' from DB: %s", userID, err.Error())
 	}
@@ -297,12 +298,14 @@ func addRewardsToUser(c *gin.Context) {
 		if bid.UserID == userID {
 			if userBidFreq < maxBidsToRewards {
 				pointsForBidPrice := (rewardPercentage * float64(bid.Price))
+				fmt.Println("auc.BasePrice:", auc.BasePrice)
 				pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
 
 				//TODO after auction creation done
 				//pointsFromTime := float64(duration*60/(auc.EndTime - bid.Time))
 
 				points := int(pointsForHighBid * pointsForBidPrice)
+				fmt.Println("pointsForBidPrice:", pointsForBidPrice, "  pointsForHighBid:", pointsForHighBid, "  points:", points)
 				if points <= 0 {
 					continue
 				} else {
