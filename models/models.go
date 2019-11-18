@@ -10,10 +10,10 @@ type Price int64
 
 //User represents the users making the bid
 type User struct {
-	UserID   string
+	UserID   string `json:"userid, string"`
 	UserName string
-	Password string
-	Points   int
+	Password string `json:"pwd, string"`
+	Points   int    `json:"points, int"`
 	Interest []string
 }
 

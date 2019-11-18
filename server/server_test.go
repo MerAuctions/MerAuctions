@@ -3,6 +3,7 @@ package server_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -189,44 +190,47 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-	Describe("The GET auctions/:auction_id/rewards endpoint", func() {
+	Describe("The GET auctions/:auction_id/rewards/:user_id endpoint", func() {
 		auctionID := "5dca6431de52283587609581"
+		userID := "shashank"
 		rewardPercentage := 0.005
 		var bids []models.Bid
 		var auc models.Auction
+		var user models.User
 
 		BeforeEach(func() {
 			bids = data.GetAllSortedBidsForAuction(auctionID)
 			auc = *data.GetAuctionById(auctionID)
-			response = performRequest(router, "GET", "/auctions/"+auctionID+"/rewards", nil)
+			user = data.GetUserByID(userID)
+			response = performRequest(router, "GET", "/auctions/"+auctionID+"/rewards/"+userID, nil)
 		})
 		It("Returns with Status 200", func() {
 			Expect(response.Code).To(Equal(200))
 		})
-		It("Updates User points in the DB for auction 5dca6431de52283587609581", func() {
+		It("Updates User's shashank points in the DB for auction 5dca6431de52283587609581", func() {
 			userPoints := make(map[string]int)
 			for _, bid := range bids {
-				user := data.GetUserByID(bid.UserID)
-				pointsForBidPrice := (rewardPercentage * float64(bid.Price))
-				pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
-				points := int(pointsForHighBid * pointsForBidPrice)
-				if points <= 0 {
-					points = 0
-				}
+				if bid.UserID == userID {
+					fmt.Println(user)
+					previousPoints := user.Points
+					pointsForBidPrice := (rewardPercentage * float64(bid.Price))
+					pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
+					points := int(pointsForHighBid * pointsForBidPrice)
+					if points <= 0 {
+						points = 0
+					}
 
-				_, ok := userPoints[user.UserID]
-				if ok == true {
-					userPoints[user.UserID] += points
-				} else {
-					userPoints[user.UserID] = points
-
+					_, ok := userPoints[user.UserID]
+					if ok == true {
+						userPoints[user.UserID] += points
+					} else {
+						userPoints[user.UserID] = points + previousPoints
+					}
 				}
 			}
 
-			for key, value := range userPoints {
-				user := data.GetUserByID(key)
-				Expect(user.Points).To(Equal(value))
-			}
+			user = data.GetUserByID(userID)
+			Expect(user.Points).To(Equal(userPoints[userID]))
 		})
 	})
 

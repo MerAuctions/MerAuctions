@@ -2,7 +2,7 @@
     {
         "UserID" : "vamshi",
         "UserName" : "vamshi",
-        "Points" : 0
+        "Points" : 100
     },
     {
         "UserID" : "deepak",
@@ -23,5 +23,10 @@
         "UserID" : "bowei",
         "UserName" : "bowei",
         "Points" : 0
+    }, 
+    {
+        "UserID" : "shashank",
+        "UserName" : "shashank",
+        "Points" : 50
     }
 ]
