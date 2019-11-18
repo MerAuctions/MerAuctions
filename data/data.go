@@ -215,6 +215,7 @@ func GetResult(auctionID string) *models.Result {
 func GetUserById(id string) (*models.User, error) {
 	usr, err := DBclient.Getuser(id)
 	if err != nil {
+		log.Println("Error fetching user details: ", err)
 		return nil, err
 	}
 	return usr, nil

@@ -249,6 +249,17 @@ func getResultByAuctionId(c *gin.Context) {
 	}
 }
 
+func getUserByUserID(c *gin.Context) {
+	id := c.Param("user_id")
+	user, err := data.GetUserById(id)
+
+	if err != nil {
+		c.JSON(500, user)
+	}
+
+	c.JSON(200, user)
+}
+
 //this will populate the db
 func addDataDB(c *gin.Context) {
 	ok := data.PopulateDB()
