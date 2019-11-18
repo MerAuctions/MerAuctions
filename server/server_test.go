@@ -3,6 +3,7 @@ package server_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -42,6 +43,33 @@ func InsertAuctionsToDB() *models.AuctionList {
 		log.Fatal("Error populating auctions.json : ", err.Error())
 	}
 	return &auc
+}
+
+func InsertUsersToDB() *[]models.User {
+	var users []models.User
+	file, err := ioutil.ReadFile("./seed-data/users.json")
+	if err != nil {
+		log.Fatal("Error reading users.json : ", err.Error())
+	}
+	json.Unmarshal([]byte(file), &users)
+	err = data.DBclient.InsertUsers(&users)
+	if err != nil {
+		log.Fatal("Error populating users.json : ", err.Error())
+	}
+	return &users
+}
+
+func RemoveUsersFromDB() {
+	var users []models.User
+	file, err := ioutil.ReadFile("./seed-data/users.json")
+	if err != nil {
+		log.Fatal("Error reading users.json : ", err.Error())
+	}
+	json.Unmarshal([]byte(file), &users)
+	err = data.DBclient.DeleteUsers(&users)
+	if err != nil {
+		log.Fatal("Error deleting users.json : ", err.Error())
+	}
 }
 
 func GetAuctions() *models.AuctionList {
@@ -109,10 +137,10 @@ var _ = Describe("Server", func() {
 		dbName := "testing"
 
 		ConnectToDB(dbURL, dbName)
-		RemoveAuctionsFromDB()
-		RemoveBidsFromDB()
+		data.DBclient.DeleteAllCollections()
 		insertedAuctions = InsertAuctionsToDB()
 		InsertBidsToDB()
+		InsertUsersToDB()
 	})
 
 	Describe("The /hello endpoint", func() {
@@ -148,7 +176,7 @@ var _ = Describe("Server", func() {
 
 		auctionID := "5dca6431de52283587609581"
 		BeforeEach(func() {
-			InsertBidsToDB()
+			// InsertBidsToDB()
 			response = performRequest(router, "GET", "/auctions/"+auctionID+"/bids", nil)
 		})
 		It("Returns with Status 200", func() {
@@ -162,7 +190,49 @@ var _ = Describe("Server", func() {
 		})
 	})
 
+	Describe("The GET auctions/:auction_id/rewards/:user_id endpoint", func() {
+		auctionID := "5dca6431de52283587609581"
+		userID := "shashank"
+		rewardPercentage := 0.005
+		var bids []models.Bid
+		var auc models.Auction
+		var user models.User
 
+		BeforeEach(func() {
+			bids = data.GetAllSortedBidsForAuction(auctionID)
+			auc = *data.GetAuctionById(auctionID)
+			user = data.GetUserByID(userID)
+			response = performRequest(router, "GET", "/auctions/"+auctionID+"/rewards/"+userID, nil)
+		})
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
+		})
+		It("Updates User's shashank points in the DB for auction 5dca6431de52283587609581", func() {
+			userPoints := make(map[string]int)
+			for _, bid := range bids {
+				if bid.UserID == userID {
+					fmt.Println(user)
+					previousPoints := user.Points
+					pointsForBidPrice := (rewardPercentage * float64(bid.Price))
+					pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
+					points := int(pointsForHighBid * pointsForBidPrice)
+					if points <= 0 {
+						points = 0
+					}
+
+					_, ok := userPoints[user.UserID]
+					if ok == true {
+						userPoints[user.UserID] += points
+					} else {
+						userPoints[user.UserID] = points + previousPoints
+					}
+				}
+			}
+
+			user = data.GetUserByID(userID)
+			Expect(user.Points).To(Equal(userPoints[userID]))
+		})
+	})
 
 	Describe("The POST auctions/create endpoint: Successfully created", func() {
 		var newAuction models.Auction
@@ -247,7 +317,6 @@ var _ = Describe("Server", func() {
 		})
 	})
 
-
 	// Describe("The POST /users endpoint", func() {
 	// 	BeforeEach(func() {
 	// 		newusr := []byte(`{"UserID":"vamshi", "UserName":"vamshiteja"}`)
@@ -268,7 +337,7 @@ var _ = Describe("Server", func() {
 
 	// Describe("The POST /auctions/:auction_id/users/:user_id/bids endpoint", func() {
 	// 	BeforeEach(func() {
-	// 		newbid := []byte(`{"BidID":"0", "AuctionID":"1", "UserID":"vamshi", "Price":"2000", "Time":""}`)
+	// 		newbid := []byte(`{"BidID":"0", "AuctionID":"1", "UserID":"vamshi", "Price":"2000", "Count": 11, "Time":""}`)
 	// 		response = performRequest(router, "POST", "/auctions/0/users/vamshi/bids", newbid)
 	// 	})
 

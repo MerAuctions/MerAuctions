@@ -58,6 +58,16 @@ func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 	return bids
 }
 
+// This function returns all user who bid for an auction
+func GetAllUsersForAuction(auctionID string) []models.User {
+	users, err := DBclient.GetUsers(auctionID)
+	if err != nil {
+		log.Fatal("No bidders for auction ", auctionID)
+	}
+
+	return *users
+}
+
 func AddNewUser(usr *models.User) int {
 	_, err := DBclient.Getuser(string(usr.UserID))
 	if err == nil {
@@ -78,7 +88,7 @@ func AddNewUser(usr *models.User) int {
 func GetUserByID(userID string) models.User {
 	temp_user, err := DBclient.Getuser(userID)
 	if err != nil {
-		log.Fatal("User not Found!")
+		log.Fatal(userID, " User not Found!")
 	}
 	user := *temp_user
 	return user
