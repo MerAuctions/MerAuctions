@@ -222,9 +222,11 @@ func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
 func (c *DBClient) GetAuction(id string) (*models.Auction, error) {
 	var auction models.Auction
 	collection := c.client.Database(c.DBname).Collection("auctions")
+	log.Println(id)
 	docID, err := primitive.ObjectIDFromHex(id)
+
 	if err != nil {
-		log.Fatal("Error in fetching auction ", err)
+		log.Fatal("Error in fetching auction(GetAuction) ", err)
 		return nil, err
 	}
 	filter := bson.D{{"_id", docID}}
@@ -282,7 +284,7 @@ func (c *DBClient) GetAuctions() *models.AuctionList {
 func (c *DBClient) GetBids(AuctionId string) (*[]models.Bid, error) {
 	var bids []models.Bid
 	collection := c.client.Database(c.DBname).Collection("bids")
-	filter := bson.D{{"auctionid", AuctionId}}
+	filter := bson.D{{"_id", AuctionId}}
 	cur, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		// log.Fatal(err)
@@ -371,6 +373,10 @@ func (c *DBClient) GetUsers(AuctionId string) (*[]models.User, error) {
 		return nil, err
 	}
 	return &users, nil
+}
+
+func ObjectIDToString(id primitive.ObjectID) string {
+	return id.Hex()
 }
 
 // // Following is for testing the db locally

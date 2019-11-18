@@ -48,13 +48,14 @@ func GetTopFiveBids(auctionID string) *[]models.Bid {
 func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 	tmp_bids, err := DBclient.GetBids(auctionID)
 	if err != nil {
+		log.Fatal("Error in finding bids ", err)
 		return nil //TODO: also give error
 	}
 	bids := *tmp_bids
 	sort.SliceStable(bids, func(i, j int) bool {
 		return bids[i].Time > bids[j].Time
 	})
-
+	log.Println("Bids: ", bids)
 	return bids
 }
 
