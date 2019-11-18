@@ -2,29 +2,50 @@
         "BidID": "1",
         "AuctionID": "5dca6431de52283587609581",
         "UserID": "bowei",
-        "Price": 2000000,
-        "Time": 1573516800
+        "Price": 160000,
+        "Count": 8,
+        "Time": 1573664360
+        
     },
     {
         "BidID": "2",
         "AuctionID": "5dca6431de52283587609581",
         "UserID": "harsh",
-        "Price": 35000000,
-        "Time": 1573516810
+        "Price": 220000,
+        "Count": 5,
+        "Time": 1573664370
     },
     {
         "BidID": "3",
         "AuctionID": "5dca6431de52283587609581",
         "UserID": "deepak",
-        "Price": 32000000,
-        "Time": 1573516820
+        "Price": 350000,
+        "Count": 11,
+        "Time": 1573664380
     },
     {
         "BidID": "4",
         "AuctionID": "5dca6431de52283587609581",
         "UserID": "vamshi",
-        "Price": 40000000,
-        "Time": 1573516830
+        "Price": 400000,
+        "Count": 1,
+        "Time": 1573664385
+    },
+    {
+        "BidID": "4",
+        "AuctionID": "5dca6431de52283587609581",
+        "UserID": "vamshi",
+        "Price": 450000,
+        "Count": 1,
+        "Time": 1573664390
+    },
+    {
+        "BidID": "5",
+        "AuctionID": "5dca6431de52283587609581",
+        "UserID": "shashank",
+        "Price": 450000,
+        "Count": 5,
+        "Time": 1573664395
     },
     {
         "BidID": "5",
