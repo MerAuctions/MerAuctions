@@ -32,8 +32,12 @@
     <script type="text/javascript">
       function uploadPics() {
         var file_data = $("#file").prop("files")[0];
+        console.log(file_data);
         var form_data = new FormData();
+        // var name = "cooldogee";
         form_data.append("file", file_data);
+        // form_data.append("name", name);
+        console.log(form_data);
         $.ajax({
           url: "/upload", // point to server-side controller method
           dataType: "text", // what to expect back from the server
@@ -76,11 +80,14 @@
         var description = $("#auction-description").val();
         var basePrice = $("#auction-base-price").val();
         var endTime = $("#auction-end-time").val();
+        var unixEndTime = (Date.now(endTime) / 1000) | 0;
         if (
           title.length == 0 ||
           b64_image.length == 0 ||
           tags.length == 0 ||
-          description.length == 0
+          description.length == 0 ||
+          basePrice.length == 0 ||
+          endTime.length == 0
         ) {
           M.toast({
             html: "Please complete the form!"
@@ -92,10 +99,9 @@
             datatype: "json",
             contentType: "application/json",
             success: function(result) {
-              //   updateBids();
               console.log(result);
               M.toast({
-                html: result
+                html: result.Message
               });
             },
             error: function(jqXHR, exception) {
@@ -109,7 +115,7 @@
               tag: tags,
               description: description,
               price: basePrice,
-              time: endTime
+              time: unixEndTime
             })
           });
         }
