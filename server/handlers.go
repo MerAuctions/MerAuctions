@@ -405,3 +405,10 @@ func getDescriptionfromImage(c *gin.Context) {
 	description := api.GetDescriptionForImage(imageName)
 	c.JSON(http.StatusOK, description)
 }
+
+func getUserAuctions(c *gin.Context) {
+	listAuctions := data.GetAuctionByUserId(c.Param("id"))
+	log.Println(c.Param("id"))
+	log.Println(listAuctions)
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", listAuctions)
+}

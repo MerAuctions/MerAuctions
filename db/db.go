@@ -307,6 +307,33 @@ func (c *DBClient) GetBids(AuctionId string) (*[]models.Bid, error) {
 	return &bids, nil
 }
 
+//get the list of all the bids by user id
+func (c *DBClient) GetBidsbyUser(UserId string) (*[]models.Bid, error) {
+	var bids []models.Bid
+	collection := c.client.Database(c.DBname).Collection("bids")
+	filter := bson.D{{"userid", UserId}}
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		// log.Fatal(err)
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+	for cur.Next(context.Background()) {
+		var elem models.Bid
+		err := cur.Decode(&elem)
+		bids = append(bids, elem)
+		if err != nil {
+			// log.Fatal(err)
+			return nil, err
+		}
+	}
+	if err := cur.Err(); err != nil {
+		// log.Fatal(err)
+		return nil, err
+	}
+	return &bids, nil
+}
+
 //get an user by id
 func (c *DBClient) Getuser(id string) (*models.User, error) {
 	var user models.User
