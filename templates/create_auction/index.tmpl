@@ -68,6 +68,49 @@
         document.getElementById("file").addEventListener("change", readFile);
       }
 
+      function submitAuc() {
+        var title = $("#auction-title").val();
+        var b64_image = new Array($("#b64").val());
+        console.log(b64_image);
+        var tags = $("#auction-tags").val();
+        var description = $("#auction-description").val();
+        if (
+          title.length == 0 ||
+          b64_image.length == 0 ||
+          tags.length == 0 ||
+          description.length == 0
+        ) {
+          M.toast({
+            html: "Please complete the form!"
+          });
+        } else {
+          $.ajax({
+            url: `/auction/create`,
+            method: "POST",
+            datatype: "json",
+            contentType: "application/json",
+            success: function(result) {
+              //   updateBids();
+              console.log(result);
+              M.toast({
+                html: result
+              });
+            },
+            error: function(jqXHR, exception) {
+              M.toast({
+                html: JSON.parse(jqXHR.responseText)["message"]
+              });
+            },
+            data: JSON.stringify({
+              title: title,
+              image: b64_image,
+              tags: tags,
+              description: description
+            })
+          });
+        }
+      }
+
       function login() {
         var user_id = $("#login-input-username").val();
         var password = $("#login-input-password").val();
