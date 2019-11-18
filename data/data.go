@@ -99,6 +99,11 @@ func UpdateUser(userID string, points int) error {
 	return DBclient.UpdateUser(userID, points)
 }
 
+// //This function updates an Auction details by ID
+// func UpdateAuction(auctionID string, currentPrice models.Price) error {
+// 	return DBclient.UpdateAuction(auctionID, currentPrice)
+// }
+
 func AddNewAuction(auction *models.Auction) int {
 	if auction.Title == "" {
 		log.Println("Invalid Auction Title")

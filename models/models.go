@@ -30,12 +30,13 @@ type Bid struct {
 type Auction struct {
 	AuctionID primitive.ObjectID `bson:"_id, omitempty"`
 	// AuctionID   primitive.ObjectID
-	Title       string
-	Image       []string // image encode in base64
-	Tag         []string
-	Description string
-	BasePrice   Price `json:"price"`
-	EndTime     int64 `json:"time"`
+	Title        string
+	Image        []string // image encode in base64
+	Tag          []string
+	Description  string
+	BasePrice    Price `json:"price"`
+	CurrentPrice Price `json:"current_price"`
+	EndTime      int64 `json:"time"`
 }
 
 //AuctionList is a list of auctions

@@ -157,7 +157,6 @@ func createAuction(c *gin.Context) {
 
 //addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
-
 	isUserSignedIn := false
 	usr_id := ""
 	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
@@ -187,6 +186,7 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	json.Unmarshal(rawData, &price_map)
 
 	auc_id := c.Param("auction_id")
+	auc := data.GetAuctionById(auc_id)
 
 	str_price, ok := price_map["price"].(string)
 	if ok == false {
@@ -201,19 +201,38 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 		return
 	}
 
-	newbid.AuctionID = auc_id
-	newbid.UserID = usr_id
-	newbid.Price = models.Price(tmp_price)
-
-	//TODO: check for price limits
-	status := data.AddNewBid(&newbid)
-	if status == 0 {
-		log.Printf("User's Bid Successfully added.")
-		c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
-	} else {
-		log.Printf("User's Bid could not be added with status %d.", status)
-		c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
+	currentBid := models.Price(tmp_price)
+	bids := data.GetAllSortedBidsForAuction(auc_id)
+	var highestBid models.Price = 0
+	for _, bid := range bids {
+		fmt.Println(bid)
+		if highestBid < bid.Price {
+			highestBid = bid.Price
+		}
 	}
+
+	if (len(bids) == 0 && highestBid == auc.BasePrice) || (currentBid >= auc.BasePrice && currentBid > highestBid) &&
+		currentBid <= 10*auc.BasePrice {
+		newbid.AuctionID = auc_id
+		newbid.UserID = usr_id
+		newbid.Price = models.Price(currentBid)
+
+		//TODO: check for price limits
+		status := data.AddNewBid(&newbid)
+		if status == 0 {
+			log.Printf("User's Bid Successfully added.")
+			c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
+		} else {
+			log.Printf("User's Bid could not be added with status %d.", status)
+			c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
+		}
+		if err != nil {
+			c.JSON(404, fmt.Sprint("Auction Not Found!"))
+		}
+	} else {
+		c.JSON(500, fmt.Sprintf("You can only bid above the current highest bid!"))
+	}
+
 }
 
 //getResultByAuctionId is handler function to check result by ID

@@ -319,6 +319,25 @@ func (c *DBClient) UpdateUser(userID string, points int) error {
 	return err
 }
 
+// //Update Auction in db by AuctionID
+// func (c *DBClient) UpdateAuction(auctionID string, currentPrice models.Price) error {
+// 	collection := c.client.Database(c.DBname).Collection("auctions")
+
+// 	filter := bson.D{{"_id", auctionID}}
+// 	update := bson.D{
+// 		{"$inc", bson.D{
+// 			{"current_price", currentPrice},
+// 		}},
+// 	}
+
+// 	_, err := collection.UpdateOne(context.TODO(), filter, update)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return err
+// }
+
 //get the list of all the users
 func (c *DBClient) GetUsers(AuctionId string) (*[]models.User, error) {
 	var users []models.User
