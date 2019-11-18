@@ -105,7 +105,13 @@
 
       function submitAuc() {
         var title = $("#auction-title").val();
-        var b64_image = new Array($("#b64").val());
+        var b64_image = new Array(
+          $("#b64")
+            .val()
+            .split(",")[1]
+        );
+
+        // console.log(base64[1]);
         var tags = $("#auction-tags")
           .val()
           .split(";");
