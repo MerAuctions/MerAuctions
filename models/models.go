@@ -19,11 +19,11 @@ type User struct {
 
 //Bid represents a single bid in an Auction
 type Bid struct {
-	AuctionID string
-	UserID    string
-	Price     Price
-	Count     int
-	Time      int64
+	AuctionID string `json:"auction_id, string"`
+	UserID    string `json:"user_id, string"`
+	Price     Price  `json:"price"`
+	Count     int    `json:"count, int"`
+	Time      int64  `json:"time"`
 }
 
 //Auction represents a single auction
