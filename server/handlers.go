@@ -403,12 +403,13 @@ func getTagsfromImage(c *gin.Context) {
 func getDescriptionfromImage(c *gin.Context) {
 	imageName := c.Request.URL.Query().Get("imageName")
 	description := api.GetDescriptionForImage(imageName)
+	log.Println("description : ", description)
 	c.JSON(http.StatusOK, description)
 }
 
 func getUserAuctions(c *gin.Context) {
-	listAuctions := data.GetAuctionByUserId(c.Param("id"))
-	log.Println(c.Param("id"))
+	listAuctions := data.GetAuctionByUserId(c.Param("user_id"))
+	log.Println(c.Param("user_id"))
 	log.Println(listAuctions)
 	c.HTML(http.StatusOK, "auction_list/index.tmpl", listAuctions)
 }
