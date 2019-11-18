@@ -59,7 +59,7 @@
                 console.log(len);
                 var tags = "";
                 for (var i = 0; i < len; i++) {
-                  tags += response[i].Name + "; ";
+                  tags += response[i].Name + ";";
                 }
                 document.getElementById("auction-tags").value = tags;
               },
@@ -73,14 +73,7 @@
                 "/auction/create/getDescriptionfromImage?imageName=" + fileName,
               dataType: "json",
               success: function(response) {
-                console.log(response);
-                // var len = response.length;
-                // console.log(len);
-                // var tags = "";
-                // for (var i = 0; i < len; i++) {
-                //   tags += response[i].Name + "; ";
-                // }
-                // document.getElementById("auction-tags").value = tags;
+                document.getElementById("auction-description").value = response;
               },
               error: function(response) {
                 console.log(response);
@@ -115,8 +108,10 @@
       function submitAuc() {
         var title = $("#auction-title").val();
         var b64_image = new Array($("#b64").val());
-        console.log(b64_image);
-        var tags = $("#auction-tags").val();
+        var tags = $("#auction-tags")
+          .val()
+          .split(";");
+        console.log($("#auction-tags").val());
         var description = $("#auction-description").val();
         var basePrice = $("#auction-base-price").val();
         var endTime = $("#auction-end-time").val();
