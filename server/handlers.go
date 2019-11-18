@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
+
 	// "io/ioutil"
 
 	"github.com/MerAuctions/MerAuctions/data"
@@ -15,6 +17,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var maxBidsToRewards int = 5
+
 func hello(c *gin.Context) {
 	c.String(200, "Hello World")
 }
@@ -22,6 +26,7 @@ func hello(c *gin.Context) {
 //getAllAuctions is handler function to return list of all auctions
 func getAllAuctions(c *gin.Context) {
 	allAuctions := data.GetAllAuctions()
+	log.Println(allAuctions)
 	c.HTML(http.StatusOK, "auction_list/index.tmpl", allAuctions)
 }
 
@@ -64,6 +69,27 @@ func getAuctionsByID(c *gin.Context) {
 	})
 }
 
+//getAuctionsByID is handler function for getting particular auction page
+func getCreateAuction(c *gin.Context) {
+	isUserSignedIn := false
+	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
+		if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok && jwtToken.Valid {
+			if userID, ok := claims[jwtIdentityKey].(string); ok == true {
+				if user, _ := data.GetUserById(userID); user != nil {
+					isUserSignedIn = true
+				}
+			} else {
+				log.Printf("Could not convert claim to string")
+			}
+		} else {
+			log.Printf("Could not extract claims into JWT")
+		}
+	}
+	c.HTML(http.StatusOK, "create_auction/index.tmpl", gin.H{
+		"isUserSignedIn": isUserSignedIn,
+	})
+}
+
 //getBidsAuctionsById is handler function to get all bids from a auction
 func getBidsAuctionsById(c *gin.Context) {
 	id := c.Param("auction_id")
@@ -101,6 +127,7 @@ func addNewUser(c *gin.Context) {
 
 }
 
+// createAuction create a new auction for the user
 func createAuction(c *gin.Context) {
 	var newAuction models.Auction
 	var response models.ResponseCreateAuction
@@ -212,4 +239,62 @@ func addDataDB(c *gin.Context) {
 		c.String(200, "DB is populated Successfully")
 	}
 
+}
+
+//addRewardsToUsers is handler function to offer rewards when the auction ends
+func addRewardsToUsers(c *gin.Context) {
+	rewardPercentage := 0.005
+	id := c.Param("auction_id")
+	auc := data.GetAuctionById(id)
+
+	bids := data.GetAllSortedBidsForAuction(id)
+	userBidFreq := make(map[string]int)
+
+	for _, bid := range bids {
+		freq, ok := userBidFreq[bid.UserID]
+		if ok == false {
+			userBidFreq[bid.UserID] = 1
+		} else {
+			userBidFreq[bid.UserID] = freq + 1
+		}
+
+		if freq <= maxBidsToRewards+1 {
+			pointsForBidPrice := (rewardPercentage * float64(bid.Price))
+			pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
+
+			//TODO after auction creation done
+			//pointsFromTime := float64(duration*60/(auc.EndTime - bid.Time))
+
+			points := int(pointsForHighBid * pointsForBidPrice)
+			if points <= 0 {
+				continue
+			} else {
+				err := data.UpdateUser(bid.UserID, points)
+				if err != nil {
+					c.JSON(404, fmt.Sprint("User Not Found!"))
+				}
+			}
+		}
+	}
+
+	c.JSON(200, "Bidders are rewarded!")
+
+}
+
+func uploadPicture(c *gin.Context) {
+	name := c.PostForm("name")
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+		return
+	}
+
+	filename := filepath.Base(file.Filename)
+	if err := c.SaveUploadedFile(file, "media/images/"+filename); err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
+		return
+	}
+
+	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully with fields name=%s", file.Filename, name))
 }

@@ -1,8 +1,8 @@
-# MerAuctions
- 
+# merAuc
+
 [![CircleCI](https://circleci.com/gh/MerAuctions/MerAuctions/tree/master.svg?style=svg)](https://circleci.com/gh/MerAuctions/MerAuctions/tree/master)
 
-### Mercari Greenfield Project by [Harsh](https://github.com/sipian), [Deepak](https://github.com/deepakbhatt329), [Vamshi](https://github.com/vamshiteja) & [Bowei](https://github.com/b-z)
+### Code Chrysalis X Mercari Legacy Project by [Sahil](https://github.com/sahil505), [Aniket](https://github.com/aniket1743), [Liu](https://github.com/Rocuku) & [Shashank](https://github.com/shasjakka0390)
 
 ---
 
@@ -13,35 +13,46 @@ MerAuctions is an online live auction portal where users can register for multip
 ## How do run locally?
 
 ### Install MongoDB
+
 ```
 brew tap mongodb/brew
 brew install mongodb-community@4.2
 mongod --config /usr/local/etc/mongod.conf --fork
 ps -ef | grep mongod #check if mongodb is working
 ```
+
 ### Start the App
+
 ```
 go run cmd/auctions/merauctions.go --mongodb-url=mongodb://localhost:27017/testing --database=testing
 ```
-* If you want to populate initial data you can run `cd server/seed-data/ && go run seeddb.go`
+
+- If you want to populate initial data you can run `cd server/seed-data/ && go run seeddb.go`
 
 ## Technologies Used
+
 ### Front-end
-  - Materialize CSS
-  - jQuery
-  - Go templates
+
+- Materialize CSS
+- jQuery
+- Go templates
 
 ### Back-end
-  - ginkgo
-  - JWT
-  
-### Database
-  - MongoDB
 
+- ginkgo
+- JWT
+
+### Database
+
+- MongoDB
 
 ### Deployment
-  - Kubernetes
-  - CircleCI
-  - Docker
-  - GCP
-  
+
+- Kubernetes
+- CircleCI
+- Docker
+- GCP
+
+## StyleGuide for Codebase
+
+Please refer to the StyleGuide [here](https://docs.google.com/document/d/1IYPQ_jkVBBcz7EZHN6GanW2wtXnp1Lvu0Xkz9rLg6hk/edit?usp=sharing)

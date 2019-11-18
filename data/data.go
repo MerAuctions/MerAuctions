@@ -2,7 +2,6 @@ package data
 
 // package main
 import (
-	// "context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -45,6 +44,20 @@ func GetTopFiveBids(auctionID string) *[]models.Bid {
 	return &result
 }
 
+// This function returns all the bids for an auction by price sorted
+func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
+	tmp_bids, err := DBclient.GetBids(auctionID)
+	if err != nil {
+		return nil //TODO: also give error
+	}
+	bids := *tmp_bids
+	sort.SliceStable(bids, func(i, j int) bool {
+		return bids[i].Time > bids[j].Time
+	})
+
+	return bids
+}
+
 func AddNewUser(usr *models.User) int {
 
 	if usr.UserID == "" {
@@ -75,6 +88,21 @@ func AddNewUser(usr *models.User) int {
 
 	log.Println("User signup successful")
 	return 0
+}
+
+//This function returns User by UserID
+func GetUserByID(userID string) models.User {
+	temp_user, err := DBclient.Getuser(userID)
+	if err != nil {
+		log.Fatal("User not Found!")
+	}
+	user := *temp_user
+	return user
+}
+
+//This function updates an User details by ID
+func UpdateUser(userID string, points int) error {
+	return DBclient.UpdateUser(userID, points)
 }
 
 func AddNewAuction(auction *models.Auction) int {
