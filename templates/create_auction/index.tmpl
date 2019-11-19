@@ -149,6 +149,9 @@
               M.toast({
                 html: result.Message
               });
+              window.setTimeout(function() {
+                window.location = "/";
+              }, 1000);
             },
             error: function(jqXHR, exception) {
               M.toast({
