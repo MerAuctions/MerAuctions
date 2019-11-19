@@ -46,8 +46,7 @@
       var debug = {{ . }};
       var auction_id = "{{ formatAuctionIDAsHexString .auction.AuctionID }}";
       var end_time = new Date(1000 * {{ .auction.EndTime }});
-      console.log({{ .auction.EndTime }});
-
+      // console.log({{.auction.CreatedBy }})
       var end_timer;
       var bid_timer;
 
@@ -165,7 +164,7 @@
         var user_id = $('#signup-input-username').val();
         var pwd = $('#signup-input-password').val();
         $.ajax({
-          url: `/users`,
+          url: `/user/signup`,
           method: 'POST',
           datatype: "json",
           contentType: 'application/json',

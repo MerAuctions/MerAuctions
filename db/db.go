@@ -30,14 +30,14 @@ func ConnectDB(url string, db string) *DBClient {
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	// Check the connection
 	err = client.Ping(context.TODO(), nil)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	fmt.Println("Connected to MongoDB!")
@@ -52,27 +52,27 @@ func ConnectDB(url string, db string) *DBClient {
 func (c *DBClient) DeleteAllCollections() error {
 	if err := c.client.Database(c.DBname).Collection("users").Drop(context.TODO()); err != nil {
 		if err != nil {
-			fmt.Println("Could not drop users collection in database")
+			log.Println("Could not drop users collection in database")
 			return err
 		}
 	}
-	fmt.Println("Dropped users collection from database")
+	log.Println("Dropped users collection from database")
 
 	if err := c.client.Database(c.DBname).Collection("bids").Drop(context.TODO()); err != nil {
 		if err != nil {
-			fmt.Println("Could not drop bids collection in database")
+			log.Println("Could not drop bids collection in database")
 			return err
 		}
 	}
-	fmt.Println("Dropped bids collection from database")
+	log.Println("Dropped bids collection from database")
 
 	if err := c.client.Database(c.DBname).Collection("auctions").Drop(context.TODO()); err != nil {
 		if err != nil {
-			fmt.Println("Could not drop auctions collection in database")
+			log.Println("Could not drop auctions collection in database")
 			return err
 		}
 	}
-	fmt.Println("Dropped auctions collection from database")
+	log.Println("Dropped auctions collection from database")
 	return nil
 }
 
@@ -81,10 +81,10 @@ func (c *DBClient) InsertUser(usr *models.User) error {
 	collection := c.client.Database(c.DBname).Collection("users")
 	insertResult, err := collection.InsertOne(context.TODO(), usr)
 	if err != nil {
-		log.Fatal("Error in creating new user(Insert User) : ", err)
+		log.Println("Error in creating new user(Insert User) : ", err)
 		return err
 	}
-	fmt.Println("Inserted user: ", insertResult.InsertedID)
+	log.Println("Inserted user: ", insertResult.InsertedID)
 	return nil
 }
 
@@ -96,7 +96,7 @@ func (c *DBClient) InsertUsers(users *[]models.User) error {
 			log.Println("Error in inserting users: ", err)
 			return err
 		}
-		fmt.Println("Inserted user: ", insertResult.InsertedID)
+		log.Println("Inserted user: ", insertResult.InsertedID)
 	}
 	return nil
 }
@@ -109,7 +109,7 @@ func (c *DBClient) DeleteUsers(users *[]models.User) error {
 			return err
 		}
 	}
-	fmt.Println("Deleted all users")
+	log.Println("Deleted all users")
 	return nil
 }
 
@@ -121,7 +121,7 @@ func (c *DBClient) InsertBid(bid *models.Bid) error {
 		log.Println("err:", err)
 		return err
 	}
-	fmt.Println("Inserted bid: ", insertResult.InsertedID)
+	log.Println("Inserted bid: ", insertResult.InsertedID)
 	return err
 }
 
@@ -130,10 +130,10 @@ func (c *DBClient) InsertBids(bids *models.BidList) error {
 	for _, bid := range *bids {
 		insertResult, err := collection.InsertOne(context.TODO(), bid)
 		if err != nil {
-			//log.Fatal(err)
+			log.Println(err)
 			return err
 		}
-		fmt.Println("Inserted bid: ", insertResult.InsertedID)
+		log.Println("Inserted bid: ", insertResult.InsertedID)
 	}
 	return nil
 }
@@ -142,10 +142,10 @@ func (c *DBClient) DeleteBid(bid *models.Bid) error {
 	collection := c.client.Database(c.DBname).Collection("bids")
 	_, err := collection.DeleteOne(context.TODO(), bid)
 	if err != nil {
-		//log.Fatal(err)
+		log.Println(err)
 		return err
 	}
-	fmt.Println("Deleted bid")
+	log.Println("Deleted bid")
 	return nil
 }
 
@@ -157,7 +157,7 @@ func (c *DBClient) DeleteBids(bids *models.BidList) error {
 			return err
 		}
 	}
-	fmt.Println("Deleted all bids")
+	log.Println("Deleted all bids")
 	return nil
 }
 
@@ -169,10 +169,10 @@ func (c *DBClient) InsertAuction(auction *models.Auction) (primitive.ObjectID, e
 	id := insertResult.InsertedID.(primitive.ObjectID)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return id, err
 	}
-	fmt.Println("Inserted auction: ", insertResult.InsertedID)
+	log.Println("Inserted auction: ", insertResult.InsertedID)
 	return id, err
 }
 
@@ -180,10 +180,10 @@ func (c *DBClient) DeleteAuction(auction *models.Auction) error {
 	collection := c.client.Database(c.DBname).Collection("auctions")
 	_, err := collection.DeleteOne(context.TODO(), auction)
 	if err != nil {
-		// log.Fatal(err)
+		log.Println(err)
 		return err
 	}
-	fmt.Println("Inserted auction: ", auction)
+	log.Println("Inserted auction: ", auction)
 	return nil
 }
 
@@ -192,10 +192,10 @@ func (c *DBClient) InsertAuctions(auctions *models.AuctionList) error {
 	for _, auc := range *auctions {
 		insertResult, err := collection.InsertOne(context.TODO(), auc)
 		if err != nil {
-			// log.Fatal(err)
+			log.Println(err)
 			return err
 		}
-		fmt.Println("Inserted auction: ", insertResult.InsertedID)
+		log.Println("Inserted auction: ", insertResult.InsertedID)
 	}
 	return nil
 }
@@ -205,7 +205,7 @@ func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
 	collection := c.client.Database(c.DBname).Collection("auctions")
 	_, err := collection.DeleteMany(ctx, bson.M{})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 		// for _, auc := range *auctions {
 		// 	_, err := collection.DeleteOne(context.TODO(), auc)
@@ -214,7 +214,7 @@ func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
 		// 		return err
 		// 	}
 	}
-	fmt.Println("Deleted all auctions")
+	log.Println("Deleted all auctions")
 	return nil
 }
 
@@ -226,7 +226,7 @@ func (c *DBClient) GetAuction(id string) (*models.Auction, error) {
 	docID, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		log.Fatal("Error in fetching auction(GetAuction) ", err)
+		log.Println("Error in fetching auction(GetAuction) ", err)
 		return nil, err
 	}
 	filter := bson.D{{"_id", docID}}
@@ -371,10 +371,10 @@ func (c *DBClient) DeleteAllUsers() error {
 	collection := c.client.Database(c.DBname).Collection("users")
 	_, err := collection.DeleteMany(ctx, bson.M{})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
-	fmt.Println("Deleted all users")
+	log.Println("Deleted all users")
 	return nil
 }
 
