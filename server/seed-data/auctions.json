@@ -34,45 +34,5 @@
     "tag": ["Yacht", "Luxury"],
     "time": 1573664490,
     "created_by": "user789"
-  },
-  {
-    "AuctionID": "5dca644cde52283587609584",
-    "title": "Household",
-    "image": [],
-    "description": "Harley Davidson HARLEY VRSCD1250",
-    "price": 150000,
-    "tag": ["Luxury", "utensils", "clothes", "dishes"],
-    "time": 1573664460,
-    "created_by": "user459"
-  },
-  {
-    "AuctionID": "5dca644cde52283587609585",
-    "title": "Stationary",
-    "image": [],
-    "description": "Harley Davidson HARLEY VRSCD1250",
-    "price": 150000,
-    "tag": ["Books", "Pens", "Paintings"],
-    "time": 1573664460,
-    "created_by": "user456"
-  },
-  {
-    "AuctionID": "5dca644cde52283587609586",
-    "title": "Veggies",
-    "image": [],
-    "description": "Harley Davidson HARLEY VRSCD1250",
-    "price": 150000,
-    "tag": ["Fruits", "Vegetables", "Meat"],
-    "time": 1573664460,
-    "created_by": "user456"
-  },
-  {
-    "AuctionID": "5dca644cde52283587609587",
-    "title": "Appliances",
-    "image": [],
-    "description": "Harley Davidson HARLEY VRSCD1250",
-    "price": 150000,
-    "tag": ["Fridge", "Washing Machine", "Furniture"],
-    "time": 1573664460,
-    "created_by": "user456"
   }
 ]
