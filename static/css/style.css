@@ -93,3 +93,19 @@ nav {
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+label[for="auction-title"] {
+  font-size: 20px;
+}
+
+label[for="auction-tags"] {
+  font-size: 20px;
+}
+
+label[for="auction-description"] {
+  font-size: 20px;
+}
+
+label[for="auction-base-price"] {
+  font-size: 20px;
+}
