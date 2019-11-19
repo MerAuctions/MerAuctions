@@ -199,6 +199,8 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 		return
 	}
 
+	log.Printf("Bid user check success.")
+
 	var newbid models.Bid
 	price_map := gin.H{"price": ""}
 	rawData, _ := c.GetRawData()
@@ -215,16 +217,16 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	}
 	tmp_price, err := strconv.ParseFloat(str_price, 32)
 	if err != nil {
-		log.Println(err)
+		log.Println("err:", err)
 		c.JSON(400, fmt.Sprintf("Invalid bid"))
 		return
 	}
 
 	currentBid := models.Price(tmp_price)
 	bids := data.GetAllSortedBidsForAuction(auc_id)
-	var highestBid models.Price = 0
+	var highestBid models.Price = auc.BasePrice
 	for _, bid := range bids {
-		fmt.Println(bid)
+		log.Println(bid)
 		if highestBid < bid.Price {
 			highestBid = bid.Price
 		}
@@ -235,6 +237,8 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 		newbid.AuctionID = auc_id
 		newbid.UserID = usr_id
 		newbid.Price = models.Price(currentBid)
+
+		log.Println(newbid)
 
 		//TODO: check for price limits
 		status := data.AddNewBid(&newbid)
@@ -251,6 +255,8 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	} else {
 		c.JSON(500, fmt.Sprintf("You can only bid above the current highest bid!"))
 	}
+
+	log.Println("Done bidding.")
 
 }
 
