@@ -3,7 +3,6 @@ package data
 // package main
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"sort"
@@ -87,7 +86,7 @@ func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 	sort.SliceStable(bids, func(i, j int) bool {
 		return bids[i].Time > bids[j].Time
 	})
-	log.Println("Bids: ", bids)
+	// log.Println("Bids: ", bids)
 	return bids
 }
 
@@ -211,7 +210,7 @@ func GetResult(auctionID string) *models.Result {
 	}
 
 	currentTime := int64(time.Now().Unix())
-	fmt.Printf("Current unix time: %v    Time at which auction ends: %v", currentTime, auc.EndTime)
+	// fmt.Printf("Current unix time: %v    Time at which auction ends: %v", currentTime, auc.EndTime)
 	if currentTime < auc.EndTime {
 		return nil
 	}
