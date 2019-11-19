@@ -1,7 +1,6 @@
 .post-bid-buttons .btn {
-    margin: 1rem 0;
+  margin: 1rem 0;
 }
-
 
 /* @font-face {
   font-family: MercariSans-Thin;
@@ -12,40 +11,45 @@
 } */
 
 @font-face {
-    font-family: MercariSans-Regular;
-    src: url(/fonts/b396b9d.woff2) format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap
+  font-family: MercariSans-Regular;
+  src: url(/fonts/b396b9d.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-    font-family: MercariSans-Bold;
-    src: url(/fonts/647432b.woff2) format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap
+  font-family: MercariSans-Bold;
+  src: url(/fonts/647432b.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 body {
-    font-family: MercariSans-Regular;
-    background-color: rgb(245, 245, 245);
+  font-family: MercariSans-Regular;
+  background-color: rgb(245, 245, 245);
 }
 
 nav {
-    font-family: MercariSans-Bold;
+  font-family: MercariSans-Bold;
 }
 
 .btn {
-    background-color: #4cc9ff;
+  background-color: #4cc9ff;
 }
 
 .btn:hover {
-    background-color: #ff0010;
+  background-color: #ff0010;
+}
+
+.card-image {
+  height: 300px !important;
+  overflow: hidden;
 }
 
 .card-action a {
-    color: #4cc9ff;
+  color: #4cc9ff;
 }
 
 .card-title {
