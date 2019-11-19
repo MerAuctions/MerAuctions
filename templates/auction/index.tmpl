@@ -91,11 +91,11 @@
             $('#table-bids').show();
             $('#text-no-bids').hide();
             for (var bid of result) {
-              var t = new Date(1000 * bid.Time);
+              var t = new Date(1000 * bid.time);
               var tr = $('<tr>')
-                .append($('<td>').text(bid.UserID))
+                .append($('<td>').text(bid.user_id))
                 .append($('<td>').text(t.toLocaleString()))
-                .append($('<td>').text('$' +bid.Price))
+                .append($('<td>').text('$' +bid.price))
               $('#table-bids-body').append(tr);
             }
           },
@@ -123,9 +123,9 @@
                     html: result
                   });
                 },
-                error: function (jqXHR, exception) {
+                error: function (response) {
                   M.toast({
-                    html: JSON.parse(jqXHR.responseText)["message"]
+                    html: response.responseJSON
                   });
                 },
                 data: JSON.stringify({
