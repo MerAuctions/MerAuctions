@@ -12,7 +12,8 @@
       <p>{{ .Description }}</p>
     </div>
     <div class="card-action">
-      <a class="card-action-link" href="auctions/{{ formatAuctionIDAsHexString .AuctionID }}">Open</a>
+      <a href="auctions/{{ formatAuctionIDAsHexString .AuctionID }}">Open</a>
+      <p>{{.BasePrice}}</p>
     </div>
   </div>
 </div>

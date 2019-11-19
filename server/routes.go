@@ -121,6 +121,7 @@ func setupRoutes(router *gin.Engine) {
 	router.GET("/auctions/:auction_id/rewards/:user_id", addRewardsToUser)
 	router.GET("/personalise/:user_id", getPersonalisedAuctions)
 	router.GET("/auctions/:auction_id/result", getResultByAuctionId)
+	router.GET("/tags/:tag/auctions", getAuctionsByTag)
 	router.POST("/auction/create", createAuction)
 
 	router.GET("/auction/create/getTagsfromImage", getTagsfromImage)
