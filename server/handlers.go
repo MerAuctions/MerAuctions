@@ -43,10 +43,10 @@ func getAuctionsByID(c *gin.Context) {
 		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
-	// fmt.Println("At the start: auction ", auc.AuctionID, " the end")
+	fmt.Println("At the start: auction ", auc.AuctionID, " the end")
 
 	top5bids := data.GetTopFiveBids(id)
-	// fmt.Println("top 5 bids ", top5bids)
+	fmt.Println("top 5 bids ", top5bids)
 
 	if top5bids == nil {
 		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
@@ -115,8 +115,8 @@ func addNewUser(c *gin.Context) {
 	c.ShouldBindJSON(&newuser)
 
 	newUser, status := data.AddNewUser(&newuser)
-	// log.Println("User object: ", newUser)
-	// log.Println("Status: ", status)
+	log.Println("User object: ", newUser)
+	log.Println("Status: ", status)
 
 	if newUser != nil {
 		responseSignup.User = *newUser
@@ -236,30 +236,35 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 		}
 	}
 
-	if (len(bids) == 0 && currentBid >= auc.BasePrice) || (currentBid > auc.BasePrice && currentBid > highestBid) {
-		newbid.AuctionID = auc_id
-		newbid.UserID = usr_id
-		newbid.Price = models.Price(currentBid)
-
-		log.Println(newbid)
-
-		//TODO: check for price limits
-		status := data.AddNewBid(&newbid)
-		if status == 0 {
-			log.Printf("User's Bid Successfully added.")
-			c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
-		} else {
-			log.Printf("User's Bid could not be added with status %d.", status)
-			c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
-		}
-		if err != nil {
-			c.JSON(404, fmt.Sprint("Auction Not Found!"))
-		}
+	if len(bids) == 0 && currentBid < auc.BasePrice {
+		c.JSON(500, fmt.Sprintf("You can only place bids higher than the base price!"))
 	} else {
-		c.JSON(500, fmt.Sprintf("You can only bid above the current highest bid!"))
-	}
 
-	log.Println("Done bidding.")
+		if (len(bids) == 0 && currentBid >= auc.BasePrice) || (currentBid > auc.BasePrice && currentBid > highestBid) {
+			newbid.AuctionID = auc_id
+			newbid.UserID = usr_id
+			newbid.Price = models.Price(currentBid)
+
+			log.Println(newbid)
+
+			//TODO: check for price limits
+			status := data.AddNewBid(&newbid)
+			if status == 0 {
+				log.Printf("User's Bid Successfully added.")
+				c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
+			} else {
+				log.Printf("User's Bid could not be added with status %d.", status)
+				c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
+			}
+			if err != nil {
+				c.JSON(404, fmt.Sprint("Auction Not Found!"))
+			}
+		} else {
+			c.JSON(500, fmt.Sprintf("You can only bid above the current highest bid!"))
+		}
+
+		log.Println("Done bidding.")
+	}
 
 }
 
@@ -356,7 +361,7 @@ func addRewardsToUser(c *gin.Context) {
 		if bid.UserID == userID {
 			if userBidFreq < maxBidsToRewards {
 				pointsForBidPrice := (rewardPercentage * float64(bid.Price))
-				// fmt.Println("auc.BasePrice:", auc.BasePrice)
+				fmt.Println("auc.BasePrice:", auc.BasePrice)
 				pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
 
 				//TODO after auction creation done
