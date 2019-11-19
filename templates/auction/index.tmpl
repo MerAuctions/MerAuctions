@@ -46,8 +46,7 @@
       var debug = {{ . }};
       var auction_id = "{{ formatAuctionIDAsHexString .auction.AuctionID }}";
       var end_time = new Date(1000 * {{ .auction.EndTime }});
-      console.log({{ .auction.EndTime }});
-
+      // console.log({{.auction.CreatedBy }})
       var end_timer;
       var bid_timer;
 
