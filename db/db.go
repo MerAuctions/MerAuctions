@@ -218,6 +218,36 @@ func (c *DBClient) DeleteAuctions(auctions *models.AuctionList) error {
 	return nil
 }
 
+//Get an Auction by Tag
+func (c *DBClient) GetAuctionsByTag(tag string) (*[]models.Auction, error) {
+	var auctions []models.Auction
+	collection := c.client.Database(c.DBname).Collection("auctions")
+	log.Println(tag)
+
+	filter := bson.D{{"tag", tag}}
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		log.Println("Error in fetching auction by Tag ", err)
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+	for cur.Next(context.Background()) {
+		var elem models.Auction
+		err := cur.Decode(&elem)
+		auctions = append(auctions, elem)
+		if err != nil {
+			// log.Fatal(err)
+			return nil, err
+		}
+	}
+	if err := cur.Err(); err != nil {
+		// log.Fatal(err)
+		return nil, err
+	}
+	return &auctions, nil
+
+}
+
 //Get an Auction with ID
 func (c *DBClient) GetAuction(id string) (*models.Auction, error) {
 	var auction models.Auction

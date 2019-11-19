@@ -181,6 +181,12 @@ func createAuction(c *gin.Context) {
 	c.JSON(responseCode, response)
 }
 
+func getAuctionsByTag(c *gin.Context) {
+	tagAuctions := data.GetAuctionsByAuctionTag(c.Param("tag"))
+
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", tagAuctions)
+}
+
 //addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
 	isUserSignedIn := false

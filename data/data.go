@@ -20,6 +20,15 @@ func GetAllAuctions() *models.AuctionList {
 	return DBclient.GetAuctions()
 }
 
+func GetAuctionsByAuctionTag(tag string) *[]models.Auction {
+	auc, err := DBclient.GetAuctionsByTag(tag)
+	if err != nil {
+		log.Println("err:", err)
+		return nil
+	}
+	return auc
+}
+
 //TODO return error
 func GetAuctionById(id string) *models.Auction {
 	auc, err := DBclient.GetAuction(id)
