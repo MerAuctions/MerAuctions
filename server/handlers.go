@@ -6,8 +6,12 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	// "io/ioutil"
 
@@ -21,7 +25,7 @@ import (
 var maxBidsToRewards int = 5
 
 func hello(c *gin.Context) {
-	c.String(200, "Hello World")
+	c.JSON(200, "hello")
 }
 
 //getAllAuctions is handler function to return list of all auctions
@@ -224,7 +228,7 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 
 	currentBid := models.Price(tmp_price)
 	bids := data.GetAllSortedBidsForAuction(auc_id)
-	var highestBid models.Price = auc.BasePrice
+	var highestBid models.Price = 0
 	for _, bid := range bids {
 		log.Println(bid)
 		if highestBid < bid.Price {
@@ -232,8 +236,7 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 		}
 	}
 
-	if (len(bids) == 0 && highestBid == auc.BasePrice) || (currentBid >= auc.BasePrice && currentBid > highestBid) &&
-		currentBid <= 10*auc.BasePrice {
+	if (len(bids) == 0 && currentBid >= auc.BasePrice) || (currentBid > auc.BasePrice && currentBid > highestBid) {
 		newbid.AuctionID = auc_id
 		newbid.UserID = usr_id
 		newbid.Price = models.Price(currentBid)
@@ -381,6 +384,54 @@ func addRewardsToUser(c *gin.Context) {
 
 }
 
+// This function gets personalised Auctions based on User Interests
+func getPersonalisedAuctions(c *gin.Context) {
+	userID := c.Param("user_id")
+	user := data.GetUserByID(userID)
+	interests := user.Interest
+	auctions := *data.GetAllAuctions()
+	similarityMap := make(map[primitive.ObjectID]int)
+
+	for _, auc := range auctions {
+		count := 0
+		tagMap := make(map[string]int)
+		for _, tag := range auc.Tag {
+			tagMap[strings.ToLower(tag)] = 0
+		}
+		for _, interest := range interests {
+			_, ok := tagMap[strings.ToLower(interest)]
+			if ok == true {
+				count++
+			}
+		}
+		similarityMap[auc.AuctionID] = count
+
+	}
+
+	var sortedAuctions entries
+	for k, v := range similarityMap {
+		sortedAuctions = append(sortedAuctions, entry{val: v, key: k})
+	}
+
+	sort.Sort(sort.Reverse(sortedAuctions))
+
+	var personalisedAuctions []primitive.ObjectID
+
+	for _, auc := range sortedAuctions {
+		fmt.Println("auction:", auc.key, " similar:", auc.val)
+		personalisedAuctions = append(personalisedAuctions, auc.key)
+	}
+
+	var aucs []models.Auction
+
+	for _, auc := range personalisedAuctions {
+		tmp_auc := data.GetAuctionByAuctionID(auc)
+		aucs = append(aucs, *tmp_auc)
+	}
+
+	c.JSON(200, aucs)
+}
+
 // get picture user uploaded and save to /media/images
 func uploadPicture(c *gin.Context) {
 	// Source
@@ -412,6 +463,17 @@ func getDescriptionfromImage(c *gin.Context) {
 	log.Println("description : ", description)
 	c.JSON(http.StatusOK, description)
 }
+
+type entry struct {
+	val int
+	key primitive.ObjectID
+}
+
+type entries []entry
+
+func (s entries) Len() int           { return len(s) }
+func (s entries) Less(i, j int) bool { return s[i].val < s[j].val }
+func (s entries) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func getUserAuctions(c *gin.Context) {
 	listAuctions := data.GetAuctionByUserId(c.Param("user_id"))
