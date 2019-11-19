@@ -118,7 +118,7 @@ func (c *DBClient) InsertBid(bid *models.Bid) error {
 	collection := c.client.Database(c.DBname).Collection("bids")
 	insertResult, err := collection.InsertOne(context.TODO(), bid)
 	if err != nil {
-		log.Println(err)
+		log.Println("err:", err)
 		return err
 	}
 	log.Println("Inserted bid: ", insertResult.InsertedID)
@@ -284,7 +284,34 @@ func (c *DBClient) GetAuctions() *models.AuctionList {
 func (c *DBClient) GetBids(AuctionId string) (*[]models.Bid, error) {
 	var bids []models.Bid
 	collection := c.client.Database(c.DBname).Collection("bids")
-	filter := bson.D{{"_id", AuctionId}}
+	filter := bson.D{{"auctionid", AuctionId}}
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		// log.Fatal(err)
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+	for cur.Next(context.Background()) {
+		var elem models.Bid
+		err := cur.Decode(&elem)
+		bids = append(bids, elem)
+		if err != nil {
+			// log.Fatal(err)
+			return nil, err
+		}
+	}
+	if err := cur.Err(); err != nil {
+		// log.Fatal(err)
+		return nil, err
+	}
+	return &bids, nil
+}
+
+//get the list of all the bids by user id
+func (c *DBClient) GetBidsbyUser(UserId string) (*[]models.Bid, error) {
+	var bids []models.Bid
+	collection := c.client.Database(c.DBname).Collection("bids")
+	filter := bson.D{{"userid", UserId}}
 	cur, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		// log.Fatal(err)

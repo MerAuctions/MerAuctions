@@ -8,6 +8,8 @@ import (
 	"sort"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/MerAuctions/MerAuctions/db"
 	"github.com/MerAuctions/MerAuctions/models"
 )
@@ -22,14 +24,42 @@ func GetAllAuctions() *models.AuctionList {
 func GetAuctionById(id string) *models.Auction {
 	auc, err := DBclient.GetAuction(id)
 	if err != nil {
+		log.Println("err:", err)
 		return nil
 	}
 	return auc
 }
 
+func GetAuctionByAuctionID(id primitive.ObjectID) *models.Auction {
+	auc, err := DBclient.GetAuctionByID(id)
+	if err != nil {
+		log.Println("err:", err)
+		return nil
+	}
+	return auc
+}
+
+func GetAuctionByUserId(id string) *models.AuctionList {
+	bids, err := DBclient.GetBidsbyUser(id)
+	if err != nil {
+		log.Println("err:", err)
+		return nil
+	}
+	log.Println(bids)
+	var aucs models.AuctionList
+	for _, bid := range *bids {
+		auc, _ := DBclient.GetAuction(bid.AuctionID)
+		aucs = append(aucs, *auc)
+	}
+	log.Println(aucs)
+	return &aucs
+}
+
 func GetTopFiveBids(auctionID string) *[]models.Bid {
 	tmp_bids, err := DBclient.GetBids(auctionID)
+	log.Println("tmp_bids:", tmp_bids)
 	if err != nil {
+		log.Println("err:", err)
 		return nil //TODO: also give error
 	}
 	bids := *tmp_bids
@@ -40,12 +70,14 @@ func GetTopFiveBids(auctionID string) *[]models.Bid {
 		return &bids
 	}
 	result := bids[:5]
+	log.Println("result:", result)
 	return &result
 }
 
 // This function returns all the bids for an auction by price sorted
 func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 	tmp_bids, err := DBclient.GetBids(auctionID)
+	log.Println(tmp_bids)
 	if err != nil {
 		log.Println("Error in finding bids ", err)
 		return nil //TODO: also give error
@@ -156,7 +188,7 @@ func AddNewBid(bid *models.Bid) int {
 	}
 
 	currentTime := int64(time.Now().Unix())
-	// fmt.Printf("Current unix time: %v    Time at which auction ends: %v", currentTime, auc.EndTime)
+	log.Printf("Current unix time: %v    Time at which auction ends: %v", currentTime, auc.EndTime)
 	if currentTime > auc.EndTime {
 		return 2 //TODO: discuss which status code to give
 	}
