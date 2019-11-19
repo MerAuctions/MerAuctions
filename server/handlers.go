@@ -43,10 +43,10 @@ func getAuctionsByID(c *gin.Context) {
 		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
-	fmt.Println("At the start: auction ", auc.AuctionID, " the end")
+	// fmt.Println("At the start: auction ", auc.AuctionID, " the end")
 
 	top5bids := data.GetTopFiveBids(id)
-	fmt.Println("top 5 bids ", top5bids)
+	// fmt.Println("top 5 bids ", top5bids)
 
 	if top5bids == nil {
 		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
@@ -118,8 +118,8 @@ func addNewUser(c *gin.Context) {
 	c.ShouldBindJSON(&newuser)
 
 	newUser, status := data.AddNewUser(&newuser)
-	log.Println("User object: ", newUser)
-	log.Println("Status: ", status)
+	// log.Println("User object: ", newUser)
+	// log.Println("Status: ", status)
 
 	if newUser != nil {
 		responseSignup.User = *newUser
@@ -370,7 +370,7 @@ func addRewardsToUser(c *gin.Context) {
 		if bid.UserID == userID {
 			if userBidFreq < maxBidsToRewards {
 				pointsForBidPrice := (rewardPercentage * float64(bid.Price))
-				fmt.Println("auc.BasePrice:", auc.BasePrice)
+				// fmt.Println("auc.BasePrice:", auc.BasePrice)
 				pointsForHighBid := float64(bid.Price-2*auc.BasePrice) / float64(2*auc.BasePrice)
 
 				//TODO after auction creation done
