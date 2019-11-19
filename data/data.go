@@ -3,7 +3,6 @@ package data
 // package main
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"sort"
@@ -48,14 +47,14 @@ func GetTopFiveBids(auctionID string) *[]models.Bid {
 func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 	tmp_bids, err := DBclient.GetBids(auctionID)
 	if err != nil {
-		log.Fatal("Error in finding bids ", err)
+		log.Println("Error in finding bids ", err)
 		return nil //TODO: also give error
 	}
 	bids := *tmp_bids
 	sort.SliceStable(bids, func(i, j int) bool {
 		return bids[i].Time > bids[j].Time
 	})
-	log.Println("Bids: ", bids)
+	// log.Println("Bids: ", bids)
 	return bids
 }
 
@@ -63,7 +62,7 @@ func GetAllSortedBidsForAuction(auctionID string) []models.Bid {
 func GetAllUsersForAuction(auctionID string) []models.User {
 	users, err := DBclient.GetUsers(auctionID)
 	if err != nil {
-		log.Fatal("No bidders for auction ", auctionID)
+		log.Println("No bidders for auction ", auctionID)
 	}
 
 	return *users
@@ -93,13 +92,13 @@ func AddNewUser(usr *models.User) (*models.User, int) {
 	err = DBclient.InsertUser(usr)
 	if err != nil {
 		//unable to insert user
-		log.Fatal("Error in creating new user (AddNewUser) ", err)
+		log.Println("Error in creating new user (AddNewUser) ", err)
 		return user, 5 //TODO: discuss which status code to give
 	}
 
 	user, err = DBclient.Getuser(string(usr.UserID))
 	if err != nil {
-		log.Fatal("Error in creating new user (Getuser): ", err)
+		log.Println("Error in creating new user (Getuser): ", err)
 		return user, 5
 	}
 
@@ -111,7 +110,7 @@ func AddNewUser(usr *models.User) (*models.User, int) {
 func GetUserByID(userID string) models.User {
 	temp_user, err := DBclient.Getuser(userID)
 	if err != nil {
-		log.Fatal(userID, " User not Found!")
+		log.Println(userID, " User not Found!")
 	}
 	user := *temp_user
 	return user
@@ -133,7 +132,7 @@ func AddNewAuction(auction *models.Auction) (models.Auction, int) {
 
 	id, err := DBclient.InsertAuction(auction)
 	if err != nil {
-		log.Fatal("Error in creating new auction")
+		log.Println("Error in creating new auction")
 		return *auction, 1
 	}
 
@@ -157,7 +156,7 @@ func AddNewBid(bid *models.Bid) int {
 	}
 
 	currentTime := int64(time.Now().Unix())
-	fmt.Printf("Current unix time: %v    Time at which auction ends: %v", currentTime, auc.EndTime)
+	// fmt.Printf("Current unix time: %v    Time at which auction ends: %v", currentTime, auc.EndTime)
 	if currentTime > auc.EndTime {
 		return 2 //TODO: discuss which status code to give
 	}
@@ -179,7 +178,7 @@ func GetResult(auctionID string) *models.Result {
 	}
 
 	currentTime := int64(time.Now().Unix())
-	fmt.Printf("Current unix time: %v    Time at which auction ends: %v", currentTime, auc.EndTime)
+	// fmt.Printf("Current unix time: %v    Time at which auction ends: %v", currentTime, auc.EndTime)
 	if currentTime < auc.EndTime {
 		return nil
 	}
@@ -226,7 +225,7 @@ func PopulateDB() bool {
 	var auc models.AuctionList
 	file, err := ioutil.ReadFile("./server/seed-data/auctions.json")
 	if err != nil {
-		log.Fatal("Error reading auctions.json : ", err.Error())
+		log.Println("Error reading auctions.json : ", err.Error())
 	}
 	// fmt.Println(string(file))
 	json.Unmarshal([]byte(file), &auc)
@@ -234,7 +233,7 @@ func PopulateDB() bool {
 	// deleting all the data it exists before
 	err = DBclient.DeleteAllCollections()
 	if err != nil {
-		log.Fatal("Error in deleting pre-existing data : ", err.Error())
+		log.Println("Error in deleting pre-existing data : ", err.Error())
 	}
 
 	//setting the time for different aucitons
@@ -243,7 +242,7 @@ func PopulateDB() bool {
 	auc[2].EndTime = int64(time.Now().Add(time.Minute * 2).Unix())
 	err = DBclient.InsertAuctions(&auc)
 	if err != nil {
-		log.Fatal("Error populating auctions.json : ", err.Error())
+		log.Println("Error populating auctions.json : ", err.Error())
 	}
 	return true
 
