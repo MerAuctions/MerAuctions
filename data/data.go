@@ -9,6 +9,8 @@ import (
 	"sort"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/MerAuctions/MerAuctions/db"
 	"github.com/MerAuctions/MerAuctions/models"
 )
@@ -22,6 +24,15 @@ func GetAllAuctions() *models.AuctionList {
 //TODO return error
 func GetAuctionById(id string) *models.Auction {
 	auc, err := DBclient.GetAuction(id)
+	if err != nil {
+		log.Println("err:", err)
+		return nil
+	}
+	return auc
+}
+
+func GetAuctionByAuctionID(id primitive.ObjectID) *models.Auction {
+	auc, err := DBclient.GetAuctionByID(id)
 	if err != nil {
 		log.Println("err:", err)
 		return nil

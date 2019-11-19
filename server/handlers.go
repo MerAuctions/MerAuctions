@@ -422,7 +422,14 @@ func getPersonalisedAuctions(c *gin.Context) {
 		personalisedAuctions = append(personalisedAuctions, auc.key)
 	}
 
-	c.JSON(200, personalisedAuctions)
+	var aucs []models.Auction
+
+	for _, auc := range personalisedAuctions {
+		tmp_auc := data.GetAuctionByAuctionID(auc)
+		aucs = append(aucs, *tmp_auc)
+	}
+
+	c.JSON(200, aucs)
 }
 
 // get picture user uploaded and save to /media/images
