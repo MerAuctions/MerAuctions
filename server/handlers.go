@@ -181,6 +181,12 @@ func createAuction(c *gin.Context) {
 	c.JSON(responseCode, response)
 }
 
+func getAuctionsByTag(c *gin.Context) {
+	tagAuctions := data.GetAuctionsByAuctionTag(c.Param("tag"))
+
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", tagAuctions)
+}
+
 //addBidAuctionIdByUserId is handler function to add bid by a registered user
 func addBidAuctionIdByUserId(c *gin.Context) {
 	isUserSignedIn := false
@@ -239,30 +245,35 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 		}
 	}
 
-	if (len(bids) == 0 && currentBid >= auc.BasePrice) || (currentBid > auc.BasePrice && currentBid > highestBid) {
-		newbid.AuctionID = auc_id
-		newbid.UserID = usr_id
-		newbid.Price = models.Price(currentBid)
-
-		log.Println(newbid)
-
-		//TODO: check for price limits
-		status := data.AddNewBid(&newbid)
-		if status == 0 {
-			log.Printf("User's Bid Successfully added.")
-			c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
-		} else {
-			log.Printf("User's Bid could not be added with status %d.", status)
-			c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
-		}
-		if err != nil {
-			c.JSON(404, fmt.Sprint("Auction Not Found!"))
-		}
+	if len(bids) == 0 && currentBid < auc.BasePrice {
+		c.JSON(500, fmt.Sprintf("You can only place bids higher than the base price!"))
 	} else {
-		c.JSON(500, fmt.Sprintf("You can only bid above the current highest bid!"))
-	}
 
-	log.Println("Done bidding.")
+		if (len(bids) == 0 && currentBid >= auc.BasePrice) || (currentBid > auc.BasePrice && currentBid > highestBid) {
+			newbid.AuctionID = auc_id
+			newbid.UserID = usr_id
+			newbid.Price = models.Price(currentBid)
+
+			log.Println(newbid)
+
+			//TODO: check for price limits
+			status := data.AddNewBid(&newbid)
+			if status == 0 {
+				log.Printf("User's Bid Successfully added.")
+				c.JSON(200, fmt.Sprintf("User's Bid Successfully added"))
+			} else {
+				log.Printf("User's Bid could not be added with status %d.", status)
+				c.JSON(400, fmt.Sprintf("User's Bid could not be added"))
+			}
+			if err != nil {
+				c.JSON(404, fmt.Sprint("Auction Not Found!"))
+			}
+		} else {
+			c.JSON(500, fmt.Sprintf("You can only bid above the current highest bid!"))
+		}
+
+		log.Println("Done bidding.")
+	}
 
 }
 
