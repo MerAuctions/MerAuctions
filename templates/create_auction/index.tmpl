@@ -130,6 +130,7 @@
         var basePrice = $("#auction-base-price").val();
         var endTime = $("#auction-end-time").val();
         var parsedUnixTime = new Date(endTime).getUnixTime();
+        var created_by = $("#create").val();
         if (
           title.length == 0 ||
           b64_image.length == 0 ||
@@ -167,7 +168,8 @@
               tag: tags,
               description: description,
               price: parseInt(basePrice),
-              time: parsedUnixTime
+              time: parsedUnixTime,
+              created_by: created_by
             })
           });
         }
@@ -214,6 +216,8 @@
             setTimeout(function() {
               location.reload();
             }, 500);
+            // console.log(result.User.user_id);
+            // document.getElementById("create").value = result.User.user_id;
           },
           error: function(jqXHR, exception) {
             M.toast({
