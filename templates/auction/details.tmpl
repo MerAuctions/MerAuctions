@@ -15,6 +15,14 @@
       <p class="flow-text">
         {{ .auction.Description }}
       </p><br/><br/>
+      <div>
+        {{ range .auction.Tag}}
+          <div class="chip">
+            <a href="/tags/{{ . }}/auctions">{{ . }}</a>
+          </div>
+        {{ end }}
+
+      </div>
       <blockquote>
         <h5 class="text-darken-4">Created By: {{ .auction.CreatedBy }}</h5>
       </blockquote>
