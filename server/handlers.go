@@ -77,11 +77,13 @@ func getAuctionsByID(c *gin.Context) {
 //getAuctionsByID is handler function for getting particular auction page
 func getCreateAuction(c *gin.Context) {
 	isUserSignedIn := false
+	usr_id := ""
 	if jwtToken, err := authMiddleware.ParseToken(c); err == nil {
 		if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok && jwtToken.Valid {
 			if userID, ok := claims[jwtIdentityKey].(string); ok == true {
 				if user, _ := data.GetUserById(userID); user != nil {
 					isUserSignedIn = true
+					usr_id = userID
 				}
 			} else {
 				log.Printf("Could not convert claim to string")
@@ -92,6 +94,7 @@ func getCreateAuction(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "create_auction/index.tmpl", gin.H{
 		"isUserSignedIn": isUserSignedIn,
+		"user_id":        usr_id,
 	})
 }
 
@@ -176,6 +179,12 @@ func createAuction(c *gin.Context) {
 	}
 
 	c.JSON(responseCode, response)
+}
+
+func getAuctionsByTag(c *gin.Context) {
+	tagAuctions := data.GetAuctionsByAuctionTag(c.Param("tag"))
+
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", tagAuctions)
 }
 
 //addBidAuctionIdByUserId is handler function to add bid by a registered user

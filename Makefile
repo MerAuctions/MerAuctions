@@ -29,10 +29,10 @@ deps:
 docker: docker-push
 
 docker-build:
-		docker build -t gcr.io/$(PROJECT_NAME)/merauctions:v0.1 .
+		docker build -t gcr.io/$(PROJECT_NAME)/merauctions:v0.3 .
 
 docker-push: docker-build
-		docker push gcr.io/$(PROJECT_NAME)/merauctions:v0.1
+		docker push gcr.io/$(PROJECT_NAME)/merauctions:v0.3
 
 cluster-create:
 	gcloud container clusters create $(CLUSTER_NAME) --num-nodes=2 --machine-type=g1-small
