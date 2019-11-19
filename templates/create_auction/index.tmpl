@@ -73,9 +73,7 @@
               success: function(response) {
                 response = response.substring(0, response.length - 1);
                 response = response.substring(1, response.length);
-                console.log(response)
                 response = response.replace(/\\n/g, ". ");
-                console.log(response)
                 document.getElementById("auction-description").value = response;
               },
               error: function(response) {
