@@ -43,6 +43,10 @@ nav {
   background-color: #ff0010;
 }
 
+.card:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
 .card-image {
   height: 300px !important;
   overflow: hidden;
@@ -88,4 +92,20 @@ nav {
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+label[for="auction-title"] {
+  font-size: 20px;
+}
+
+label[for="auction-tags"] {
+  font-size: 20px;
+}
+
+label[for="auction-description"] {
+  font-size: 20px;
+}
+
+label[for="auction-base-price"] {
+  font-size: 20px;
 }
