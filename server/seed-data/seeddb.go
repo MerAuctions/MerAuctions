@@ -77,4 +77,5 @@ func main() {
 		log.Fatal("Could not delete all collections in database")
 	}
 	InsertAuctionsToDB()
+	InsertBidsToDB()
 }

@@ -104,15 +104,29 @@
       }
 
       function submitAuc() {
+        Date.prototype.getUnixTime = function() {
+          return (this.getTime() / 1000) | 0;
+        };
+        if (!Date.now)
+          Date.now = function() {
+            return new Date();
+          };
+        Date.time = function() {
+          return Date.now().getUnixTime();
+        };
         var title = $("#auction-title").val();
-        var b64_image = new Array($("#b64").val());
+        var b64_image = new Array(
+          $("#b64")
+            .val()
+            .split(",")[1]
+        );
         var tags = $("#auction-tags")
           .val()
           .split(";");
         var description = $("#auction-description").val();
         var basePrice = $("#auction-base-price").val();
         var endTime = $("#auction-end-time").val();
-        var unixEndTime = (Date.now(endTime) / 1000) | 0;
+        var parsedUnixTime = new Date(endTime).getUnixTime();
         if (
           title.length == 0 ||
           b64_image.length == 0 ||
@@ -135,6 +149,9 @@
               M.toast({
                 html: result.Message
               });
+              window.setTimeout(function() {
+                window.location = "/";
+              }, 1000);
             },
             error: function(jqXHR, exception) {
               M.toast({
@@ -147,7 +164,7 @@
               tag: tags,
               description: description,
               price: parseInt(basePrice),
-              time: unixEndTime
+              time: parsedUnixTime
             })
           });
         }

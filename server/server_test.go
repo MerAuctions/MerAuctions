@@ -438,6 +438,27 @@ var _ = Describe("Server", func() {
 		})
 	})
 
+	Describe("The GET /auction/create/getTagsfromImage", func() {
+		BeforeEach(func() {
+
+			response = performRequest(router, "GET", "/auction/create/getTagsfromImage?imageName=test1.png", nil)
+		})
+
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
+		})
+	})
+
+	Describe("The GET /auction/create/getDescriptionfromImage", func() {
+		BeforeEach(func() {
+			response = performRequest(router, "GET", "/auction/create/getDescriptionfromImage?imageName=test1.png", nil)
+		})
+
+		It("Returns with Status 200", func() {
+			Expect(response.Code).To(Equal(200))
+		})
+	})
+
 	// Describe("The POST /auctions/:auction_id/users/:user_id/bids endpoint", func() {
 	// 	BeforeEach(func() {
 	// 		newbid := []byte(`{"BidID":"0", "AuctionID":"1", "UserID":"vamshi", "Price":"2000", "Count": 11, "Time":""}`)

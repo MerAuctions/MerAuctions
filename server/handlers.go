@@ -203,6 +203,8 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 		return
 	}
 
+	log.Printf("Bid user check success.")
+
 	var newbid models.Bid
 	price_map := gin.H{"price": ""}
 	rawData, _ := c.GetRawData()
@@ -219,7 +221,7 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	}
 	tmp_price, err := strconv.ParseFloat(str_price, 32)
 	if err != nil {
-		log.Println(err)
+		log.Println("err:", err)
 		c.JSON(400, fmt.Sprintf("Invalid bid"))
 		return
 	}
@@ -228,17 +230,18 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	bids := data.GetAllSortedBidsForAuction(auc_id)
 	var highestBid models.Price = 0
 	for _, bid := range bids {
-		fmt.Println(bid)
+		log.Println(bid)
 		if highestBid < bid.Price {
 			highestBid = bid.Price
 		}
 	}
 
-	if (len(bids) == 0 && highestBid == auc.BasePrice) || (currentBid >= auc.BasePrice && currentBid > highestBid) &&
-		currentBid <= 10*auc.BasePrice {
+	if (len(bids) == 0 && currentBid >= auc.BasePrice) || (currentBid > auc.BasePrice && currentBid > highestBid) {
 		newbid.AuctionID = auc_id
 		newbid.UserID = usr_id
 		newbid.Price = models.Price(currentBid)
+
+		log.Println(newbid)
 
 		//TODO: check for price limits
 		status := data.AddNewBid(&newbid)
@@ -255,6 +258,8 @@ func addBidAuctionIdByUserId(c *gin.Context) {
 	} else {
 		c.JSON(500, fmt.Sprintf("You can only bid above the current highest bid!"))
 	}
+
+	log.Println("Done bidding.")
 
 }
 
@@ -448,6 +453,7 @@ func getTagsfromImage(c *gin.Context) {
 func getDescriptionfromImage(c *gin.Context) {
 	imageName := c.Request.URL.Query().Get("imageName")
 	description := api.GetDescriptionForImage(imageName)
+	log.Println("description : ", description)
 	c.JSON(http.StatusOK, description)
 }
 
@@ -461,3 +467,10 @@ type entries []entry
 func (s entries) Len() int           { return len(s) }
 func (s entries) Less(i, j int) bool { return s[i].val < s[j].val }
 func (s entries) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+
+func getUserAuctions(c *gin.Context) {
+	listAuctions := data.GetAuctionByUserId(c.Param("user_id"))
+	log.Println(c.Param("user_id"))
+	log.Println(listAuctions)
+	c.HTML(http.StatusOK, "auction_list/index.tmpl", listAuctions)
+}

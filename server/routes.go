@@ -96,6 +96,7 @@ func setupRoutes(router *gin.Engine) {
 	router.POST("/login", authMiddleware.LoginHandler)
 	router.POST("/user/signup", addNewUser)       //handle signing up
 	router.GET("/user/:user_id", getUserByUserID) // get user info
+	router.GET("/user/:user_id/auctions", getUserAuctions)
 
 	router.SetFuncMap(template.FuncMap{
 		"formatAuctionIDAsHexString": formatAuctionIDAsHexString,
