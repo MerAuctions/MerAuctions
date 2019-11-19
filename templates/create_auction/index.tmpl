@@ -71,6 +71,9 @@
                 "/auction/create/getDescriptionfromImage?imageName=" + fileName,
               dataType: "json",
               success: function(response) {
+                response = response.substring(0, response.length - 1);
+                response = response.substring(1, response.length);
+                response = response.replace(/\\n/g, ". ");
                 document.getElementById("auction-description").value = response;
               },
               error: function(response) {
