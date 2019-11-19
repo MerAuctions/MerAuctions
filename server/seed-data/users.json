@@ -2,16 +2,42 @@
     {
         "user_id" : "vamshi",
         "user_name" : "vamshi",
-        "pwd" : "pwd_vamshi"
+        "pwd" : "pwd_vamshi",
+        "interest" : ["car", "Motor Cycle"]
     },
     {
         "user_id" : "deepak",
         "user_name" : "deepak",
-        "pwd" : "pwd_deepak"
+        "pwd" : "pwd_deepak",
+        "interest" : ["Luxury"]
     },
     {
         "user_id" : "harsh",
         "user_name" : "harsh",
         "pwd" : "pwd_harsh"
+    },
+    {
+        "user_id" : "shashank",
+        "user_name" : "shashank",
+        "pwd" : "pwd_shashank",
+        "interest": ["Furniture", "vegetables", "Luxury"]
+    },
+    {
+        "user_id" : "sahil",
+        "user_name" : "sahil",
+        "pwd" : "pwd_sahil",
+        "interest": ["Fruits", "vegetables", "fridge"]
+    },
+    {
+        "user_id" : "aniket",
+        "user_name" : "aniket",
+        "pwd" : "pwd_aniket",
+        "interest": ["meat", "pens", "utensils"]
+    },
+    {
+        "user_id" : "liu",
+        "user_name" : "lie",
+        "pwd" : "pwd_liu",
+        "interest": ["yackt", "books", "pens"]
     }
 ]
