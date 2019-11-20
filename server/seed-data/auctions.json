@@ -7,7 +7,7 @@
     ],
     "description": "Ferrari 360 | Modena Berlinetta | 2002 Model",
     "price": 150000,
-    "tag": ["Car", "Luxury"],
+    "tag": ["car", "luxury"],
     "time": 1573664400,
     "created_by": "user123"
   },
@@ -19,7 +19,7 @@
     ],
     "description": "Harley Davidson | Model : VRSCD1250 | Black Color",
     "price": 150000,
-    "tag": ["Motor Cycle"],
+    "tag": ["motorcycle"],
     "time": 1573664460,
     "created_by": "user456"
   },
@@ -31,7 +31,7 @@
     ],
     "price": 150000,
     "description": "Mengi Yay Custom Built 108 | Super-Yacht Grace Kelly",
-    "tag": ["Yacht", "Luxury"],
+    "tag": ["yacht", "luxury"],
     "time": 1573664490,
     "created_by": "user789"
   }
