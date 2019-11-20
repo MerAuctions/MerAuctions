@@ -67,7 +67,6 @@
                 for (var i = 0; i < len; i++) {
                   tags.push({tag: response[i].Name,});
                 }
-                console.log(tags);
                 $('.chips-placeholder').chips({
                   data: tags,
                 });
@@ -135,9 +134,11 @@
             .val()
             .split(",")[1]
         );
-        var tags = $("#auction-tags")
-          .val()
-          .split(";");
+        var tmp_tags = M.Chips.getInstance($('.chips-placeholder')).chipsData;
+        var tags = []
+        for (var i = 0; i < tmp_tags.length; i++) {
+          tags.push(tmp_tags[i].tag);
+        }
         var description = $("#auction-description").val();
         var basePrice = $("#auction-base-price").val();
         var endTime = $("#auction-end-time").val();
