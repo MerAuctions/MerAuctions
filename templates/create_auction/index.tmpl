@@ -30,6 +30,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="/js/materialize.min.js"></script>
     <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.chips');
+        var instances = M.Chips.init(elems, options);
+      });
+      $('.chips-placeholder').chips({
+        placeholder: '+Tag',
+        secondaryPlaceholder: '+Tag',
+      });
+
+      $('.chips').chips();
       function uploadPics() {
         var file_data = $("#file").prop("files")[0];
         var fileName = file_data.name;
@@ -53,10 +63,14 @@
               dataType: "json",
               success: function(response) {
                 var len = response.length;
-                var tags = "";
+                var tags = [];
                 for (var i = 0; i < len; i++) {
-                  tags += response[i].Name + ";";
+                  tags.push({tag: response[i].Name,});
                 }
+                console.log(tags);
+                $('.chips-placeholder').chips({
+                  data: tags,
+                });
                 document.getElementById("auction-tags").value = tags;
               },
               error: function(response) {
