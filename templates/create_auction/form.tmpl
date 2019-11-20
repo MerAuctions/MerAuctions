@@ -12,20 +12,38 @@
     />
     <label for="auction-title">Title</label>
   </div>
-  <div class="col s12" style="margin-top: 20px;">
-    <input type="file" id="file" name="file" multiple />
-    <button
-      id="upload"
-      class="waves-effect waves-light btn"
-      onclick="uploadPics()"
-    >
-      Upload Image
-    </button>
+  <div class="file-field col s12 input-field">
+    <div class="btn">
+      <span>Select Image</span>
+      <input type="file" id="file" name="file" multiple />
+    </div>
+    <div class="file-path-wrapper">
+      <input
+        class="file-path validate"
+        type="text"
+        placeholder="Upload one or more files"
+      />
+    </div>
   </div>
   <div class="col s12">
-    <input id="b64" type="hidden" />
-    <input id="create" type="hidden" value="{{.user_id}}" />
-    <img id="img" height="250" style="margin-top: 30px; margin-bottom: 30px;" />
+    <div class="col s6">
+      <input id="b64" type="hidden" />
+      <input id="create" type="hidden" value="{{.user_id}}" />
+      <img
+        id="img"
+        height="250"
+        style="margin-top: 30px; margin-bottom: 30px;"
+      />
+    </div>
+    <div class="col s6">
+      <button
+        id="upload"
+        class="waves-effect waves-light btn"
+        onclick="uploadPics()"
+      >
+        Upload Image
+      </button>
+    </div>
   </div>
   <div class="input-field col s12">
     <div id="auction-tags" class="chips chips-placeholder"></div>
