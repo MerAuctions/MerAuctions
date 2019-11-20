@@ -4,38 +4,70 @@
 <div class="row">
   {{ if .isUserSignedIn }}
   <div class="input-field col s12">
-    <input id="auction-title" type="text" class="validate" />
+    <input
+      id="auction-title"
+      placeholder="Please enter a title for the auction"
+      type="text"
+      class="validate"
+    />
     <label for="auction-title">Title</label>
   </div>
-  <div class="col s12">
-    <input type="file" id="file" name="file" multiple />
-    <button
-      id="upload"
-      class="waves-effect waves-light btn"
-      onclick="uploadPics()"
-    >
-      Upload Image
-    </button>
+  <div class="file-field col s12 input-field">
+    <div class="btn">
+      <span>Select Image</span>
+      <input type="file" id="file" name="file" multiple />
+    </div>
+    <div class="file-path-wrapper">
+      <input
+        class="file-path validate"
+        type="text"
+        placeholder="Upload one or more files"
+      />
+    </div>
   </div>
   <div class="col s12">
-    <input id="b64" type="hidden" />
-    <input id="create" type="hidden" value="{{.user_id}}" />
-    <!-- <p>{{.user_id}}</p> -->
-    <img id="img" height="250" />
+    <div class="col s6">
+      <input id="b64" type="hidden" />
+      <input id="create" type="hidden" value="{{.user_id}}" />
+      <img
+        id="img"
+        height="250"
+        style="margin-top: 30px; margin-bottom: 30px;"
+      />
+    </div>
+    <div class="col s6">
+      <button
+        id="upload"
+        class="waves-effect waves-light btn"
+        onclick="uploadPics()"
+      >
+        Upload Image
+      </button>
+    </div>
   </div>
   <div class="input-field col s12">
-    <input id="auction-tags" type="text" class="validate" />
-    <label for="auction-tags">Tags</label>
+    <div id="auction-tags" class="chips chips-placeholder"></div>
   </div>
   <div class="input-field col s12">
-    <input id="auction-description" type="text" class="validate" />
+    <input
+      id="auction-description"
+      type="text"
+      class="validate"
+      placeholder="Description will get auto-filled after you upload an Image"
+    />
     <label for="auction-description">Description</label>
   </div>
   <div class="input-field col s12">
-    <input id="auction-base-price" type="text" class="validate" />
+    <input
+      id="auction-base-price"
+      type="text"
+      placeholder="Please enter a Base Price for the Auction"
+      class="validate"
+    />
     <label for="auction-base-price">Base Price</label>
   </div>
   <div class="input-field col s12">
+    <p style="color: #9e9e9e; font-size: 16px;">End Time</p>
     <input id="auction-end-time" type="datetime-local" class="validate" />
   </div>
   <div class="col s12 post-bid-buttons">

@@ -30,13 +30,21 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="/js/materialize.min.js"></script>
     <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.chips');
+        var instances = M.Chips.init(elems, options);
+      });
+      $('.chips-placeholder').chips({
+        placeholder: '+Tag',
+        secondaryPlaceholder: '+Tag',
+      });
+
+      $('.chips').chips();
       function uploadPics() {
         var file_data = $("#file").prop("files")[0];
         var fileName = file_data.name;
         var form_data = new FormData();
-        // var name = "cooldogee";
         form_data.append("file", file_data);
-        // form_data.append("name", name);
         $.ajax({
           url: "/upload",
           dataType: "text",
@@ -55,10 +63,13 @@
               dataType: "json",
               success: function(response) {
                 var len = response.length;
-                var tags = "";
+                var tags = [];
                 for (var i = 0; i < len; i++) {
-                  tags += response[i].Name + ";";
+                  tags.push({tag: response[i].Name,});
                 }
+                $('.chips-placeholder').chips({
+                  data: tags,
+                });
                 document.getElementById("auction-tags").value = tags;
               },
               error: function(response) {
@@ -123,9 +134,11 @@
             .val()
             .split(",")[1]
         );
-        var tags = $("#auction-tags")
-          .val()
-          .split(";");
+        var tmp_tags = M.Chips.getInstance($('.chips-placeholder')).chipsData;
+        var tags = []
+        for (var i = 0; i < tmp_tags.length; i++) {
+          tags.push(tmp_tags[i].tag);
+        }
         var description = $("#auction-description").val();
         var basePrice = $("#auction-base-price").val();
         var endTime = $("#auction-end-time").val();

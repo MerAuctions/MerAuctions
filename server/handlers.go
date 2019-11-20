@@ -43,6 +43,9 @@ func getAuctionsByID(c *gin.Context) {
 		c.JSON(404, fmt.Sprintf("Given id: %v not found", id))
 		return
 	}
+	if auc.Tag[len(auc.Tag)-1] == "" {
+		auc.Tag = auc.Tag[:len(auc.Tag)-1]
+	}
 	// fmt.Println("At the start: auction ", auc.AuctionID, " the end")
 
 	top5bids := data.GetTopFiveBids(id)
@@ -66,6 +69,7 @@ func getAuctionsByID(c *gin.Context) {
 			log.Printf("Could not extract claims into JWT")
 		}
 	}
+
 	c.HTML(http.StatusOK, "auction/index.tmpl", gin.H{
 		"auction":        auc,
 		"bids":           top5bids,
