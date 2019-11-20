@@ -18,6 +18,9 @@
       <div class="row">
         {{ range $auction := . -}}
         {{ template "auction_list/card.tmpl" $auction }}
+        {{else}}
+          </div></div></div>
+          <div>No Auctions Found!</div>
         {{- end }}
       </div>
     </section>
