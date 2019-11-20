@@ -20,7 +20,9 @@
     <script type="text/javascript">
       function searchAuc() {
         var tag = $("#search-text").val();
-        console.log(tag)
+        if(tag == "") {
+          tag = "none"
+        }
         window.location.href = `/tags/` + tag + `/auctions`;
       }
     </script>
